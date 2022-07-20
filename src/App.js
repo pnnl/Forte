@@ -1,25 +1,44 @@
-import logo from './logo.svg';
+/* eslint-disable no-unused-vars */
+import React, {Component} from 'react';
+import {connect} from "react-redux";
+import { Grid } from '@mui/material/Grid';
+import * as d3 from "d3";
+//import logo from './logo.svg';
 import './App.css';
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+
+
+class App extends Component{
+  constructor(props){
+    super(props);
+    console.log()
+  }
+
+  componentDidMount(){
+
+  }
+
+  componentDidUpdate(){
+
+  }
+
+  render(){
+
+    return(
+      "Hello"
+    )
+  }
 }
 
-export default App;
+const mapStateToProp = (state) => {
+  return {
+    blank_placeholder: state.blank_placeholder,
+  }
+}
+
+const mapDispatchToProp = (dispatch) => {
+  return{
+    set_blank_placeholder: (val) => dispatch({ type: "blank_placeholder", value: val}),
+  }
+}
+export default connect(mapStateToProp,mapDispatchToProp)(App);

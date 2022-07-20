@@ -1,15 +1,28 @@
 import React from 'react';
-import ReactDOM from 'react-dom/client';
+import { createRoot } from 'react-dom/client';
 import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
+import { configureStore} from '@reduxjs/toolkit';
+import myreducer from './store/reducer';
+import {ThemeProvider} from '@mui/material/styles';
+import { Provider } from 'react-redux';
+import outerTheme from './theme/theme';
+import 'font-awesome/css/font-awesome.min.css';
 
-const root = ReactDOM.createRoot(document.getElementById('root'));
+const store=configureStore({
+  reducer: myreducer,
+});
+
+const root = createRoot(document.getElementById('root'));
 root.render(
-  <React.StrictMode>
+  <Provider store={store}>
+    <ThemeProvider theme={outerTheme}>
     <App />
-  </React.StrictMode>
+    </ThemeProvider>
+  </Provider>
 );
+
 
 // If you want to start measuring performance in your app, pass a function
 // to log results (for example: reportWebVitals(console.log))

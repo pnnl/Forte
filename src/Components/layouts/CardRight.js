@@ -28,7 +28,7 @@ var mini_card_height = (100/metrics.length) + "%";
 return (
     <div style={{height: "94vh"}}>
     {metrics.map((item, index) =>{
-        return <Card style={{height: mini_card_height}}>
+        return <Card key={index} style={{height: mini_card_height}}>
         <Card.Header>
           <Grid container direction="row" spacing={1}>
           <Grid item xs={12} sm={12}>{item}</Grid>

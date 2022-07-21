@@ -46,34 +46,12 @@ return (
 
 const maptstateToprop = (state) => {
   return {
-      url: state.url,
-      attributes_of_interest: state.attributes_of_interest,
-      attributes_of_interest_temp: state.attributes_of_interest_temp,
-      tags_dict2:state.tags_dict2,
-      datasets_with_url: state.datasets_with_url,
-      isLoading: state.isLoading,
-      isLoadingTags: state.isLoadingTags,
-      keywords_datasets_tag: state.keywords_datasets_tag,
-      clicked_tags: state.clicked_tags,
-      cluster_data: state.cluster_data,
-      cluster_data_filtered: state.cluster_data_filtered,
-      plot_type: state.plot_type,
-      vulnerable_checked: state.vulnerable_checked,
-      vulnerable_checked_disabled: state.vulnerable_checked_disabled,
+      blank_placeholder: state.blank_placeholder,
   }
 }
 const mapdispatchToprop = (dispatch) => {
   return {
-      set_selected_datasets: (val) => dispatch({ type: "selected_datasets", value: val }),
-      set_final_selected_datasets: (val) => dispatch({ type: "final_selected_datasets", value: val }),
-      set_attributes_of_interest: (val) => dispatch({ type: "attributes_of_interest", value: val }),
-      set_attributes_of_interest_temp: (val) => dispatch({ type: "attributes_of_interest_temp", value: val }),
-      set_projection_data: (val) => dispatch({ type: "projection_data", value: val }),
-      set_isLoading: (val) => dispatch({ type: "isLoading", value: val }),
-      set_isLoadingTags: (val) => dispatch({ type: "isLoadingTags", value: val }),
-      set_dataset_list: (val) => dispatch({ type: "dataset_list", value: val }),
-      set_vulnerable_checked: (val) => dispatch({ type: "vulnerable_checked", value: val }),
-      set_vulnerable_checked_disabled: (val) => dispatch({ type: "vulnerable_checked_disabled", value: val }),
+      set_blank_placeholder: (val) => dispatch({ type: "blank_placeholder", value: val }),
   }
 }
 

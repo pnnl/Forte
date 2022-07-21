@@ -30,15 +30,16 @@ class UpdateButton extends Component {
         // css design is in App.css
 
         return (
-           
+           <div>
+            &nbsp;&nbsp;
                 <Button 
                 variant="secondary"
-                style={{backgroundColor: (this.props.color_buttons)["focused"]}}
+                style={{backgroundColor: (this.props.color_buttons)["general"], color:"black", marginTop:"10%"}}
                 disabled={this.props.isLoadingUpdate}
                 onClick={!this.props.isLoadingUpdate ?this.handleButtonClick : null}
                 >{this.props.isLoadingUpdate ? 'Loading…' : 'Update'}</Button>
           
-            
+          </div>
           );
        
     }

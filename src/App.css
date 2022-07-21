@@ -36,3 +36,6 @@
     transform: rotate(360deg);
   }
 }
+.myDateTimePicker {
+  height: 5vh;
+}

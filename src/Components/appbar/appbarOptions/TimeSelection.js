@@ -31,19 +31,17 @@ class TimeSelection extends Component {
             <DateTimePicker
                 label="Start date"
                 renderInput={(params) => <TextField {...params} />}
-                value={new Date(this.props.start_date).toLocaleString("en-US", {timeZone: "UTC"})}
+                value={new Date(this.props.start_date_temp).toLocaleString("en-US", {timeZone: "UTC"})}
                 onChange={(newValue) => {
-                    var test = new Date(newValue.valueOf()).toLocaleString("en-US", {timeZone: "UTC"});
-                    console.log(test);
-                    this.props.set_start_date(newValue.valueOf());
+                    this.props.set_start_date_temp(newValue.valueOf());
                   }}
             />&nbsp;
              <DateTimePicker
                 label="End date"
                 renderInput={(params) => <TextField {...params} />}
-                value={new Date(this.props.end_date).toLocaleString("en-US", {timeZone: "UTC"})}
+                value={new Date(this.props.end_date_temp).toLocaleString("en-US", {timeZone: "UTC"})}
                 onChange={(newValue) => {
-                    this.props.set_end_date(newValue.valueOf());
+                    this.props.set_end_date_temp(newValue.valueOf());
                   }}
             />
         </LocalizationProvider>
@@ -55,15 +53,15 @@ class TimeSelection extends Component {
 const maptstateToprop = (state) => {
     return {
         blank_placeholder:state.blank_placeholder,
-        start_date: state.start_date,
-        end_date: state.end_date,
+        start_date_temp: state.start_date_temp,
+        end_date_temp: state.end_date_temp,
     }
 }
 const mapdispatchToprop = (dispatch) => {
     return {
         set_blank_placeholder: (val) => dispatch({ type: "blank_placeholder", value: val }),
-        set_start_date: (val) => dispatch({ type: "start_date", value: val }),
-        set_end_date: (val) => dispatch({ type: "end_date", value: val }),
+        set_start_date_temp: (val) => dispatch({ type: "start_date_temp", value: val }),
+        set_end_date_temp: (val) => dispatch({ type: "end_date_temp", value: val }),
     }
 }
 export default connect(maptstateToprop, mapdispatchToprop)(TimeSelection);

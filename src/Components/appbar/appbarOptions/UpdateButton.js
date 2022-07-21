@@ -23,6 +23,8 @@ class UpdateButton extends Component {
     
     handleButtonClick=()=>{
         this.props.set_isLoadingUpdate(true); 
+        this.props.set_start_date(this.props.start_date_temp);
+        this.props.set_end_date(this.props.end_date_temp);
         console.log("Clicked");
         this.props.set_isLoadingUpdate(false);
     } 
@@ -50,12 +52,18 @@ const maptstateToprop = (state) => {
         blank_placeholder:state.blank_placeholder,
         color_buttons: state.color_buttons,
         isLoadingUpdate: state.isLoadingUpdate,
+        start_date: state.start_date,
+        end_date: state.end_date,
+        start_date_temp: state.start_date_temp,
+        end_date_temp: state.end_date_temp,
     }
 }
 const mapdispatchToprop = (dispatch) => {
     return {
         set_blank_placeholder: (val) => dispatch({ type: "blank_placeholder", value: val }),
         set_isLoadingUpdate: (val) => dispatch({ type: "isLoadingUpdate", value: val }),
+        set_start_date: (val) => dispatch({ type: "start_date", value: val }),
+        set_end_date: (val) => dispatch({ type: "end_date", value: val }),
     }
 }
 export default connect(maptstateToprop, mapdispatchToprop)(UpdateButton);

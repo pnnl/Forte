@@ -31,7 +31,8 @@ class TimeSelection extends Component {
             <DateTimePicker
                 label="Start date"
                 renderInput={(params) => <TextField {...params} />}
-                value={new Date(this.props.start_date_temp).toLocaleString("en-US", {timeZone: "UTC"})}
+                // value={new Date(this.props.start_date_temp).toLocaleString("en-US", {timeZone: "UTC"})}
+                value={new Date(this.props.start_date_temp)}
                 onChange={(newValue) => {
                     this.props.set_start_date_temp(newValue.valueOf());
                   }}
@@ -39,7 +40,8 @@ class TimeSelection extends Component {
              <DateTimePicker
                 label="End date"
                 renderInput={(params) => <TextField {...params} />}
-                value={new Date(this.props.end_date_temp).toLocaleString("en-US", {timeZone: "UTC"})}
+                // value={new Date(this.props.end_date_temp).toLocaleString("en-US", {timeZone: "UTC"})}
+                value={new Date(this.props.end_date_temp)}
                 onChange={(newValue) => {
                     this.props.set_end_date_temp(newValue.valueOf());
                   }}

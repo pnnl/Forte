@@ -27,19 +27,21 @@ class TimeSelection extends Component {
 
         return <div>
         {/* <LocalizationProvider dateAdapter={AdapterDateFns}> */}
-        <LocalizationProvider dateAdapter={AdapterDateFns}>   
+        <LocalizationProvider dateAdapter={AdapterDateFns} adpaterLocale={"false"}>   
             <DateTimePicker
                 label="Start date"
                 renderInput={(params) => <TextField {...params} />}
-                value={new Date(this.props.start_date)}
+                value={new Date(this.props.start_date).toLocaleString("en-US", {timeZone: "UTC"})}
                 onChange={(newValue) => {
+                    var test = new Date(newValue.valueOf()).toLocaleString("en-US", {timeZone: "UTC"});
+                    console.log(test);
                     this.props.set_start_date(newValue.valueOf());
                   }}
             />&nbsp;
              <DateTimePicker
                 label="End date"
                 renderInput={(params) => <TextField {...params} />}
-                value={new Date(this.props.end_date)}
+                value={new Date(this.props.end_date).toLocaleString("en-US", {timeZone: "UTC"})}
                 onChange={(newValue) => {
                     this.props.set_end_date(newValue.valueOf());
                   }}

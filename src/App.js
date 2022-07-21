@@ -6,6 +6,8 @@ import AppBar from './Components/appbar/AppBar';
 import * as d3 from "d3";
 //import logo from './logo.svg';
 import './App.css';
+import CardLeft from './Components/layouts/CardLeft';
+import CardRight from './Components/layouts/CardRight';
 
 
 
@@ -28,12 +30,13 @@ class App extends Component{
     return(
       <Grid container spacing={0} >
           <Grid item xs={12}><AppBar style={{height:"5vh"}}></AppBar></Grid>
-          {/* <Grid item xs={12}>
-          <Grid container style={{opacity:(this.props.isLoadingUpdate)?0.4:1}}>
-          <Grid item xs={12} lg={5}><CardLeft></CardLeft></Grid>
-          <Grid item xs={12} lg={7}><CardRight></CardRight></Grid>
+          <Grid item xs={12}>
+          {/* <Grid container style={{opacity:(this.props.isLoadingUpdate)?0.4:1}}> */}
+          <Grid container>
+          <Grid item xs={12} lg={6}><CardLeft></CardLeft></Grid>
+          <Grid item xs={12} lg={6}><CardRight></CardRight></Grid>
           </Grid>
-        </Grid> */}
+        </Grid>
         </Grid>
     )
   }

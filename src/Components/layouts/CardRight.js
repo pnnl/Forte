@@ -8,7 +8,7 @@ import _ from 'lodash';
 
 
 
-class BasicCopyableComponent extends Component {
+class CardRight extends Component {
     constructor(props) {
         super(props)
         console.log();
@@ -38,4 +38,4 @@ const mapdispatchToprop = (dispatch) => {
         set_blank_placeholder: (val) => dispatch({ type: "blank_placeholder", value: val }),
     }
 }
-export default connect(maptstateToprop, mapdispatchToprop)(BasicCopyableComponent);
+export default connect(maptstateToprop, mapdispatchToprop)(CardRight);

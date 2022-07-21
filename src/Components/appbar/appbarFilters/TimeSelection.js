@@ -24,8 +24,6 @@ class TimeSelection extends Component {
     componentDidUpdate(prevProps, prevState) {
     }
     render() {
-        var start_date = new Date('2020-01-02T00:00:00.000Z')
-        var end_date = new Date('2020-01-03T00:00:00.000Z')
 
         return <div>
         {/* <LocalizationProvider dateAdapter={AdapterDateFns}> */}
@@ -33,12 +31,18 @@ class TimeSelection extends Component {
             <DateTimePicker
                 label="Start date"
                 renderInput={(params) => <TextField {...params} />}
-                value={start_date}
+                value={new Date(this.props.start_date)}
+                onChange={(newValue) => {
+                    this.props.set_start_date(newValue.valueOf());
+                  }}
             />&nbsp;
              <DateTimePicker
                 label="End date"
                 renderInput={(params) => <TextField {...params} />}
-                value={end_date}
+                value={new Date(this.props.end_date)}
+                onChange={(newValue) => {
+                    this.props.set_end_date(newValue.valueOf());
+                  }}
             />
         </LocalizationProvider>
       </div>
@@ -49,11 +53,15 @@ class TimeSelection extends Component {
 const maptstateToprop = (state) => {
     return {
         blank_placeholder:state.blank_placeholder,
+        start_date: state.start_date,
+        end_date: state.end_date,
     }
 }
 const mapdispatchToprop = (dispatch) => {
     return {
         set_blank_placeholder: (val) => dispatch({ type: "blank_placeholder", value: val }),
+        set_start_date: (val) => dispatch({ type: "start_date", value: val }),
+        set_end_date: (val) => dispatch({ type: "end_date", value: val }),
     }
 }
 export default connect(maptstateToprop, mapdispatchToprop)(TimeSelection);

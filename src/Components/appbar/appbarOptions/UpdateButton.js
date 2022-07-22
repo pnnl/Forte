@@ -23,10 +23,15 @@ class UpdateButton extends Component {
     
     handleButtonClick=()=>{
         this.props.set_isLoadingUpdate(true); 
-        this.props.set_start_date(this.props.start_date_temp);
-        this.props.set_end_date(this.props.end_date_temp);
-        console.log("Clicked");
+        if(this.props.start_date_temp< this.props.end_date_temp){
+            this.props.set_start_date(this.props.start_date_temp);
+            this.props.set_end_date(this.props.end_date_temp);
+        }
+        else{
+           alert("Please select an end date later than the start date") 
+        }
         this.props.set_isLoadingUpdate(false);
+        
     } 
     render() {
         // css design is in App.css

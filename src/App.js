@@ -8,12 +8,14 @@ import * as d3 from "d3";
 import './App.css';
 import CardLeft from './Components/layouts/CardLeft';
 import CardRight from './Components/layouts/CardRight';
+import moment from 'moment-timezone';
 
 
 
 class App extends Component{
   constructor(props){
     super(props);
+    moment.tz.setDefault('UTC');
     console.log();
   }
 

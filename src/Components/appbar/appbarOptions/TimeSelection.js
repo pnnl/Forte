@@ -10,7 +10,7 @@ import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import { AdapterMoment } from '@mui/x-date-pickers/AdapterMoment';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
-import moment from 'moment-timezone';
+//import moment from 'moment-timezone';
 
 
 
@@ -18,7 +18,7 @@ import moment from 'moment-timezone';
 class TimeSelection extends Component {
     constructor(props) {
         super(props);
-        moment.tz.setDefault('UTC');
+        //moment.tz.setDefault('UTC');
         console.log();
     }
     componentDidMount() {

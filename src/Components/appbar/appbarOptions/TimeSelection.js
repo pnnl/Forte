@@ -7,15 +7,18 @@ import * as d3 from "d3";
 import _ from 'lodash';
 import TextField from '@mui/material/TextField';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
+import { AdapterMoment } from '@mui/x-date-pickers/AdapterMoment';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
+import moment from 'moment-timezone';
 
 
 
 
 class TimeSelection extends Component {
     constructor(props) {
-        super(props)
+        super(props);
+        moment.tz.setDefault('UTC');
         console.log();
     }
     componentDidMount() {
@@ -27,11 +30,11 @@ class TimeSelection extends Component {
 
         return <div>
         {/* <LocalizationProvider dateAdapter={AdapterDateFns}> */}
-        <LocalizationProvider dateAdapter={AdapterDateFns} adpaterLocale={"false"}>   
+        <LocalizationProvider dateAdapter={AdapterMoment} >   
             <DateTimePicker
                 label="Start date"
                 renderInput={(params) => <TextField {...params} />}
-                // value={new Date(this.props.start_date_temp).toLocaleString("en-US", {timeZone: "UTC"})}
+                //value={new Date(this.props.start_date_temp).toLocaleString("en-US", {timeZone: "UTC"})}
                 value={new Date(this.props.start_date_temp)}
                 onChange={(newValue) => {
                     this.props.set_start_date_temp(newValue.valueOf());

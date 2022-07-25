@@ -3,3 +3,7 @@
 2022-07-25 12:39:19,924 INFO werkzeug MainThread :  * Restarting with stat
 2022-07-25 12:39:35,332 INFO werkzeug Thread-3 : 127.0.0.1 - - [25/Jul/2022 12:39:35] "GET / HTTP/1.1" 200 -
 2022-07-25 12:39:35,458 INFO werkzeug Thread-4 : 127.0.0.1 - - [25/Jul/2022 12:39:35] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
+2022-07-25 13:49:43,406 INFO werkzeug Thread-6 : 127.0.0.1 - - [25/Jul/2022 13:49:43] "OPTIONS / HTTP/1.1" 200 -
+2022-07-25 13:49:43,579 INFO werkzeug Thread-7 : 127.0.0.1 - - [25/Jul/2022 13:49:43] "POST / HTTP/1.1" 200 -
+2022-07-25 13:49:48,439 INFO werkzeug Thread-8 : 127.0.0.1 - - [25/Jul/2022 13:49:48] "OPTIONS / HTTP/1.1" 200 -
+2022-07-25 13:49:48,765 INFO werkzeug Thread-9 : 127.0.0.1 - - [25/Jul/2022 13:49:48] "POST / HTTP/1.1" 200 -

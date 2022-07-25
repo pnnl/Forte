@@ -9,6 +9,7 @@ import './App.css';
 import CardLeft from './Components/layouts/CardLeft';
 import CardRight from './Components/layouts/CardRight';
 import moment from 'moment-timezone';
+import * as jsonCall from "./Algorithms/JSONCall";
 
 
 
@@ -20,7 +21,10 @@ class App extends Component{
   }
 
   componentDidMount(){
-
+    jsonCall.download(this.props.url + "/", {dummy: "abcd", dummy1: "abcd"}).then(res =>{
+      console.log(res);
+      })
+    
   }
 
   componentDidUpdate(){
@@ -47,6 +51,7 @@ class App extends Component{
 const mapStateToProp = (state) => {
   return {
     blank_placeholder: state.blank_placeholder,
+    url: state.url,
   }
 }
 

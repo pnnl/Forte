@@ -1,5 +1,6 @@
 let initialState = {
     blank_placeholder: null,
+    url: "http://localhost:5000",
     start_date: 1577923200000,
     end_date: 1578009600000,
     start_date_temp: 1577923200000,

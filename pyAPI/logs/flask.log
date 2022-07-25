@@ -7,3 +7,28 @@
 2022-07-25 13:49:43,579 INFO werkzeug Thread-7 : 127.0.0.1 - - [25/Jul/2022 13:49:43] "POST / HTTP/1.1" 200 -
 2022-07-25 13:49:48,439 INFO werkzeug Thread-8 : 127.0.0.1 - - [25/Jul/2022 13:49:48] "OPTIONS / HTTP/1.1" 200 -
 2022-07-25 13:49:48,765 INFO werkzeug Thread-9 : 127.0.0.1 - - [25/Jul/2022 13:49:48] "POST / HTTP/1.1" 200 -
+2022-07-25 14:12:29,662 INFO werkzeug Thread-11 : 127.0.0.1 - - [25/Jul/2022 14:12:29] "OPTIONS / HTTP/1.1" 200 -
+2022-07-25 14:12:29,894 INFO werkzeug Thread-12 : 127.0.0.1 - - [25/Jul/2022 14:12:29] "POST / HTTP/1.1" 200 -
+2022-07-25 14:38:05,391 INFO werkzeug MainThread :  * Detected change in 'C:\\Users\\bhat970\\OneDrive - PNNL\\Documents\\Work\\netloadforecasting\\pyAPI\\app.py', reloading
+2022-07-25 14:38:05,830 INFO werkzeug MainThread :  * Restarting with stat
+2022-07-25 16:16:00,404 INFO werkzeug Thread-3 : 127.0.0.1 - - [25/Jul/2022 16:16:00] "OPTIONS / HTTP/1.1" 200 -
+2022-07-25 16:16:00,618 INFO werkzeug Thread-4 : 127.0.0.1 - - [25/Jul/2022 16:16:00] "POST / HTTP/1.1" 200 -
+2022-07-25 16:42:03,759 INFO werkzeug MainThread :  * Detected change in 'C:\\Users\\bhat970\\OneDrive - PNNL\\Documents\\Work\\netloadforecasting\\pyAPI\\app.py', reloading
+2022-07-25 16:42:04,383 INFO werkzeug MainThread :  * Restarting with stat
+2022-07-25 16:42:34,085 INFO werkzeug Thread-3 : 127.0.0.1 - - [25/Jul/2022 16:42:34] "[35m[1mGET /processor HTTP/1.1[0m" 500 -
+2022-07-25 16:42:34,796 INFO werkzeug Thread-4 : 127.0.0.1 - - [25/Jul/2022 16:42:34] "GET /processor?__debugger__=yes&cmd=resource&f=style.css HTTP/1.1" 200 -
+2022-07-25 16:42:34,885 INFO werkzeug Thread-5 : 127.0.0.1 - - [25/Jul/2022 16:42:34] "GET /processor?__debugger__=yes&cmd=resource&f=debugger.js HTTP/1.1" 200 -
+2022-07-25 16:42:35,368 INFO werkzeug Thread-6 : 127.0.0.1 - - [25/Jul/2022 16:42:35] "GET /processor?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1" 200 -
+2022-07-25 16:42:35,640 INFO werkzeug Thread-7 : 127.0.0.1 - - [25/Jul/2022 16:42:35] "[36mGET /processor?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1[0m" 304 -
+2022-07-25 16:46:34,418 INFO werkzeug MainThread :  * Detected change in 'C:\\Users\\bhat970\\OneDrive - PNNL\\Documents\\Work\\netloadforecasting\\pyAPI\\app.py', reloading
+2022-07-25 16:46:35,018 INFO werkzeug MainThread :  * Restarting with stat
+2022-07-25 16:46:48,040 DEBUG h5py._conv Thread-1 : Creating converter from 3 to 5
+2022-07-25 16:47:22,078 INFO werkzeug Thread-3 : 127.0.0.1 - - [25/Jul/2022 16:47:22] "[35m[1mGET /processor HTTP/1.1[0m" 500 -
+2022-07-25 16:47:22,804 INFO werkzeug Thread-4 : 127.0.0.1 - - [25/Jul/2022 16:47:22] "[36mGET /processor?__debugger__=yes&cmd=resource&f=style.css HTTP/1.1[0m" 304 -
+2022-07-25 16:47:22,828 INFO werkzeug Thread-5 : 127.0.0.1 - - [25/Jul/2022 16:47:22] "[36mGET /processor?__debugger__=yes&cmd=resource&f=debugger.js HTTP/1.1[0m" 304 -
+2022-07-25 16:47:23,194 INFO werkzeug Thread-6 : 127.0.0.1 - - [25/Jul/2022 16:47:23] "[36mGET /processor?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1[0m" 304 -
+2022-07-25 16:47:23,474 INFO werkzeug Thread-7 : 127.0.0.1 - - [25/Jul/2022 16:47:23] "[36mGET /processor?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1[0m" 304 -
+2022-07-25 16:51:49,696 INFO werkzeug MainThread :  * Detected change in 'C:\\Users\\bhat970\\OneDrive - PNNL\\Documents\\Work\\netloadforecasting\\pyAPI\\app.py', reloading
+2022-07-25 16:51:50,121 INFO werkzeug MainThread :  * Restarting with stat
+2022-07-25 16:52:04,066 DEBUG h5py._conv Thread-1 : Creating converter from 3 to 5
+2022-07-25 16:53:42,592 INFO werkzeug Thread-4 : 127.0.0.1 - - [25/Jul/2022 16:53:42] "GET /processor HTTP/1.1" 200 -

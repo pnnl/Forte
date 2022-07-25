@@ -15,6 +15,11 @@ logging.basicConfig(filename='pyAPI/logs/flask.log',level=logging.DEBUG,format='
 path_parent = os.getcwd()
 
 # Non-callable functions
+def prepare_data(filename):
+    A=pd.read_csv(path_parent+'/data/inputs/'+filename) # Reading file
+    A=A.drop(['min_t'], axis=1) # Drop this axis
+    A=A.dropna() # Drop axis with 'NA' values
+    return A
 def NLL(y, distr): 
     sy = distr.mean()
     return 1*-distr.log_prob(y)+tf.keras.losses.mean_squared_error(y, sy)
@@ -25,10 +30,11 @@ my_model = tf.keras.models.load_model(path_parent+"/data/models/model_rnn_probab
 @app.route('/processor',methods = ['POST', 'GET'])
 def processor():
     final_result2 ={"message": "This is not an error. This endpoint is not configured for public use."}
-    input = ""
+    input = "df1_solar_50_pen.csv"
+    prepared_data = prepare_data(input)
     model = ""
     output = ""
-    print(my_model.summary())
+    print(prepared_data)
     
     response=make_response(jsonify(final_result2), 200) #removed processing
     response.headers.add('Access-Control-Allow-Origin', '*')

@@ -160,7 +160,7 @@ def draw_samples(nsamples):
     latent_gen[i] /= _sum
   return latent_gen
 
-sequence_length = 24*2
+
 def gen_seq(id_df, seq_length, seq_cols):
 
     data_matrix =  id_df[seq_cols]
@@ -168,30 +168,32 @@ def gen_seq(id_df, seq_length, seq_cols):
 
     for start, stop in zip(range(0, num_elements-seq_length, 1), range(seq_length, num_elements, 1)):
         
-        yield data_matrix[stop-sequence_length:stop].values.reshape((-1,len(seq_cols)))
+        yield data_matrix[stop-seq_length:stop].values.reshape((-1,len(seq_cols)))
 
 
 def prepare_data(filename):
+    t = time.process_time()
     A=pd.read_csv(path_parent+'/data/inputs/'+filename) # Reading file
-    A=A.drop(['min_t'], axis=1) # Drop this axis
-    A=A.dropna() # Drop axis with 'NA' values
-    my_data = A.iloc[[35]]
+    my_data = A.loc[(A['min_t'] >= '2020-05-01 00:00:00') & (A['min_t'] <= '2020-05-01 23:45:00')]
+    my_data=my_data.drop(['min_t'], axis=1) # Drop this axis
+    my_data=my_data.dropna() # Drop axis with 'NA' values
+    
     
     sequence_length = 24*2 # Length of historical datapoints to use for forecast
 
     sequence_input = []
-    sequence_target = []
-    for seq in tqdm(gen_seq(A, sequence_length, A.columns)):
+    for seq in tqdm(gen_seq(my_data, sequence_length, my_data.columns)):
         sequence_input.append(seq)
         
     sequence_input = np.asarray(sequence_input) 
     sequence_input.shape
     
-    total_train=int(len(sequence_input)-48)
+    #total_train=int(len(sequence_input)-48)
+    total_train=int(len(sequence_input))
 
     y_ground=[]
     for i in range(total_train):
-        y_ground.append(A.iloc[i+48]['power'])
+        y_ground.append(my_data.iloc[i+48]['power'])
         
     y_ground=np.asarray(y_ground)
 
@@ -199,7 +201,7 @@ def prepare_data(filename):
     y_prev = []
     sequence_target = []
     #AA=A
-    B=A.drop(['apparent_power', 'humidity','temp'], axis=1)
+    B=my_data.drop(['apparent_power', 'humidity','temp'], axis=1)
     for seq in tqdm(gen_seq(B, sequence_length, B.columns)):
         y_prev.append(seq)
     y_prev=np.asarray(y_prev)
@@ -249,8 +251,9 @@ def prepare_data(filename):
     y_pred=y_pred*(np.max(total_train_data[:,41])-np.min(total_train_data[:,41]))+np.min(total_train_data[:,41])
     Y_test=Y_test*(np.max(total_train_data[:,41])-np.min(total_train_data[:,41]))+np.min(total_train_data[:,41])
 
-    
-    return 1#sequence_input
+    elapsed_time = time.process_time() - t
+    print("Prepare data takes %f seconds" % elapsed_time)
+    return elapsed_time#sequence_input
 
 
 
@@ -258,13 +261,13 @@ def prepare_data(filename):
 # Callable functions
 @app.route('/processor',methods = ['POST', 'GET'])
 def processor():
-    final_result2 ={"message": "This is not an error. This endpoint is not configured for public use."}
+    
     input = "df1_solar_50_pen.csv"
-    prepared_data = prepare_data(input)
+    prepared_data_time = prepare_data(input)
     model = ""
     output = ""
-    print(prepared_data)
-    
+    #print(prepared_data)
+    final_result2 ={"message": "This is not an error. This endpoint is not configured for public use.", "prepare_data_time": prepared_data_time}
     response=make_response(jsonify(final_result2), 200) #removed processing
     response.headers.add('Access-Control-Allow-Origin', '*')
     return response;

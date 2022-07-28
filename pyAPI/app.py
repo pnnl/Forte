@@ -69,6 +69,7 @@ def NLL(y, distr):
 my_model = tf.keras.models.load_model(path_parent+"/data/models/model_rnn_probab_nonsol.h5", custom_objects={'NLL': NLL})
 
 def my_autoencoder():
+    t = time.process_time()
     ## HYPERPARAMETERS
     latent_dim =20
     enc=latent_dim
@@ -109,12 +110,15 @@ def my_autoencoder():
 
     autoencoder.compile(optimizer='adam', loss='mse')
     callback = tf.keras.callbacks.EarlyStopping(monitor='loss', patience=3)
-    return encoder, autoencoder
+    elapsed_time_autoencoder = time.process_time() - t
+    print("Autoencoder takes %f seconds" % elapsed_time_autoencoder)
+    return encoder, autoencoder, elapsed_time_autoencoder
 
 def kernel(x, y):
     return math.exp(-np.linalg.norm(x - y)/2)
 
 def train(file):
+  t = time.process_time()  
   A = loadmat(file)
   idx = np.random.permutation(A['data'].shape[0])
   x = A['data'][idx[:2000]]
@@ -131,8 +135,12 @@ def train(file):
 
   Kinv = np.linalg.pinv(K + 0.001*2000)
   np.save('dict.npy', {'kinv':Kinv, 'L':L, 'x':x, 'z':z})
+  elapsed_time_train = time.process_time() - t
+  print("Train takes %f seconds" % elapsed_time_train)
+  return elapsed_time_train
 
 def draw_samples(nsamples):
+  t = time.process_time()  
   gamma = 10
   A = np.load('dict.npy', allow_pickle=True).item()
   Kinv = A['kinv']
@@ -158,7 +166,9 @@ def draw_samples(nsamples):
       latent_gen[i] += s[ind[j][i]][i] * x[ind[j][i]]
       _sum += s[ind[j][i]][i]
     latent_gen[i] /= _sum
-  return latent_gen
+  elapsed_time_draw_samples = time.process_time() - t
+  print("Draw samples takes %f seconds" % elapsed_time_draw_samples)
+  return latent_gen, elapsed_time_draw_samples
 
 
 def gen_seq(id_df, seq_length, seq_cols):
@@ -177,6 +187,9 @@ def prepare_data(filename):
     my_data = A.loc[(A['min_t'] >= '2020-05-01 00:00:00') & (A['min_t'] <= '2020-05-01 23:45:00')]
     my_data=my_data.drop(['min_t'], axis=1) # Drop this axis
     my_data=my_data.dropna() # Drop axis with 'NA' values
+    # A=A.drop(['min_t'], axis=1)
+    # A=A.dropna()
+    # my_data = A
     
     
     sequence_length = 24*2 # Length of historical datapoints to use for forecast
@@ -210,15 +223,16 @@ def prepare_data(filename):
 
     scaler_target = Scaler1D().fit(sequence_input)
 
-    encoder, autoencoder = my_autoencoder()
+    encoder, autoencoder, elapsed_time_autoencoder = my_autoencoder()
     seq_inp_norm = scaler_target.transform(sequence_input)
     pred_train=encoder.predict(seq_inp_norm)
 
     data={'data':pred_train}
     io.savemat('data.mat',data)
 
-    train('data.mat')
-    aa=(draw_samples(10000))
+    elapsed_time_train = train('data.mat')
+    aa, elapsed_time_draw_samples=draw_samples(10000)
+    aa = (aa)
     
     yyy=np.zeros((total_train,40))
     for index in tqdm(range(total_train)):
@@ -253,7 +267,7 @@ def prepare_data(filename):
 
     elapsed_time = time.process_time() - t
     print("Prepare data takes %f seconds" % elapsed_time)
-    return elapsed_time#sequence_input
+    return y_pred, Y_test, elapsed_time, elapsed_time_autoencoder, elapsed_time_train, elapsed_time_draw_samples#sequence_input
 
 
 
@@ -263,11 +277,13 @@ def prepare_data(filename):
 def processor():
     
     input = "df1_solar_50_pen.csv"
-    prepared_data_time = prepare_data(input)
+    y_pred, Y_test, prepared_data_time, elapsed_time_autoencoder, elapsed_time_train, elapsed_time_draw_samples = prepare_data(input)
     model = ""
     output = ""
     #print(prepared_data)
-    final_result2 ={"message": "This is not an error. This endpoint is not configured for public use.", "prepare_data_time": prepared_data_time}
+    print(y_pred, Y_test)
+    print(type(y_pred), type(Y_test))
+    final_result2 ={"autoencoder time":elapsed_time_autoencoder, "train time": elapsed_time_train, "draw samples time": elapsed_time_draw_samples, "total prepare_data_time": prepared_data_time}
     response=make_response(jsonify(final_result2), 200) #removed processing
     response.headers.add('Access-Control-Allow-Origin', '*')
     return response;

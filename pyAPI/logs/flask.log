@@ -155,3 +155,28 @@
 2022-07-27 19:55:46,859 INFO werkzeug MainThread :  * Restarting with stat
 2022-07-27 19:55:56,806 DEBUG h5py._conv Thread-1 : Creating converter from 3 to 5
 2022-07-27 19:56:06,395 INFO werkzeug Thread-3 : 127.0.0.1 - - [27/Jul/2022 19:56:06] "GET /processor HTTP/1.1" 200 -
+2022-07-28 12:09:03,339 DEBUG h5py._conv MainThread : Creating converter from 3 to 5
+2022-07-28 12:09:06,108 INFO werkzeug MainThread :  * Running on http://127.0.0.1:5000 (Press CTRL+C to quit)
+2022-07-28 12:09:06,113 INFO werkzeug MainThread :  * Restarting with stat
+2022-07-28 12:09:22,974 DEBUG h5py._conv Thread-1 : Creating converter from 3 to 5
+2022-07-28 12:09:37,293 INFO werkzeug Thread-4 : 127.0.0.1 - - [28/Jul/2022 12:09:37] "GET /processor HTTP/1.1" 200 -
+2022-07-28 12:28:20,267 INFO werkzeug MainThread :  * Detected change in 'C:\\Users\\bhat970\\OneDrive - PNNL\\Documents\\Work\\netloadforecasting\\pyAPI\\app.py', reloading
+2022-07-28 12:28:21,502 INFO werkzeug MainThread :  * Restarting with stat
+2022-07-28 12:28:44,065 DEBUG h5py._conv Thread-1 : Creating converter from 3 to 5
+2022-07-28 12:29:09,154 INFO werkzeug Thread-3 : 127.0.0.1 - - [28/Jul/2022 12:29:09] "GET /processor HTTP/1.1" 200 -
+2022-07-28 12:29:47,901 INFO werkzeug MainThread :  * Detected change in 'C:\\Users\\bhat970\\OneDrive - PNNL\\Documents\\Work\\netloadforecasting\\pyAPI\\app.py', reloading
+2022-07-28 12:29:48,655 INFO werkzeug MainThread :  * Restarting with stat
+2022-07-28 12:30:04,371 DEBUG h5py._conv Thread-1 : Creating converter from 3 to 5
+2022-07-28 12:30:24,051 INFO werkzeug Thread-4 : 127.0.0.1 - - [28/Jul/2022 12:30:24] "GET /processor HTTP/1.1" 200 -
+2022-07-28 12:37:46,927 INFO werkzeug MainThread :  * Detected change in 'C:\\Users\\bhat970\\OneDrive - PNNL\\Documents\\Work\\netloadforecasting\\pyAPI\\app.py', reloading
+2022-07-28 12:37:47,696 INFO werkzeug MainThread :  * Restarting with stat
+2022-07-28 12:37:57,119 DEBUG h5py._conv Thread-1 : Creating converter from 3 to 5
+2022-07-28 12:50:15,129 INFO werkzeug Thread-4 : 127.0.0.1 - - [28/Jul/2022 12:50:15] "GET /processor HTTP/1.1" 200 -
+2022-07-28 12:52:25,619 INFO werkzeug MainThread :  * Detected change in 'C:\\Users\\bhat970\\OneDrive - PNNL\\Documents\\Work\\netloadforecasting\\pyAPI\\app.py', reloading
+2022-07-28 12:52:26,554 INFO werkzeug MainThread :  * Restarting with stat
+2022-07-28 12:52:54,724 DEBUG h5py._conv Thread-1 : Creating converter from 3 to 5
+2022-07-28 12:53:01,892 INFO werkzeug Thread-3 : 127.0.0.1 - - [28/Jul/2022 12:53:01] "GET /processor HTTP/1.1" 200 -
+2022-07-28 12:55:29,114 INFO werkzeug MainThread :  * Detected change in 'C:\\Users\\bhat970\\OneDrive - PNNL\\Documents\\Work\\netloadforecasting\\pyAPI\\app.py', reloading
+2022-07-28 12:55:29,763 INFO werkzeug MainThread :  * Restarting with stat
+2022-07-28 12:55:46,686 DEBUG h5py._conv Thread-1 : Creating converter from 3 to 5
+2022-07-28 12:56:14,499 INFO werkzeug Thread-3 : 127.0.0.1 - - [28/Jul/2022 12:56:14] "GET /processor HTTP/1.1" 200 -

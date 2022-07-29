@@ -184,9 +184,10 @@ def gen_seq(id_df, seq_length, seq_cols):
 def prepare_data(filename):
     t = time.process_time()
     A=pd.read_csv(path_parent+'/data/inputs/'+filename) # Reading file
-    my_data = A.loc[(A['min_t'] >= '2020-05-01 00:00:00') & (A['min_t'] <= '2020-05-01 23:45:00')]
+    my_data = A.loc[(A['min_t'] >= '2020-05-01 00:00:00') & (A['min_t'] <= '2020-05-02 23:45:00')]
     my_data=my_data.drop(['min_t'], axis=1) # Drop this axis
-    my_data=my_data.dropna() # Drop axis with 'NA' values
+    # my_data=my_data.dropna() # Drop axis with 'NA' values
+    my_data=my_data.fillna(99999) # Replace NA values with large number 99999
     # A=A.drop(['min_t'], axis=1)
     # A=A.dropna()
     # my_data = A
@@ -199,16 +200,18 @@ def prepare_data(filename):
         sequence_input.append(seq)
         
     sequence_input = np.asarray(sequence_input) 
-    sequence_input.shape
+    print(sequence_input)
     
     #total_train=int(len(sequence_input)-48)
-    total_train=int(len(sequence_input))
+    total_train=int(len(sequence_input)-48)
+    print("sequence_input: %d   | total train: %d " %(len(sequence_input), total_train))
 
     y_ground=[]
     for i in range(total_train):
         y_ground.append(my_data.iloc[i+48]['power'])
         
     y_ground=np.asarray(y_ground)
+    pd.DataFrame(y_ground).to_csv(path_parent+'/data/outputs/y_ground.csv', header=None, index=None)
 
     sequence_length = 24*2
     y_prev = []
@@ -282,8 +285,9 @@ def processor():
     output = ""
     #print(prepared_data)
     print(y_pred, Y_test)
-    print(type(y_pred), type(Y_test))
-    final_result2 ={"autoencoder time":elapsed_time_autoencoder, "train time": elapsed_time_train, "draw samples time": elapsed_time_draw_samples, "total prepare_data_time": prepared_data_time}
+    pd.DataFrame(y_pred).to_csv(path_parent+'/data/outputs/y_pred.csv', header=None, index=None)
+    pd.DataFrame(Y_test).to_csv(path_parent+'/data/outputs/Y_test.csv', header=None, index=None)
+    final_result2 ={"1.autoencoder time":elapsed_time_autoencoder, "2.train time": elapsed_time_train, "3.draw samples time": elapsed_time_draw_samples, "4.total prepare_data_time": prepared_data_time}
     response=make_response(jsonify(final_result2), 200) #removed processing
     response.headers.add('Access-Control-Allow-Origin', '*')
     return response;

@@ -183,7 +183,7 @@ def gen_seq(id_df, seq_length, seq_cols):
         yield data_matrix[stop-seq_length:stop].values.reshape((-1,len(seq_cols)))
 
 
-def prepare_data(filename):
+def prepare_data_old(filename):
     t = time.process_time()
     A=pd.read_csv(path_parent+'/data/inputs/'+filename) # Reading file
     my_data = A.loc[(A['min_t'] >= '2020-05-01 00:00:00') & (A['min_t'] <= '2020-05-02 23:45:00')]
@@ -275,6 +275,7 @@ def prepare_data(filename):
     return y_pred, Y_test, elapsed_time, elapsed_time_autoencoder, elapsed_time_train, elapsed_time_draw_samples#sequence_input
 
 def prepare_input(filename):
+    t = time.process_time()
     A=pd.read_csv(path_parent+'/data/inputs/'+filename) # Reading file
     my_data = A.loc[(A['min_t'] >= '2020-05-01 00:00:00') & (A['min_t'] <= '2020-05-02 23:45:00')]
     #my_data = A
@@ -302,18 +303,22 @@ def prepare_input(filename):
         y_prev.append(seq)
     y_prev=np.asarray(y_prev)
     y_prev=y_prev.reshape((y_prev.shape[0],y_prev.shape[1]))
-    return sequence_input, y_ground, y_prev
+    elapsed_time_prepare_input = time.process_time() - t
+    return sequence_input, y_ground, y_prev, elapsed_time_prepare_input
 
 def autoencoder_func(sequence_input):
+    t = time.process_time()
     scaler_target = Scaler1D().fit(sequence_input)
     seq_inp_norm = scaler_target.transform(sequence_input)
-    #pred_train=autoencoder_model.predict(seq_inp_norm)
+    #pred_train=autoencoder_model.predict(seq_inp_norm) # this one does not work
     pred_train=encoder_model.predict(seq_inp_norm)
     #print(pred_train)
     #pd.DataFrame(pred_train).to_csv(path_parent+'/data/outputs/pred_train.csv', header=None, index=None)
-    return pred_train
+    elapsed_time_autoencoder = time.process_time() - t
+    return pred_train, elapsed_time_autoencoder
 
 def kPF_func(pred_train):
+    t = time.process_time()
     nsamples = 10000
     gamma = 10
     A = np.load('dict.npy', allow_pickle=True).item()
@@ -339,11 +344,13 @@ def kPF_func(pred_train):
             _sum += s[ind[j][i]][i]
         latent_gen[i] /= _sum
     print(latent_gen)
-    return latent_gen
+    elapsed_time_kpf = time.process_time() - t
+    return latent_gen, elapsed_time_kpf
 
 def lstm_func(latent_gen, sequence_input, pred_train, y_ground, y_prev):
+    t = time.process_time()
     aa = (latent_gen)
-    #total_train=int(len(sequence_input) - 48)
+    #total_train=int(len(sequence_input) - 48) # did not use this since we are not using training data
     total_train=int(len(sequence_input))
     yyy=np.zeros((total_train,40))
     for index in tqdm(range(total_train)):
@@ -363,13 +370,14 @@ def lstm_func(latent_gen, sequence_input, pred_train, y_ground, y_prev):
     y_pred=y_pred*(np.max(total_train_data[:,41])-np.min(total_train_data[:,41]))+np.min(total_train_data[:,41])
     Y_test=Y*(np.max(total_train_data[:,41])-np.min(total_train_data[:,41]))+np.min(total_train_data[:,41])
     print(y_pred, Y_test)
-    return y_pred, Y_test    
+    elapsed_time_lstm = time.process_time() - t
+    return y_pred, Y_test, elapsed_time_lstm 
 # Callable functions
 @app.route('/processor',methods = ['POST', 'GET'])
 def processor():
     
     input = "df1_solar_50_pen.csv"
-    y_pred, Y_test, prepared_data_time, elapsed_time_autoencoder, elapsed_time_train, elapsed_time_draw_samples = prepare_data(input)
+    y_pred, Y_test, prepared_data_time, elapsed_time_autoencoder, elapsed_time_train, elapsed_time_draw_samples = prepare_data_old(input)
     model = ""
     output = ""
     #print(prepared_data)
@@ -383,14 +391,14 @@ def processor():
 
 @app.route('/processor2',methods = ['POST', 'GET'])
 def processor2():
-    
+    t = time.process_time()
     filename = "df1_solar_50_pen.csv"
-    sequence_input, y_ground, y_prev = prepare_input(filename)
-    pred_train = autoencoder_func(sequence_input)
-    latent_gen = kPF_func(pred_train)
-    y_pred, Y_test = lstm_func(latent_gen, sequence_input, pred_train, y_ground, y_prev)
-    
-    final_result2 ={"message":"Program executed"}
+    sequence_input, y_ground, y_prev, elapsed_time_prepare_input = prepare_input(filename)
+    pred_train, elapsed_time_autoencoder = autoencoder_func(sequence_input)
+    latent_gen, elapsed_time_kpf = kPF_func(pred_train)
+    y_pred, Y_test, elapsed_time_lstm = lstm_func(latent_gen, sequence_input, pred_train, y_ground, y_prev)
+    elapsed_time_total = time.process_time() - t
+    final_result2 ={"1. message":"Program executed", "2. time taken (prepare input)": elapsed_time_prepare_input, "3. time taken (autoencoder)":elapsed_time_autoencoder, "4. time taken (kPF)": elapsed_time_kpf, "5. time taken (LSTM)": elapsed_time_lstm, "6. total time taken":elapsed_time_total}
     response=make_response(jsonify(final_result2), 200) #removed processing
     response.headers.add('Access-Control-Allow-Origin', '*')
     return response;

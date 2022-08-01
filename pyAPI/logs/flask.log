@@ -384,3 +384,31 @@
 2022-08-01 15:13:19,020 DEBUG h5py._conv Thread-1 : Creating converter from 3 to 5
 2022-08-01 15:13:19,425 WARNING tensorflow Thread-1 : No training configuration found in the save file, so the model was *not* compiled. Compile it manually.
 2022-08-01 15:13:46,309 INFO werkzeug Thread-3 : 127.0.0.1 - - [01/Aug/2022 15:13:46] "GET /processor2 HTTP/1.1" 200 -
+2022-08-01 16:53:57,506 INFO werkzeug MainThread :  * Detected change in 'C:\\Users\\bhat970\\OneDrive - PNNL\\Documents\\Work\\netloadforecasting\\pyAPI\\app.py', reloading
+2022-08-01 16:54:00,792 INFO werkzeug MainThread :  * Restarting with stat
+2022-08-01 16:54:19,039 DEBUG h5py._conv Thread-1 : Creating converter from 3 to 5
+2022-08-01 16:54:19,525 WARNING tensorflow Thread-1 : No training configuration found in the save file, so the model was *not* compiled. Compile it manually.
+2022-08-01 16:54:41,393 INFO werkzeug Thread-3 : 127.0.0.1 - - [01/Aug/2022 16:54:41] "GET /processor2 HTTP/1.1" 200 -
+2022-08-01 16:55:05,599 INFO werkzeug MainThread :  * Detected change in 'C:\\Users\\bhat970\\OneDrive - PNNL\\Documents\\Work\\netloadforecasting\\pyAPI\\app.py', reloading
+2022-08-01 16:55:07,034 INFO werkzeug MainThread :  * Restarting with stat
+2022-08-01 16:55:18,318 DEBUG h5py._conv Thread-1 : Creating converter from 3 to 5
+2022-08-01 16:55:18,900 WARNING tensorflow Thread-1 : No training configuration found in the save file, so the model was *not* compiled. Compile it manually.
+2022-08-01 16:55:37,362 INFO werkzeug Thread-3 : 127.0.0.1 - - [01/Aug/2022 16:55:37] "[35m[1mGET /processor2 HTTP/1.1[0m" 500 -
+2022-08-01 16:55:38,243 INFO werkzeug Thread-8 : 127.0.0.1 - - [01/Aug/2022 16:55:38] "[36mGET /processor2?__debugger__=yes&cmd=resource&f=debugger.js HTTP/1.1[0m" 304 -
+2022-08-01 16:55:38,244 INFO werkzeug Thread-7 : 127.0.0.1 - - [01/Aug/2022 16:55:38] "[36mGET /processor2?__debugger__=yes&cmd=resource&f=style.css HTTP/1.1[0m" 304 -
+2022-08-01 16:55:38,327 INFO werkzeug Thread-9 : 127.0.0.1 - - [01/Aug/2022 16:55:38] "[36mGET /processor2?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1[0m" 304 -
+2022-08-01 16:55:38,677 INFO werkzeug Thread-10 : 127.0.0.1 - - [01/Aug/2022 16:55:38] "[36mGET /processor2?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1[0m" 304 -
+2022-08-01 16:56:01,909 INFO werkzeug MainThread :  * Detected change in 'C:\\Users\\bhat970\\OneDrive - PNNL\\Documents\\Work\\netloadforecasting\\pyAPI\\app.py', reloading
+2022-08-01 16:56:02,989 INFO werkzeug MainThread :  * Restarting with stat
+2022-08-01 16:56:16,605 DEBUG h5py._conv Thread-1 : Creating converter from 3 to 5
+2022-08-01 16:56:17,233 WARNING tensorflow Thread-1 : No training configuration found in the save file, so the model was *not* compiled. Compile it manually.
+2022-08-01 16:59:30,502 INFO werkzeug MainThread :  * Detected change in 'C:\\Users\\bhat970\\OneDrive - PNNL\\Documents\\Work\\netloadforecasting\\pyAPI\\app.py', reloading
+2022-08-01 16:59:31,192 INFO werkzeug MainThread :  * Restarting with stat
+2022-08-01 16:59:41,745 DEBUG h5py._conv Thread-1 : Creating converter from 3 to 5
+2022-08-01 16:59:42,205 WARNING tensorflow Thread-1 : No training configuration found in the save file, so the model was *not* compiled. Compile it manually.
+2022-08-01 17:00:03,665 INFO werkzeug Thread-3 : 127.0.0.1 - - [01/Aug/2022 17:00:03] "GET /processor2 HTTP/1.1" 200 -
+2022-08-01 17:07:06,939 INFO werkzeug MainThread :  * Detected change in 'C:\\Users\\bhat970\\OneDrive - PNNL\\Documents\\Work\\netloadforecasting\\pyAPI\\app.py', reloading
+2022-08-01 17:07:07,647 INFO werkzeug MainThread :  * Restarting with stat
+2022-08-01 17:07:16,728 DEBUG h5py._conv Thread-1 : Creating converter from 3 to 5
+2022-08-01 17:07:17,138 WARNING tensorflow Thread-1 : No training configuration found in the save file, so the model was *not* compiled. Compile it manually.
+2022-08-01 17:07:45,482 INFO werkzeug Thread-3 : 127.0.0.1 - - [01/Aug/2022 17:07:45] "GET /processor2 HTTP/1.1" 200 -

@@ -66,7 +66,9 @@ def NLL(y, distr):
     sy = distr.mean()
     return 1*-distr.log_prob(y)+tf.keras.losses.mean_squared_error(y, sy)
 
-my_model = tf.keras.models.load_model(path_parent+"/data/models/model_rnn_probab_nonsol.h5", custom_objects={'NLL': NLL})
+autoencoder_model = tf.keras.models.load_model(path_parent+"/data/models/autoencoder.h5")
+encoder_model = tf.keras.models.load_model(path_parent+"/data/models/encoder.h5")
+lstm_model = tf.keras.models.load_model(path_parent+"/data/models/model_rnn_probab_nonsol.h5", custom_objects={'NLL': NLL})
 
 def my_autoencoder():
     t = time.process_time()
@@ -264,7 +266,7 @@ def prepare_data(filename):
     Y_test=Y[int(X.shape[0]*0.8):]
 
     
-    y_pred=my_model.predict(X_test)
+    y_pred=lstm_model.predict(X_test)
     y_pred=y_pred*(np.max(total_train_data[:,41])-np.min(total_train_data[:,41]))+np.min(total_train_data[:,41])
     Y_test=Y_test*(np.max(total_train_data[:,41])-np.min(total_train_data[:,41]))+np.min(total_train_data[:,41])
 
@@ -272,9 +274,96 @@ def prepare_data(filename):
     print("Prepare data takes %f seconds" % elapsed_time)
     return y_pred, Y_test, elapsed_time, elapsed_time_autoencoder, elapsed_time_train, elapsed_time_draw_samples#sequence_input
 
+def prepare_input(filename):
+    A=pd.read_csv(path_parent+'/data/inputs/'+filename) # Reading file
+    my_data = A.loc[(A['min_t'] >= '2020-05-01 00:00:00') & (A['min_t'] <= '2020-05-02 23:45:00')]
+    #my_data = A
+    my_data=my_data.drop(['min_t'], axis=1) # Drop this axis
+    my_data=my_data.fillna(99999)
 
+    sequence_length = 24*2 # Length of historical datapoints to use for forecast
+    sequence_input = []
+    for seq in tqdm(gen_seq(my_data, sequence_length, my_data.columns)):
+        sequence_input.append(seq)    
+    sequence_input = np.asarray(sequence_input) 
+    #print(sequence_input)
+    
+    y_ground=[]
+    for i in range(len(sequence_input)):
+        y_ground.append(my_data.iloc[i+48]['power'])   
+    y_ground=np.asarray(y_ground)
+    pd.DataFrame(y_ground).to_csv(path_parent+'/data/outputs/y_ground.csv', header=None, index=None)
 
+    y_prev = []
+    sequence_target = []
+    #AA=A
+    B=my_data.drop(['apparent_power', 'humidity','temp'], axis=1)
+    for seq in tqdm(gen_seq(B, sequence_length, B.columns)):
+        y_prev.append(seq)
+    y_prev=np.asarray(y_prev)
+    y_prev=y_prev.reshape((y_prev.shape[0],y_prev.shape[1]))
+    return sequence_input, y_ground, y_prev
 
+def autoencoder_func(sequence_input):
+    scaler_target = Scaler1D().fit(sequence_input)
+    seq_inp_norm = scaler_target.transform(sequence_input)
+    #pred_train=autoencoder_model.predict(seq_inp_norm)
+    pred_train=encoder_model.predict(seq_inp_norm)
+    #print(pred_train)
+    #pd.DataFrame(pred_train).to_csv(path_parent+'/data/outputs/pred_train.csv', header=None, index=None)
+    return pred_train
+
+def kPF_func(pred_train):
+    nsamples = 10000
+    gamma = 10
+    A = np.load('dict.npy', allow_pickle=True).item()
+    Kinv = A['kinv']
+    L = A['L']
+    z = A['z']
+    x = A['x']
+    ntrain = x.shape[0]
+    latent_dim = x.shape[1]
+    nz = np.random.multivariate_normal(np.zeros((latent_dim,)), np.eye(latent_dim), nsamples)
+
+    nv = np.zeros((ntrain, nsamples))
+    for i in range(ntrain):
+        for j in range(nsamples):
+            nv[i][j] = kernel(z[i], nz[j])
+    s = L@Kinv@nv   #matrix multiplication
+    ind = np.argsort(-s, 0)[:gamma,:]
+    latent_gen = np.zeros((nsamples, latent_dim))
+    for i in range(nsamples):
+        _sum = 0
+        for j in range(gamma):
+            latent_gen[i] += s[ind[j][i]][i] * x[ind[j][i]]
+            _sum += s[ind[j][i]][i]
+        latent_gen[i] /= _sum
+    print(latent_gen)
+    return latent_gen
+
+def lstm_func(latent_gen, sequence_input, pred_train, y_ground, y_prev):
+    aa = (latent_gen)
+    #total_train=int(len(sequence_input) - 48)
+    total_train=int(len(sequence_input))
+    yyy=np.zeros((total_train,40))
+    for index in tqdm(range(total_train)):
+        yyy[index,0:20]=np.mean(aa[np.argsort(np.linalg.norm(aa[:,:]-pred_train[index,:],axis=1))[0:10],:],axis=0)
+        yyy[index,20:40]=np.std(aa[np.argsort(np.linalg.norm(aa[:,:]-pred_train[index,:],axis=1))[0:10],:],axis=0)
+        
+    yyy1=np.concatenate((yyy,y_prev[:,47].reshape((len(y_prev),1))),axis=1)
+
+    y_train_sol=y_ground
+    total_train_data=np.concatenate((yyy1,y_train_sol.reshape((len(y_train_sol),1))),axis=1)
+    scaler_target = Scaler1D().fit(total_train_data)
+    total_norm_train = scaler_target.transform(total_train_data)
+    X=total_norm_train[:,0:41].reshape((total_norm_train.shape[0],41,1))
+    Y=total_norm_train[:,41]
+
+    y_pred = lstm_model.predict(X)
+    y_pred=y_pred*(np.max(total_train_data[:,41])-np.min(total_train_data[:,41]))+np.min(total_train_data[:,41])
+    Y_test=Y*(np.max(total_train_data[:,41])-np.min(total_train_data[:,41]))+np.min(total_train_data[:,41])
+    print(y_pred, Y_test)
+    return y_pred, Y_test    
 # Callable functions
 @app.route('/processor',methods = ['POST', 'GET'])
 def processor():
@@ -288,6 +377,20 @@ def processor():
     pd.DataFrame(y_pred).to_csv(path_parent+'/data/outputs/y_pred.csv', header=None, index=None)
     pd.DataFrame(Y_test).to_csv(path_parent+'/data/outputs/Y_test.csv', header=None, index=None)
     final_result2 ={"1.autoencoder time":elapsed_time_autoencoder, "2.train time": elapsed_time_train, "3.draw samples time": elapsed_time_draw_samples, "4.total prepare_data_time": prepared_data_time}
+    response=make_response(jsonify(final_result2), 200) #removed processing
+    response.headers.add('Access-Control-Allow-Origin', '*')
+    return response;
+
+@app.route('/processor2',methods = ['POST', 'GET'])
+def processor2():
+    
+    filename = "df1_solar_50_pen.csv"
+    sequence_input, y_ground, y_prev = prepare_input(filename)
+    pred_train = autoencoder_func(sequence_input)
+    latent_gen = kPF_func(pred_train)
+    y_pred, Y_test = lstm_func(latent_gen, sequence_input, pred_train, y_ground, y_prev)
+    
+    final_result2 ={"message":"Program executed"}
     response=make_response(jsonify(final_result2), 200) #removed processing
     response.headers.add('Access-Control-Allow-Origin', '*')
     return response;

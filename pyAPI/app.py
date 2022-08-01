@@ -14,11 +14,14 @@ from scipy import io
 from scipy.io import loadmat
 from keras.layers import Input, Dense, LSTM, Reshape, Conv1D, MaxPooling1D, Flatten,UpSampling1D,Conv1DTranspose
 from keras.models import Model
+from sklearn.metrics import mean_absolute_error, mean_squared_error
 
 app = Flask(__name__)
 CORS(app)
 logging.basicConfig(filename='pyAPI/logs/flask.log',level=logging.DEBUG,format='%(asctime)s %(levelname)s %(name)s %(threadName)s : %(message)s') #https://www.scalyr.com/blog/getting-started-quickly-with-flask-logging/
 path_parent = os.getcwd()
+np.random.seed(7)
+tf.random.set_seed(7)
 
 
 ### UTILITY CLASS FOR SEQUENCES SCALING ###
@@ -369,9 +372,17 @@ def lstm_func(latent_gen, sequence_input, pred_train, y_ground, y_prev):
     y_pred = lstm_model.predict(X)
     y_pred=y_pred*(np.max(total_train_data[:,41])-np.min(total_train_data[:,41]))+np.min(total_train_data[:,41])
     Y_test=Y*(np.max(total_train_data[:,41])-np.min(total_train_data[:,41]))+np.min(total_train_data[:,41])
+    #y_pred = y_pred.flatten()
     print(y_pred, Y_test)
+    print(y_pred.shape, Y_test.shape)
+    np.savetxt(path_parent+'/data/outputs/y_pred.csv', y_pred, delimiter=",")
+    np.savetxt(path_parent+'/data/outputs/Y_test.csv', Y_test, delimiter=",")
+    mae = mean_absolute_error(Y_test, y_pred)
+    mse = mean_squared_error(Y_test, y_pred)
+    print("Mean Absolute Error (MAE): ", mae)
+    print("Mean Squared Error (MSE): ", mse)
     elapsed_time_lstm = time.process_time() - t
-    return y_pred, Y_test, elapsed_time_lstm 
+    return y_pred, Y_test, mae, mse, elapsed_time_lstm 
 # Callable functions
 @app.route('/processor',methods = ['POST', 'GET'])
 def processor():
@@ -396,9 +407,9 @@ def processor2():
     sequence_input, y_ground, y_prev, elapsed_time_prepare_input = prepare_input(filename)
     pred_train, elapsed_time_autoencoder = autoencoder_func(sequence_input)
     latent_gen, elapsed_time_kpf = kPF_func(pred_train)
-    y_pred, Y_test, elapsed_time_lstm = lstm_func(latent_gen, sequence_input, pred_train, y_ground, y_prev)
+    y_pred, Y_test, mae, mse, elapsed_time_lstm = lstm_func(latent_gen, sequence_input, pred_train, y_ground, y_prev)
     elapsed_time_total = time.process_time() - t
-    final_result2 ={"1. message":"Program executed", "2. time taken (prepare input)": elapsed_time_prepare_input, "3. time taken (autoencoder)":elapsed_time_autoencoder, "4. time taken (kPF)": elapsed_time_kpf, "5. time taken (LSTM)": elapsed_time_lstm, "6. total time taken":elapsed_time_total}
+    final_result2 ={"1. message":"Program executed", "2. time taken (prepare input)": elapsed_time_prepare_input, "3. time taken (autoencoder)":elapsed_time_autoencoder, "4. time taken (kPF)": elapsed_time_kpf, "5. time taken (LSTM)": elapsed_time_lstm, "6. total time taken":elapsed_time_total, "7. MAE": mae, "8. MSE": mse}
     response=make_response(jsonify(final_result2), 200) #removed processing
     response.headers.add('Access-Control-Allow-Origin', '*')
     return response;

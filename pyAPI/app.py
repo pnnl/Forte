@@ -207,7 +207,30 @@ def processor():
 
 @app.route('/api/v1/stability_check', methods = ['POST', 'GET'])
 def stability_check():
-    return 1
+    """
+    This function checks for the stability of the program.
+    Calls to the random functions make it difficult to produce reproducible results.
+    This function specifically runs multiple times to check if outputs are same with same input
+
+    Input:(optional)
+    n: the number of times to execute the program
+    If supplying different value of n, use the following query:
+    /api/v1/stability_check?n=5
+    
+    Output:
+    JSON output with the stability result, n, and average execution time
+    """
+    time_array, mae_array, answer = [], [], ""
+    n = request.args.get('n', default = 3, type = int)
+    for i in range(n):
+        output = processor()
+        output = output.get_json()
+        time_array.append(output["6. total time taken"])
+        mae_array.append(output["7. MAE"])
+    if(len(set(mae_array)) == 1): answer = "Program is stable"
+    else: answer = "Program is NOT stable"  
+    message={"1. message": answer, "2. Number of times executed": n, "3. Average execution time (seconds)": sum(time_array)/len(time_array)}
+    return message
 
 @app.errorhandler(404)
 def handle_404(e):

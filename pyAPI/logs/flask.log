@@ -640,3 +640,62 @@
 2022-08-02 15:21:06,417 DEBUG h5py._conv Thread-1 : Creating converter from 3 to 5
 2022-08-02 15:21:06,864 WARNING tensorflow Thread-1 : No training configuration found in the save file, so the model was *not* compiled. Compile it manually.
 2022-08-02 15:21:08,768 INFO werkzeug Thread-3 : 127.0.0.1 - - [02/Aug/2022 15:21:08] "GET /processor HTTP/1.1" 200 -
+2022-08-02 15:21:43,155 INFO werkzeug Thread-6 : 127.0.0.1 - - [02/Aug/2022 15:21:43] "GET /api/v1/processor HTTP/1.1" 200 -
+2022-08-02 15:22:36,492 INFO werkzeug MainThread :  * Detected change in 'C:\\Users\\bhat970\\OneDrive - PNNL\\Documents\\Work\\netloadforecasting\\pyAPI\\app.py', reloading
+2022-08-02 15:22:37,683 INFO werkzeug MainThread :  * Restarting with stat
+2022-08-02 15:22:46,493 DEBUG h5py._conv Thread-1 : Creating converter from 3 to 5
+2022-08-02 15:22:46,910 WARNING tensorflow Thread-1 : No training configuration found in the save file, so the model was *not* compiled. Compile it manually.
+2022-08-02 15:23:15,780 INFO werkzeug Thread-3 : 127.0.0.1 - - [02/Aug/2022 15:23:15] "GET /api/v1/stability_check HTTP/1.1" 200 -
+2022-08-02 15:36:34,021 INFO werkzeug MainThread :  * Detected change in 'C:\\Users\\bhat970\\OneDrive - PNNL\\Documents\\Work\\netloadforecasting\\pyAPI\\app.py', reloading
+2022-08-02 15:36:35,444 INFO werkzeug MainThread :  * Restarting with stat
+2022-08-02 15:36:46,960 DEBUG h5py._conv Thread-1 : Creating converter from 3 to 5
+2022-08-02 15:36:47,398 WARNING tensorflow Thread-1 : No training configuration found in the save file, so the model was *not* compiled. Compile it manually.
+2022-08-02 15:37:16,345 INFO werkzeug Thread-3 : 127.0.0.1 - - [02/Aug/2022 15:37:16] "[35m[1mGET /api/v1/stability_check HTTP/1.1[0m" 500 -
+2022-08-02 15:37:17,100 INFO werkzeug Thread-6 : 127.0.0.1 - - [02/Aug/2022 15:37:17] "GET /api/v1/stability_check?__debugger__=yes&cmd=resource&f=debugger.js HTTP/1.1" 200 -
+2022-08-02 15:37:17,104 INFO werkzeug Thread-4 : 127.0.0.1 - - [02/Aug/2022 15:37:17] "GET /api/v1/stability_check?__debugger__=yes&cmd=resource&f=style.css HTTP/1.1" 200 -
+2022-08-02 15:37:17,689 INFO werkzeug Thread-7 : 127.0.0.1 - - [02/Aug/2022 15:37:17] "GET /api/v1/stability_check?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1" 200 -
+2022-08-02 15:37:17,945 INFO werkzeug Thread-8 : 127.0.0.1 - - [02/Aug/2022 15:37:17] "[36mGET /api/v1/stability_check?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1[0m" 304 -
+2022-08-02 15:53:49,194 INFO werkzeug MainThread :  * Detected change in 'C:\\Users\\bhat970\\OneDrive - PNNL\\Documents\\Work\\netloadforecasting\\pyAPI\\app.py', reloading
+2022-08-02 15:53:50,857 INFO werkzeug MainThread :  * Restarting with stat
+2022-08-02 15:54:12,425 DEBUG h5py._conv Thread-1 : Creating converter from 3 to 5
+2022-08-02 15:54:12,858 WARNING tensorflow Thread-1 : No training configuration found in the save file, so the model was *not* compiled. Compile it manually.
+2022-08-02 15:55:05,756 INFO werkzeug Thread-3 : 127.0.0.1 - - [02/Aug/2022 15:55:05] "[35m[1mGET /api/v1/stability_check HTTP/1.1[0m" 500 -
+2022-08-02 15:55:06,626 INFO werkzeug Thread-8 : 127.0.0.1 - - [02/Aug/2022 15:55:06] "[36mGET /api/v1/stability_check?__debugger__=yes&cmd=resource&f=debugger.js HTTP/1.1[0m" 304 -
+2022-08-02 15:55:06,628 INFO werkzeug Thread-7 : 127.0.0.1 - - [02/Aug/2022 15:55:06] "[36mGET /api/v1/stability_check?__debugger__=yes&cmd=resource&f=style.css HTTP/1.1[0m" 304 -
+2022-08-02 15:55:06,691 INFO werkzeug Thread-9 : 127.0.0.1 - - [02/Aug/2022 15:55:06] "[36mGET /api/v1/stability_check?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1[0m" 304 -
+2022-08-02 15:55:07,067 INFO werkzeug Thread-10 : 127.0.0.1 - - [02/Aug/2022 15:55:07] "[36mGET /api/v1/stability_check?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1[0m" 304 -
+2022-08-02 15:55:35,729 INFO werkzeug MainThread :  * Detected change in 'C:\\Users\\bhat970\\OneDrive - PNNL\\Documents\\Work\\netloadforecasting\\pyAPI\\app.py', reloading
+2022-08-02 15:55:36,800 INFO werkzeug MainThread :  * Restarting with stat
+2022-08-02 15:55:49,206 INFO werkzeug MainThread :  * Restarting with stat
+2022-08-02 15:55:58,196 DEBUG h5py._conv Thread-1 : Creating converter from 3 to 5
+2022-08-02 15:55:58,617 WARNING tensorflow Thread-1 : No training configuration found in the save file, so the model was *not* compiled. Compile it manually.
+2022-08-02 15:56:38,725 INFO werkzeug Thread-3 : 127.0.0.1 - - [02/Aug/2022 15:56:38] "[35m[1mGET /api/v1/stability_check HTTP/1.1[0m" 500 -
+2022-08-02 15:56:39,797 INFO werkzeug Thread-7 : 127.0.0.1 - - [02/Aug/2022 15:56:39] "[36mGET /api/v1/stability_check?__debugger__=yes&cmd=resource&f=style.css HTTP/1.1[0m" 304 -
+2022-08-02 15:56:39,802 INFO werkzeug Thread-8 : 127.0.0.1 - - [02/Aug/2022 15:56:39] "[36mGET /api/v1/stability_check?__debugger__=yes&cmd=resource&f=debugger.js HTTP/1.1[0m" 304 -
+2022-08-02 15:56:40,166 INFO werkzeug Thread-9 : 127.0.0.1 - - [02/Aug/2022 15:56:40] "[36mGET /api/v1/stability_check?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1[0m" 304 -
+2022-08-02 15:56:40,583 INFO werkzeug Thread-10 : 127.0.0.1 - - [02/Aug/2022 15:56:40] "[36mGET /api/v1/stability_check?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1[0m" 304 -
+2022-08-02 15:58:25,825 INFO werkzeug MainThread :  * Detected change in 'C:\\Users\\bhat970\\OneDrive - PNNL\\Documents\\Work\\netloadforecasting\\pyAPI\\app.py', reloading
+2022-08-02 15:58:26,886 INFO werkzeug MainThread :  * Restarting with stat
+2022-08-02 15:58:38,675 DEBUG h5py._conv Thread-1 : Creating converter from 3 to 5
+2022-08-02 15:58:39,697 WARNING tensorflow Thread-1 : No training configuration found in the save file, so the model was *not* compiled. Compile it manually.
+2022-08-02 15:59:22,123 INFO werkzeug Thread-3 : 127.0.0.1 - - [02/Aug/2022 15:59:22] "[35m[1mGET /api/v1/stability_check HTTP/1.1[0m" 500 -
+2022-08-02 15:59:22,957 INFO werkzeug Thread-8 : 127.0.0.1 - - [02/Aug/2022 15:59:22] "[36mGET /api/v1/stability_check?__debugger__=yes&cmd=resource&f=debugger.js HTTP/1.1[0m" 304 -
+2022-08-02 15:59:22,959 INFO werkzeug Thread-7 : 127.0.0.1 - - [02/Aug/2022 15:59:22] "[36mGET /api/v1/stability_check?__debugger__=yes&cmd=resource&f=style.css HTTP/1.1[0m" 304 -
+2022-08-02 15:59:23,033 INFO werkzeug Thread-9 : 127.0.0.1 - - [02/Aug/2022 15:59:23] "[36mGET /api/v1/stability_check?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1[0m" 304 -
+2022-08-02 15:59:23,433 INFO werkzeug Thread-10 : 127.0.0.1 - - [02/Aug/2022 15:59:23] "[36mGET /api/v1/stability_check?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1[0m" 304 -
+2022-08-02 15:59:41,725 INFO werkzeug MainThread :  * Detected change in 'C:\\Users\\bhat970\\OneDrive - PNNL\\Documents\\Work\\netloadforecasting\\pyAPI\\app.py', reloading
+2022-08-02 15:59:42,879 INFO werkzeug MainThread :  * Restarting with stat
+2022-08-02 15:59:53,107 DEBUG h5py._conv Thread-1 : Creating converter from 3 to 5
+2022-08-02 15:59:53,507 WARNING tensorflow Thread-1 : No training configuration found in the save file, so the model was *not* compiled. Compile it manually.
+2022-08-02 16:00:23,933 INFO werkzeug Thread-3 : 127.0.0.1 - - [02/Aug/2022 16:00:23] "GET /api/v1/stability_check HTTP/1.1" 200 -
+2022-08-02 16:00:38,995 INFO werkzeug MainThread :  * Detected change in 'C:\\Users\\bhat970\\OneDrive - PNNL\\Documents\\Work\\netloadforecasting\\pyAPI\\app.py', reloading
+2022-08-02 16:00:40,013 INFO werkzeug MainThread :  * Restarting with stat
+2022-08-02 16:00:51,605 DEBUG h5py._conv Thread-1 : Creating converter from 3 to 5
+2022-08-02 16:00:52,124 WARNING tensorflow Thread-1 : No training configuration found in the save file, so the model was *not* compiled. Compile it manually.
+2022-08-02 16:01:48,043 INFO werkzeug Thread-3 : 127.0.0.1 - - [02/Aug/2022 16:01:48] "GET /api/v1/stability_check HTTP/1.1" 200 -
+2022-08-02 16:04:14,858 INFO werkzeug Thread-7 : 127.0.0.1 - - [02/Aug/2022 16:04:14] "GET /api/v1/stability_check?n=2 HTTP/1.1" 200 -
+2022-08-02 16:07:18,552 INFO werkzeug MainThread :  * Detected change in 'C:\\Users\\bhat970\\OneDrive - PNNL\\Documents\\Work\\netloadforecasting\\pyAPI\\app.py', reloading
+2022-08-02 16:07:19,326 INFO werkzeug MainThread :  * Restarting with stat
+2022-08-02 16:07:30,331 DEBUG h5py._conv Thread-1 : Creating converter from 3 to 5
+2022-08-02 16:07:30,800 WARNING tensorflow Thread-1 : No training configuration found in the save file, so the model was *not* compiled. Compile it manually.
+2022-08-02 16:08:19,171 INFO werkzeug Thread-3 : 127.0.0.1 - - [02/Aug/2022 16:08:19] "GET /api/v1/stability_check?n=2 HTTP/1.1" 200 -

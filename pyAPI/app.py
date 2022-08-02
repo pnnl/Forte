@@ -38,13 +38,9 @@ class Scaler1D:
         return self
         
     def transform(self, X):
-        np.random.seed(7)
-        tf.random.set_seed(7)
         return (X - np.min(X,0))/(np.max(X,0)-np.min(X,0))
     
     def inverse_transform(self, X):
-        np.random.seed(7)
-        tf.random.set_seed(7)
         return X*(np.max(X,0)-np.min(X,0)) + np.min(X,0)
 
 sequence_length = 24*2
@@ -65,8 +61,6 @@ def gen_seq(id_df, seq_length, seq_cols):
     ...
     Sequence n would be the df rows (26180,26228)
     """
-    np.random.seed(7)
-    tf.random.set_seed(7)
     data_matrix =  id_df[seq_cols]
     num_elements = data_matrix.shape[0]
 
@@ -75,14 +69,10 @@ def gen_seq(id_df, seq_length, seq_cols):
         yield data_matrix[stop-sequence_length:stop].values.reshape((-1,len(seq_cols)))
 
 def NLL(y, distr): 
-    np.random.seed(7)
-    tf.random.set_seed(7)
     sy = distr.mean()
     return 1*-distr.log_prob(y)+tf.keras.losses.mean_squared_error(y, sy)
 
 def kernel(x, y):
-    np.random.seed(7)
-    tf.random.set_seed(7)
     return math.exp(-np.linalg.norm(x - y)/2)
 
 ### Loading the models ###
@@ -94,8 +84,6 @@ lstm_model = tf.keras.models.load_model(path_parent+"/data/models/model_rnn_prob
 
 def prepare_input(filename):
     t = time.process_time()
-    np.random.seed(7)
-    tf.random.set_seed(7)
     A=pd.read_csv(path_parent+'/data/inputs/'+filename) # Reading file
     my_data = A.loc[(A['min_t'] >= '2020-05-01 00:00:00') & (A['min_t'] <= '2020-05-02 23:45:00')]
     #my_data = A
@@ -128,8 +116,6 @@ def prepare_input(filename):
 
 def autoencoder_func(sequence_input):
     t = time.process_time()
-    np.random.seed(7)
-    tf.random.set_seed(7)
     scaler_target = Scaler1D().fit(sequence_input)
     seq_inp_norm = scaler_target.transform(sequence_input)
     #pred_train=autoencoder_model.predict(seq_inp_norm) # this one does not work
@@ -141,8 +127,6 @@ def autoencoder_func(sequence_input):
 
 def kPF_func(pred_train):
     t = time.process_time()
-    np.random.seed(7)
-    tf.random.set_seed(7)
     nsamples = 10000
     gamma = 10
     A = np.load('dict.npy', allow_pickle=True).item()
@@ -173,8 +157,6 @@ def kPF_func(pred_train):
 
 def lstm_func(latent_gen, sequence_input, pred_train, y_ground, y_prev):
     t = time.process_time()
-    np.random.seed(7)
-    tf.random.set_seed(7)
     aa = (latent_gen)
     #total_train=int(len(sequence_input) - 48) # did not use this since we are not using training data
     total_train=int(len(sequence_input))
@@ -209,11 +191,9 @@ def lstm_func(latent_gen, sequence_input, pred_train, y_ground, y_prev):
 
 ### Callable functions ###
 
-@app.route('/processor',methods = ['POST', 'GET'])
+@app.route('/api/v1/processor',methods = ['POST', 'GET'])
 def processor():
     t = time.process_time()
-    np.random.seed(7)
-    tf.random.set_seed(7)
     filename = "df1_solar_50_pen.csv"
     sequence_input, y_ground, y_prev, elapsed_time_prepare_input = prepare_input(filename)
     pred_train, elapsed_time_autoencoder = autoencoder_func(sequence_input)
@@ -224,6 +204,15 @@ def processor():
     response=make_response(jsonify(final_result2), 200) #removed processing
     response.headers.add('Access-Control-Allow-Origin', '*')
     return response;
+
+@app.route('/api/v1/stability_check', methods = ['POST', 'GET'])
+def stability_check():
+    return 1
+
+@app.errorhandler(404)
+def handle_404(e):
+    # handle all other routes here
+    return 'No such API endpoint available.'
 
 @app.route('/',methods = ['POST', 'GET'])
 def index():

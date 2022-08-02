@@ -537,3 +537,106 @@
 2022-08-02 14:03:53,082 INFO werkzeug Thread-4 : 127.0.0.1 - - [02/Aug/2022 14:03:53] "GET /processor HTTP/1.1" 200 -
 2022-08-02 14:08:54,455 INFO werkzeug Thread-7 : 127.0.0.1 - - [02/Aug/2022 14:08:54] "GET /processor HTTP/1.1" 200 -
 2022-08-02 14:14:13,179 INFO werkzeug Thread-10 : 127.0.0.1 - - [02/Aug/2022 14:14:13] "GET /processor HTTP/1.1" 200 -
+2022-08-02 14:22:24,349 INFO werkzeug MainThread :  * Detected change in 'C:\\Users\\bhat970\\OneDrive - PNNL\\Documents\\Work\\netloadforecasting\\pyAPI\\app.py', reloading
+2022-08-02 14:22:30,406 INFO werkzeug MainThread :  * Restarting with stat
+2022-08-02 14:22:58,022 DEBUG h5py._conv MainThread : Creating converter from 3 to 5
+2022-08-02 14:22:58,598 WARNING tensorflow MainThread : No training configuration found in the save file, so the model was *not* compiled. Compile it manually.
+2022-08-02 14:22:59,289 INFO werkzeug MainThread :  * Running on http://127.0.0.1:5000 (Press CTRL+C to quit)
+2022-08-02 14:22:59,293 INFO werkzeug MainThread :  * Restarting with stat
+2022-08-02 14:23:09,523 DEBUG h5py._conv Thread-1 : Creating converter from 3 to 5
+2022-08-02 14:23:10,001 WARNING tensorflow Thread-1 : No training configuration found in the save file, so the model was *not* compiled. Compile it manually.
+2022-08-02 14:24:24,192 INFO werkzeug Thread-3 : 127.0.0.1 - - [02/Aug/2022 14:24:24] "GET /processor HTTP/1.1" 200 -
+2022-08-02 14:25:58,626 INFO werkzeug Thread-7 : 127.0.0.1 - - [02/Aug/2022 14:25:58] "GET /processor HTTP/1.1" 200 -
+2022-08-02 14:27:22,783 INFO werkzeug Thread-11 : 127.0.0.1 - - [02/Aug/2022 14:27:22] "GET /processor HTTP/1.1" 200 -
+2022-08-02 14:32:49,405 INFO werkzeug MainThread :  * Detected change in 'C:\\Users\\bhat970\\OneDrive - PNNL\\Documents\\Work\\netloadforecasting\\pyAPI\\app.py', reloading
+2022-08-02 14:32:50,234 INFO werkzeug MainThread :  * Restarting with stat
+2022-08-02 14:33:20,435 DEBUG h5py._conv MainThread : Creating converter from 3 to 5
+2022-08-02 14:33:21,015 WARNING tensorflow MainThread : No training configuration found in the save file, so the model was *not* compiled. Compile it manually.
+2022-08-02 14:33:22,514 INFO werkzeug MainThread :  * Running on http://127.0.0.1:5000 (Press CTRL+C to quit)
+2022-08-02 14:33:22,521 INFO werkzeug MainThread :  * Restarting with stat
+2022-08-02 14:33:34,207 DEBUG h5py._conv Thread-1 : Creating converter from 3 to 5
+2022-08-02 14:33:34,640 WARNING tensorflow Thread-1 : No training configuration found in the save file, so the model was *not* compiled. Compile it manually.
+2022-08-02 14:35:55,613 INFO werkzeug Thread-4 : 127.0.0.1 - - [02/Aug/2022 14:35:55] "GET /processor HTTP/1.1" 200 -
+2022-08-02 14:38:38,918 INFO werkzeug Thread-7 : 127.0.0.1 - - [02/Aug/2022 14:38:38] "GET /processor HTTP/1.1" 200 -
+2022-08-02 14:38:51,586 INFO werkzeug MainThread :  * Detected change in 'C:\\Users\\bhat970\\OneDrive - PNNL\\Documents\\Work\\netloadforecasting\\pyAPI\\app.py', reloading
+2022-08-02 14:38:52,386 INFO werkzeug MainThread :  * Restarting with stat
+2022-08-02 14:39:17,390 DEBUG h5py._conv MainThread : Creating converter from 3 to 5
+2022-08-02 14:39:18,351 WARNING tensorflow MainThread : No training configuration found in the save file, so the model was *not* compiled. Compile it manually.
+2022-08-02 14:39:19,604 INFO werkzeug MainThread :  * Running on http://127.0.0.1:5000 (Press CTRL+C to quit)
+2022-08-02 14:39:19,604 INFO werkzeug MainThread :  * Restarting with stat
+2022-08-02 14:39:29,136 DEBUG h5py._conv Thread-1 : Creating converter from 3 to 5
+2022-08-02 14:39:29,695 WARNING tensorflow Thread-1 : No training configuration found in the save file, so the model was *not* compiled. Compile it manually.
+2022-08-02 14:41:13,170 INFO werkzeug Thread-3 : 127.0.0.1 - - [02/Aug/2022 14:41:13] "GET /processor HTTP/1.1" 200 -
+2022-08-02 14:43:26,981 INFO werkzeug Thread-7 : 127.0.0.1 - - [02/Aug/2022 14:43:26] "GET /processor HTTP/1.1" 200 -
+2022-08-02 14:46:30,920 INFO werkzeug Thread-11 : 127.0.0.1 - - [02/Aug/2022 14:46:30] "GET /processor HTTP/1.1" 200 -
+2022-08-02 14:47:04,701 INFO werkzeug MainThread :  * Detected change in 'C:\\Users\\bhat970\\OneDrive - PNNL\\Documents\\Work\\netloadforecasting\\pyAPI\\app.py', reloading
+2022-08-02 14:47:05,655 INFO werkzeug MainThread :  * Restarting with stat
+2022-08-02 14:47:29,707 DEBUG h5py._conv MainThread : Creating converter from 3 to 5
+2022-08-02 14:47:30,243 WARNING tensorflow MainThread : No training configuration found in the save file, so the model was *not* compiled. Compile it manually.
+2022-08-02 14:47:30,935 INFO werkzeug MainThread :  * Running on http://127.0.0.1:5000 (Press CTRL+C to quit)
+2022-08-02 14:47:30,935 INFO werkzeug MainThread :  * Restarting with stat
+2022-08-02 14:47:42,401 DEBUG h5py._conv Thread-1 : Creating converter from 3 to 5
+2022-08-02 14:47:42,881 WARNING tensorflow Thread-1 : No training configuration found in the save file, so the model was *not* compiled. Compile it manually.
+2022-08-02 14:49:37,772 INFO werkzeug Thread-3 : 127.0.0.1 - - [02/Aug/2022 14:49:37] "GET /processor HTTP/1.1" 200 -
+2022-08-02 14:51:12,734 INFO werkzeug Thread-7 : 127.0.0.1 - - [02/Aug/2022 14:51:12] "GET /processor HTTP/1.1" 200 -
+2022-08-02 14:52:51,331 INFO werkzeug Thread-10 : 127.0.0.1 - - [02/Aug/2022 14:52:51] "GET /processor HTTP/1.1" 200 -
+2022-08-02 14:53:38,122 INFO werkzeug MainThread :  * Detected change in 'C:\\Users\\bhat970\\OneDrive - PNNL\\Documents\\Work\\netloadforecasting\\pyAPI\\app.py', reloading
+2022-08-02 14:53:39,062 INFO werkzeug MainThread :  * Restarting with stat
+2022-08-02 14:54:03,077 DEBUG h5py._conv MainThread : Creating converter from 3 to 5
+2022-08-02 14:54:03,704 WARNING tensorflow MainThread : No training configuration found in the save file, so the model was *not* compiled. Compile it manually.
+2022-08-02 14:54:04,541 INFO werkzeug MainThread :  * Running on http://127.0.0.1:5000 (Press CTRL+C to quit)
+2022-08-02 14:54:04,546 INFO werkzeug MainThread :  * Restarting with stat
+2022-08-02 14:54:14,326 DEBUG h5py._conv Thread-1 : Creating converter from 3 to 5
+2022-08-02 14:54:14,746 WARNING tensorflow Thread-1 : No training configuration found in the save file, so the model was *not* compiled. Compile it manually.
+2022-08-02 14:54:39,914 INFO werkzeug Thread-3 : 127.0.0.1 - - [02/Aug/2022 14:54:39] "GET /processor HTTP/1.1" 200 -
+2022-08-02 14:55:34,486 INFO werkzeug Thread-8 : 127.0.0.1 - - [02/Aug/2022 14:55:34] "GET /processor HTTP/1.1" 200 -
+2022-08-02 14:56:23,193 INFO werkzeug Thread-10 : 127.0.0.1 - - [02/Aug/2022 14:56:23] "GET /processor HTTP/1.1" 200 -
+2022-08-02 14:57:47,767 INFO werkzeug MainThread :  * Detected change in 'C:\\Users\\bhat970\\OneDrive - PNNL\\Documents\\Work\\netloadforecasting\\pyAPI\\app.py', reloading
+2022-08-02 14:57:48,600 INFO werkzeug MainThread :  * Restarting with stat
+2022-08-02 14:58:13,350 DEBUG h5py._conv MainThread : Creating converter from 3 to 5
+2022-08-02 14:58:14,169 WARNING tensorflow MainThread : No training configuration found in the save file, so the model was *not* compiled. Compile it manually.
+2022-08-02 14:58:14,997 INFO werkzeug MainThread :  * Running on http://127.0.0.1:5000 (Press CTRL+C to quit)
+2022-08-02 14:58:15,000 INFO werkzeug MainThread :  * Restarting with stat
+2022-08-02 14:58:26,508 DEBUG h5py._conv Thread-1 : Creating converter from 3 to 5
+2022-08-02 14:58:27,098 WARNING tensorflow Thread-1 : No training configuration found in the save file, so the model was *not* compiled. Compile it manually.
+2022-08-02 14:59:11,328 INFO werkzeug Thread-4 : 127.0.0.1 - - [02/Aug/2022 14:59:11] "GET /processor HTTP/1.1" 200 -
+2022-08-02 15:00:08,537 INFO werkzeug Thread-7 : 127.0.0.1 - - [02/Aug/2022 15:00:08] "GET /processor HTTP/1.1" 200 -
+2022-08-02 15:01:09,887 INFO werkzeug Thread-10 : 127.0.0.1 - - [02/Aug/2022 15:01:09] "GET /processor HTTP/1.1" 200 -
+2022-08-02 15:04:16,907 INFO werkzeug MainThread :  * Detected change in 'C:\\Users\\bhat970\\OneDrive - PNNL\\Documents\\Work\\netloadforecasting\\pyAPI\\app.py', reloading
+2022-08-02 15:04:17,784 INFO werkzeug MainThread :  * Restarting with stat
+2022-08-02 15:04:42,775 DEBUG h5py._conv MainThread : Creating converter from 3 to 5
+2022-08-02 15:04:43,328 WARNING tensorflow MainThread : No training configuration found in the save file, so the model was *not* compiled. Compile it manually.
+2022-08-02 15:04:43,972 INFO werkzeug MainThread :  * Running on http://127.0.0.1:5000 (Press CTRL+C to quit)
+2022-08-02 15:04:43,975 INFO werkzeug MainThread :  * Restarting with stat
+2022-08-02 15:04:54,309 DEBUG h5py._conv Thread-1 : Creating converter from 3 to 5
+2022-08-02 15:04:54,786 WARNING tensorflow Thread-1 : No training configuration found in the save file, so the model was *not* compiled. Compile it manually.
+2022-08-02 15:05:27,031 INFO werkzeug Thread-3 : 127.0.0.1 - - [02/Aug/2022 15:05:27] "GET /processor HTTP/1.1" 200 -
+2022-08-02 15:06:17,378 INFO werkzeug Thread-7 : 127.0.0.1 - - [02/Aug/2022 15:06:17] "GET /processor HTTP/1.1" 200 -
+2022-08-02 15:07:30,413 DEBUG h5py._conv MainThread : Creating converter from 3 to 5
+2022-08-02 15:07:30,898 WARNING tensorflow MainThread : No training configuration found in the save file, so the model was *not* compiled. Compile it manually.
+2022-08-02 15:07:31,447 INFO werkzeug MainThread :  * Running on http://127.0.0.1:5000 (Press CTRL+C to quit)
+2022-08-02 15:07:31,464 INFO werkzeug MainThread :  * Restarting with stat
+2022-08-02 15:07:40,288 DEBUG h5py._conv Thread-1 : Creating converter from 3 to 5
+2022-08-02 15:07:40,742 WARNING tensorflow Thread-1 : No training configuration found in the save file, so the model was *not* compiled. Compile it manually.
+2022-08-02 15:08:59,364 INFO werkzeug Thread-3 : 127.0.0.1 - - [02/Aug/2022 15:08:59] "GET /processor HTTP/1.1" 200 -
+2022-08-02 15:09:29,144 INFO werkzeug Thread-7 : 127.0.0.1 - - [02/Aug/2022 15:09:29] "GET /processor HTTP/1.1" 200 -
+2022-08-02 15:10:12,077 INFO werkzeug Thread-10 : 127.0.0.1 - - [02/Aug/2022 15:10:12] "GET /processor HTTP/1.1" 200 -
+2022-08-02 15:11:53,511 DEBUG h5py._conv MainThread : Creating converter from 3 to 5
+2022-08-02 15:11:54,029 WARNING tensorflow MainThread : No training configuration found in the save file, so the model was *not* compiled. Compile it manually.
+2022-08-02 15:11:54,754 INFO werkzeug MainThread :  * Running on http://127.0.0.1:5000 (Press CTRL+C to quit)
+2022-08-02 15:11:54,758 INFO werkzeug MainThread :  * Restarting with stat
+2022-08-02 15:12:03,548 DEBUG h5py._conv Thread-1 : Creating converter from 3 to 5
+2022-08-02 15:12:03,992 WARNING tensorflow Thread-1 : No training configuration found in the save file, so the model was *not* compiled. Compile it manually.
+2022-08-02 15:13:24,819 INFO werkzeug Thread-4 : 127.0.0.1 - - [02/Aug/2022 15:13:24] "GET /processor HTTP/1.1" 200 -
+2022-08-02 15:14:28,899 INFO werkzeug Thread-7 : 127.0.0.1 - - [02/Aug/2022 15:14:28] "GET /processor HTTP/1.1" 200 -
+2022-08-02 15:14:59,601 INFO werkzeug Thread-11 : 127.0.0.1 - - [02/Aug/2022 15:14:59] "GET /processor HTTP/1.1" 200 -
+2022-08-02 15:19:17,003 INFO werkzeug MainThread :  * Detected change in 'C:\\Users\\bhat970\\OneDrive - PNNL\\Documents\\Work\\netloadforecasting\\pyAPI\\app.py', reloading
+2022-08-02 15:19:17,989 INFO werkzeug MainThread :  * Restarting with stat
+2022-08-02 15:19:29,149 DEBUG h5py._conv Thread-1 : Creating converter from 3 to 5
+2022-08-02 15:19:29,634 WARNING tensorflow Thread-1 : No training configuration found in the save file, so the model was *not* compiled. Compile it manually.
+2022-08-02 15:19:37,734 INFO werkzeug Thread-3 : 127.0.0.1 - - [02/Aug/2022 15:19:37] "GET /processor HTTP/1.1" 200 -
+2022-08-02 15:20:56,590 INFO werkzeug MainThread :  * Detected change in 'C:\\Users\\bhat970\\OneDrive - PNNL\\Documents\\Work\\netloadforecasting\\pyAPI\\app.py', reloading
+2022-08-02 15:20:57,835 INFO werkzeug MainThread :  * Restarting with stat
+2022-08-02 15:21:06,417 DEBUG h5py._conv Thread-1 : Creating converter from 3 to 5
+2022-08-02 15:21:06,864 WARNING tensorflow Thread-1 : No training configuration found in the save file, so the model was *not* compiled. Compile it manually.
+2022-08-02 15:21:08,768 INFO werkzeug Thread-3 : 127.0.0.1 - - [02/Aug/2022 15:21:08] "GET /processor HTTP/1.1" 200 -

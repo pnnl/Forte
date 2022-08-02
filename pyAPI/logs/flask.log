@@ -705,3 +705,13 @@
 2022-08-02 16:12:19,211 WARNING tensorflow Thread-1 : No training configuration found in the save file, so the model was *not* compiled. Compile it manually.
 2022-08-02 16:12:43,126 INFO app Thread-3 : {'1. message': 'Program is stable', '2. Number of times executed': 1, '3. Average execution time (seconds)': 17.359375}
 2022-08-02 16:12:43,131 INFO werkzeug Thread-3 : 127.0.0.1 - - [02/Aug/2022 16:12:43] "GET /api/v1/stability_check?n=1 HTTP/1.1" 200 -
+2022-08-02 16:40:54,870 INFO app Thread-7 : {'1. message': 'Program is stable', '2. Number of times executed': 100, '3. Average execution time (seconds)': 14.95640625}
+2022-08-02 16:40:54,871 INFO werkzeug Thread-7 : 127.0.0.1 - - [02/Aug/2022 16:40:54] "GET /api/v1/stability_check?n=100 HTTP/1.1" 200 -
+2022-08-02 18:33:10,303 INFO werkzeug MainThread :  * Detected change in 'C:\\Users\\bhat970\\OneDrive - PNNL\\Documents\\Work\\netloadforecasting\\pyAPI\\app.py', reloading
+2022-08-02 18:33:13,486 INFO werkzeug MainThread :  * Restarting with stat
+2022-08-02 18:33:35,440 DEBUG h5py._conv Thread-1 : Creating converter from 3 to 5
+2022-08-02 18:33:35,910 WARNING tensorflow Thread-1 : No training configuration found in the save file, so the model was *not* compiled. Compile it manually.
+2022-08-02 18:34:01,558 INFO werkzeug Thread-3 : 127.0.0.1 - - [02/Aug/2022 18:34:01] "GET /api/v1/processor HTTP/1.1" 200 -
+2022-08-02 18:36:17,651 INFO werkzeug Thread-7 : 127.0.0.1 - - [02/Aug/2022 18:36:17] "GET /api/v1/processor HTTP/1.1" 200 -
+2022-08-02 18:38:49,889 INFO app Thread-10 : {'1. message': 'Program is stable', '2. Number of times executed': 5, '3. Average execution time (seconds)': 13.75, '4. MAE': 0.7698729716318626, '5. MAPE': 1.5501411629933284}
+2022-08-02 18:38:49,893 INFO werkzeug Thread-10 : 127.0.0.1 - - [02/Aug/2022 18:38:49] "GET /api/v1/stability_check?n=5 HTTP/1.1" 200 -

@@ -216,7 +216,7 @@ def stability_check():
     n: the number of times to execute the program
     If supplying different value of n, use the following query:
     /api/v1/stability_check?n=5
-    
+
     Output:
     JSON output with the stability result, n, and average execution time
     """
@@ -230,6 +230,7 @@ def stability_check():
     if(len(set(mae_array)) == 1): answer = "Program is stable"
     else: answer = "Program is NOT stable"  
     message={"1. message": answer, "2. Number of times executed": n, "3. Average execution time (seconds)": sum(time_array)/len(time_array)}
+    app.logger.info(message)
     return message
 
 @app.errorhandler(404)

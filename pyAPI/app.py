@@ -15,7 +15,8 @@ from scipy.io import loadmat
 from keras.layers import Input, Dense, LSTM, Reshape, Conv1D, MaxPooling1D, Flatten,UpSampling1D,Conv1DTranspose
 from keras.models import Model
 from sklearn.metrics import mean_absolute_error, mean_squared_error, mean_absolute_percentage_error
-import properscoring as ps
+#import properscoring as ps
+import matplotlib.pyplot as plt
 
 app = Flask(__name__)
 CORS(app)
@@ -88,7 +89,7 @@ autoencoder_model = tf.keras.models.load_model(path_parent+"/data/models/autoenc
 encoder_model = tf.keras.models.load_model(path_parent+"/data/models/encoder.h5")
 lstm_model = tf.keras.models.load_model(path_parent+"/data/models/model_rnn_probab_nonsol.h5", custom_objects={'NLL': NLL})
 
-### Pipeline functions (non-callable externally) ###
+### Pipeline functions and others (non-callable externally) ###
 
 def prepare_input(filename):
     t = time.process_time()
@@ -191,13 +192,35 @@ def lstm_func(latent_gen, sequence_input, pred_train, y_ground, y_prev):
     np.savetxt(path_parent+'/data/outputs/y_pred.csv', y_pred, delimiter=",")
     np.savetxt(path_parent+'/data/outputs/Y_test.csv', Y_test, delimiter=",")
     mae = mean_absolute_error(Y_test, y_pred)
-    mape = mean_absolute_percentage_error(Y_test, y_pred)
-    crps = ps.crps_ensemble(y_pred.flatten(), Y_test).mean()
-    pbb = pbb_calculation(Y_test, y_pred.flatten())
-    mse = mean_squared_error(Y_test, y_pred)
+    #mape = mean_absolute_percentage_error(Y_test, y_pred)
+    #crps = ps.crps_ensemble(y_pred.flatten(), Y_test).mean()
+    #pbb = pbb_calculation(Y_test, y_pred.flatten())
+    #mse = mean_squared_error(Y_test, y_pred)
     elapsed_time_lstm = time.process_time() - t
-    return y_pred, Y_test, mae, mape, crps, pbb, mse, elapsed_time_lstm
+    #return y_pred, Y_test, mae, mape, crps, pbb, mse, elapsed_time_lstm
+    return y_pred, Y_test, mae, elapsed_time_lstm
 
+def generate_comparison_image(y_pred, Y_test):
+    """
+    This function generates an image(through matplotlib) comparing 
+    the actual and predicted net load values through line charts
+
+    Inputs:
+    y_pred: the predicted net load
+    Y_test: the actual net load
+
+    Output:
+    Image: saved in the folder /data/outputs/comparison.png 
+    (path is relative to the project folder)
+    """
+    plt.plot(Y_test, label="actual")
+    plt.plot(y_pred.flatten(), label="prediction")
+    plt.legend(loc="upper right")
+    plt.title("Comparison of Net Load Actual vs. Prediction")
+    plt.xlabel("Time Interval Index")
+    plt.ylabel("Net Load (kW)")
+    plt.savefig(path_parent+'/data/outputs/'+'comparison.png')
+    return 1
 ### Callable functions ###
 
 @app.route('/api/v1/processor',methods = ['POST', 'GET'])
@@ -207,9 +230,12 @@ def processor():
     sequence_input, y_ground, y_prev, elapsed_time_prepare_input = prepare_input(filename)
     pred_train, elapsed_time_autoencoder = autoencoder_func(sequence_input)
     latent_gen, elapsed_time_kpf = kPF_func(pred_train)
-    y_pred, Y_test, mae, mape, crps, pbb, mse, elapsed_time_lstm = lstm_func(latent_gen, sequence_input, pred_train, y_ground, y_prev)
+    #y_pred, Y_test, mae, mape, crps, pbb, mse, elapsed_time_lstm = lstm_func(latent_gen, sequence_input, pred_train, y_ground, y_prev)
+    y_pred, Y_test, mae, elapsed_time_lstm = lstm_func(latent_gen, sequence_input, pred_train, y_ground, y_prev)
+    generate_comparison_image(y_pred, Y_test)
     elapsed_time_total = time.process_time() - t
-    final_result2 ={"1. message":"Program executed", "2. time taken (prepare input)": elapsed_time_prepare_input, "3. time taken (autoencoder)":elapsed_time_autoencoder, "4. time taken (kPF)": elapsed_time_kpf, "5. time taken (LSTM)": elapsed_time_lstm, "6. total time taken":elapsed_time_total, "7. MAE": mae, "8. MAPE": mape, "9. CRPS": crps, "10. PBB": pbb, "11. MSE": mse}
+    #final_result2 ={"1. message":"Program executed", "2. time taken (prepare input)": elapsed_time_prepare_input, "3. time taken (autoencoder)":elapsed_time_autoencoder, "4. time taken (kPF)": elapsed_time_kpf, "5. time taken (LSTM)": elapsed_time_lstm, "6. total time taken":elapsed_time_total, "7. MAE": mae, "8. MAPE": mape, "9. CRPS": crps, "10. PBB": pbb, "11. MSE": mse}
+    final_result2 ={"1. message":"Program executed", "2. time taken (prepare input)": elapsed_time_prepare_input, "3. time taken (autoencoder)":elapsed_time_autoencoder, "4. time taken (kPF)": elapsed_time_kpf, "5. time taken (LSTM)": elapsed_time_lstm, "6. total time taken":elapsed_time_total, "7. MAE": mae}
     response=make_response(jsonify(final_result2), 200) #removed processing
     response.headers.add('Access-Control-Allow-Origin', '*')
     return response;
@@ -236,12 +262,14 @@ def stability_check():
         output = output.get_json()
         time_array.append(output["6. total time taken"])
         mae_array.append(output["7. MAE"])
-        mape_array.append(output["8. MAPE"])
-        crps_array.append(output["9. CRPS"])
-        pbb_array.append(output["10. PBB"])
-    if((len(set(mae_array)) == 1) & (len(set(mape_array)) == 1) & (len(set(crps_array)) == 1) & (len(set(pbb_array)) == 1)): answer = "Program is stable"
+        # mape_array.append(output["8. MAPE"])
+        # crps_array.append(output["9. CRPS"])
+        # pbb_array.append(output["10. PBB"])
+    #if((len(set(mae_array)) == 1) & (len(set(mape_array)) == 1) & (len(set(crps_array)) == 1) & (len(set(pbb_array)) == 1)): answer = "Program is stable"
+    if((len(set(mae_array)) == 1)): answer = "Program is stable"
     else: answer = "Program is NOT stable"  
-    message={"1. message": answer, "2. Number of times executed": n, "3. Average execution time (seconds)": sum(time_array)/len(time_array), "4. MAE": mae_array[0], "5. MAPE": mape_array[0], "6. CRPS": crps_array[0], "7. PBB": pbb_array[0]}
+    #message={"1. message": answer, "2. Number of times executed": n, "3. Average execution time (seconds)": sum(time_array)/len(time_array), "4. MAE": mae_array[0], "5. MAPE": mape_array[0], "6. CRPS": crps_array[0], "7. PBB": pbb_array[0]}
+    message={"1. message": answer, "2. Number of times executed": n, "3. Average execution time (seconds)": sum(time_array)/len(time_array), "4. MAE": mae_array[0]}
     app.logger.info(message)
     return message
 

@@ -1,3 +1,4 @@
+from tracemalloc import start
 from flask import Flask, render_template, Response, g, redirect, url_for, request,jsonify, make_response
 import time, os, re
 import pandas as pd
@@ -17,6 +18,7 @@ from keras.models import Model
 from sklearn.metrics import mean_absolute_error, mean_squared_error, mean_absolute_percentage_error
 #import properscoring as ps
 import matplotlib.pyplot as plt
+from datetime import datetime, timedelta
 
 app = Flask(__name__)
 CORS(app)
@@ -91,10 +93,10 @@ lstm_model = tf.keras.models.load_model(path_parent+"/data/models/model_rnn_prob
 
 ### Pipeline functions and others (non-callable externally) ###
 
-def prepare_input(filename):
+def prepare_input(start_date, end_date, filename):
     t = time.process_time()
     A=pd.read_csv(path_parent+'/data/inputs/'+filename) # Reading file
-    my_data = A.loc[(A['min_t'] >= '2020-04-30 12:00:00') & (A['min_t'] <= '2020-05-02 23:45:00')]
+    my_data = A.loc[(A['min_t'] >= start_date) & (A['min_t'] < end_date)]
     #my_data = A
     my_data=my_data.drop(['min_t'], axis=1) # Drop this axis
     my_data=my_data.fillna(99999)
@@ -161,7 +163,7 @@ def kPF_func(pred_train):
             latent_gen[i] += s[ind[j][i]][i] * x[ind[j][i]]
             _sum += s[ind[j][i]][i]
         latent_gen[i] /= _sum
-    print(latent_gen)
+    #print(latent_gen)
     elapsed_time_kpf = time.process_time() - t
     return latent_gen, elapsed_time_kpf
 
@@ -188,7 +190,7 @@ def lstm_func(latent_gen, sequence_input, pred_train, y_ground, y_prev):
     y_pred=y_pred*(np.max(total_train_data[:,41])-np.min(total_train_data[:,41]))+np.min(total_train_data[:,41])
     Y_test=Y*(np.max(total_train_data[:,41])-np.min(total_train_data[:,41]))+np.min(total_train_data[:,41])
     #y_pred = y_pred.flatten()
-    print(y_pred, Y_test)
+    #print(y_pred, Y_test)
     print(y_pred.shape, Y_test.shape)
     np.savetxt(path_parent+'/data/outputs/y_pred.csv', y_pred, delimiter=",")
     np.savetxt(path_parent+'/data/outputs/Y_test.csv', Y_test, delimiter=",")
@@ -222,29 +224,53 @@ def generate_comparison_image(y_pred, Y_test):
     plt.ylabel("Net Load (kW)")
     plt.savefig(path_parent+'/data/outputs/'+'comparison.png')
     return 1
+
+def validate_start_date(start_date):
+    received_start_date = datetime.strptime(start_date, "%Y-%m-%d %H:%M:%S")
+    edited_start_date = datetime.strftime((received_start_date - timedelta(hours = 12)), "%Y-%m-%d %H:%M:%S" )
+    # Handle sending lesser than 1st Jan dates
+    return edited_start_date
+
 ### Callable functions ###
 
 @app.route('/api/v1/processor',methods = ['POST', 'GET'])
 def processor():
     t = time.process_time()
-    filename = "df1_solar_50_pen.csv"
-    sequence_input, y_ground, y_prev, elapsed_time_prepare_input = prepare_input(filename)
+    start_date, end_date, solar_penetration = "2020-05-01 00:00:00", "2020-05-03 00:00:00", 50
+    start_date = validate_start_date(start_date)
+    print(start_date)
+    if(request.is_json):
+        req = request.get_json()
+        start_date = validate_start_date(req["start_date"])
+        end_date = req["end_date"]
+        solar_penetration = req["solar_penetration"]
+    filename = "df1_solar_"+str(solar_penetration)+"_pen.csv"
+    sequence_input, y_ground, y_prev, elapsed_time_prepare_input = prepare_input(start_date, end_date, filename)
     pred_train, elapsed_time_autoencoder = autoencoder_func(sequence_input)
     latent_gen, elapsed_time_kpf = kPF_func(pred_train)
     #y_pred, Y_test, mae, mape, crps, pbb, mse, elapsed_time_lstm = lstm_func(latent_gen, sequence_input, pred_train, y_ground, y_prev)
     y_pred, Y_test, mae, elapsed_time_lstm = lstm_func(latent_gen, sequence_input, pred_train, y_ground, y_prev)
     #generate_comparison_image(y_pred, Y_test)
     elapsed_time_total = time.process_time() - t
-    #final_result2 ={"1. message":"Program executed", "2. time taken (prepare input)": elapsed_time_prepare_input, "3. time taken (autoencoder)":elapsed_time_autoencoder, "4. time taken (kPF)": elapsed_time_kpf, "5. time taken (LSTM)": elapsed_time_lstm, "6. total time taken":elapsed_time_total, "7. MAE": mae, "8. MAPE": mape, "9. CRPS": crps, "10. PBB": pbb, "11. MSE": mse}
-    final_result2 ={"1. message":"Program executed", "2. time taken (prepare input)": elapsed_time_prepare_input, "3. time taken (autoencoder)":elapsed_time_autoencoder, "4. time taken (kPF)": elapsed_time_kpf, "5. time taken (LSTM)": elapsed_time_lstm, "6. total time taken":elapsed_time_total, "7. MAE": mae}
-    response=make_response(jsonify(final_result2), 200) #removed processing
+    #final_result ={"1. message":"Program executed", "2. time taken (prepare input)": elapsed_time_prepare_input, "3. time taken (autoencoder)":elapsed_time_autoencoder, "4. time taken (kPF)": elapsed_time_kpf, "5. time taken (LSTM)": elapsed_time_lstm, "6. total time taken":elapsed_time_total, "7. MAE": mae, "8. MAPE": mape, "9. CRPS": crps, "10. PBB": pbb, "11. MSE": mse}
+    final_result ={"1. message":"Program executed", "2. time taken (prepare input)": elapsed_time_prepare_input, "3. time taken (autoencoder)":elapsed_time_autoencoder, "4. time taken (kPF)": elapsed_time_kpf, "5. time taken (LSTM)": elapsed_time_lstm, "6. total time taken":elapsed_time_total, "7. MAE": mae, "predicted_net_load":y_pred.flatten().tolist(), "actual_net_load": Y_test.tolist(),}
+    response=make_response(jsonify(final_result), 200) #removed processing
     response.headers.add('Access-Control-Allow-Origin', '*')
     return response;
 
-@app.route('/api/v1/processor',methods = ['POST', 'GET'])
+@app.route('/api/v1/processor_call',methods = ['POST', 'GET'])
 def processor_call():
-
-    return 1
+    start_date, end_date, solar_penetration = "2020-04-30 12:00:00", "2020-05-02 23:45:00", 50
+    if(request.is_json):
+        req = request.get_json()
+        start_date = req["start_date"]
+        end_date = req["end_date"]
+        solar_penetration = req["solar_penetration"]
+    final_result, y_pred, Y_test = processor(start_date, end_date, solar_penetration)
+    message = {"predicted_net_load":y_pred.flatten().tolist(), "actual_net_load": Y_test.tolist(), "processing_time":final_result["6. total time taken"], "metric_mae": final_result["7. MAE"]}
+    response=make_response(jsonify(message), 200) #removed processing
+    response.headers.add('Access-Control-Allow-Origin', '*')
+    return response;
 
 @app.route('/api/v1/stability_check', methods = ['POST', 'GET'])
 def stability_check():

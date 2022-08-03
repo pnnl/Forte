@@ -8,3 +8,4 @@ tensorflow
 tensorflow-probability==0.17.0
 tqdm
 keras
+properscoring

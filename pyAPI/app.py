@@ -115,6 +115,17 @@ def prepare_input(start_date, end_date, filename):
     y_ground=np.asarray(y_ground)
     pd.DataFrame(y_ground).to_csv(path_parent+'/data/outputs/y_ground.csv', header=None, index=None)
 
+    temperature = []
+    for i in range(len(sequence_input)):
+        temperature.append(my_data.iloc[i+48]['temp'])
+    humidity = []
+    for i in range(len(sequence_input)):
+        humidity.append(my_data.iloc[i+48]['humidity'])
+    apparent_power = []
+    for i in range(len(sequence_input)):
+        apparent_power.append(my_data.iloc[i+48]['apparent_power'])        
+  
+
     y_prev = []
     sequence_target = []
     #AA=A
@@ -124,7 +135,7 @@ def prepare_input(start_date, end_date, filename):
     y_prev=np.asarray(y_prev)
     y_prev=y_prev.reshape((y_prev.shape[0],y_prev.shape[1]))
     elapsed_time_prepare_input = time.process_time() - t
-    return sequence_input, y_ground, y_prev, elapsed_time_prepare_input
+    return sequence_input, y_ground, y_prev, temperature, humidity, apparent_power, elapsed_time_prepare_input
 
 def autoencoder_func(sequence_input):
     t = time.process_time()
@@ -245,7 +256,7 @@ def processor():
         end_date = req["end_date"]
         solar_penetration = req["solar_penetration"]
     filename = "df1_solar_"+str(solar_penetration)+"_pen.csv"
-    sequence_input, y_ground, y_prev, elapsed_time_prepare_input = prepare_input(start_date, end_date, filename)
+    sequence_input, y_ground, y_prev, temperature, humidity, apparent_power, elapsed_time_prepare_input = prepare_input(start_date, end_date, filename)
     pred_train, elapsed_time_autoencoder = autoencoder_func(sequence_input)
     latent_gen, elapsed_time_kpf = kPF_func(pred_train)
     #y_pred, Y_test, mae, mape, crps, pbb, mse, elapsed_time_lstm = lstm_func(latent_gen, sequence_input, pred_train, y_ground, y_prev)
@@ -253,24 +264,11 @@ def processor():
     #generate_comparison_image(y_pred, Y_test)
     elapsed_time_total = time.process_time() - t
     #final_result ={"1. message":"Program executed", "2. time taken (prepare input)": elapsed_time_prepare_input, "3. time taken (autoencoder)":elapsed_time_autoencoder, "4. time taken (kPF)": elapsed_time_kpf, "5. time taken (LSTM)": elapsed_time_lstm, "6. total time taken":elapsed_time_total, "7. MAE": mae, "8. MAPE": mape, "9. CRPS": crps, "10. PBB": pbb, "11. MSE": mse}
-    final_result ={"1. message":"Program executed", "2. time taken (prepare input)": elapsed_time_prepare_input, "3. time taken (autoencoder)":elapsed_time_autoencoder, "4. time taken (kPF)": elapsed_time_kpf, "5. time taken (LSTM)": elapsed_time_lstm, "6. total time taken":elapsed_time_total, "7. MAE": mae, "predicted_net_load":y_pred.flatten().tolist(), "actual_net_load": Y_test.tolist(),}
+    final_result ={"1. message":"Program executed", "2. time taken (prepare input)": elapsed_time_prepare_input, "3. time taken (autoencoder)":elapsed_time_autoencoder, "4. time taken (kPF)": elapsed_time_kpf, "5. time taken (LSTM)": elapsed_time_lstm, "6. total time taken":elapsed_time_total, "7. MAE": mae, "predicted_net_load":y_pred.flatten().tolist(), "actual_net_load": Y_test.tolist(), "temperature":temperature, "humidity":humidity, "apparent_power":apparent_power}
     response=make_response(jsonify(final_result), 200) #removed processing
     response.headers.add('Access-Control-Allow-Origin', '*')
     return response;
 
-@app.route('/api/v1/processor_call',methods = ['POST', 'GET'])
-def processor_call():
-    start_date, end_date, solar_penetration = "2020-04-30 12:00:00", "2020-05-02 23:45:00", 50
-    if(request.is_json):
-        req = request.get_json()
-        start_date = req["start_date"]
-        end_date = req["end_date"]
-        solar_penetration = req["solar_penetration"]
-    final_result, y_pred, Y_test = processor(start_date, end_date, solar_penetration)
-    message = {"predicted_net_load":y_pred.flatten().tolist(), "actual_net_load": Y_test.tolist(), "processing_time":final_result["6. total time taken"], "metric_mae": final_result["7. MAE"]}
-    response=make_response(jsonify(message), 200) #removed processing
-    response.headers.add('Access-Control-Allow-Origin', '*')
-    return response;
 
 @app.route('/api/v1/stability_check', methods = ['POST', 'GET'])
 def stability_check():

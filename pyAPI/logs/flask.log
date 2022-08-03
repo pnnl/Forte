@@ -14573,3 +14573,9 @@
 2022-08-03 19:30:09,133 WARNING tensorflow Thread-1 : No training configuration found in the save file, so the model was *not* compiled. Compile it manually.
 2022-08-03 19:30:30,950 INFO werkzeug Thread-3 : 127.0.0.1 - - [03/Aug/2022 19:30:30] "GET /api/v1/processor HTTP/1.1" 200 -
 2022-08-03 19:30:31,041 INFO werkzeug Thread-4 : 127.0.0.1 - - [03/Aug/2022 19:30:31] "GET /favicon.ico HTTP/1.1" 200 -
+2022-08-03 19:37:50,058 INFO werkzeug MainThread :  * Detected change in 'C:\\Users\\bhat970\\OneDrive - PNNL\\Documents\\Work\\netloadforecasting\\pyAPI\\app.py', reloading
+2022-08-03 19:37:51,280 INFO werkzeug MainThread :  * Restarting with stat
+2022-08-03 19:38:04,506 DEBUG h5py._conv Thread-1 : Creating converter from 3 to 5
+2022-08-03 19:38:04,974 WARNING tensorflow Thread-1 : No training configuration found in the save file, so the model was *not* compiled. Compile it manually.
+2022-08-03 19:38:28,541 INFO werkzeug Thread-3 : 127.0.0.1 - - [03/Aug/2022 19:38:28] "GET /api/v1/processor HTTP/1.1" 200 -
+2022-08-03 19:38:28,975 INFO werkzeug Thread-7 : 127.0.0.1 - - [03/Aug/2022 19:38:28] "GET /favicon.ico HTTP/1.1" 200 -

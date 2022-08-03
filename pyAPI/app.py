@@ -108,7 +108,8 @@ def prepare_input(filename):
     
     y_ground=[]
     for i in range(len(sequence_input)):
-        y_ground.append(my_data.iloc[i+48]['power'])   
+        y_ground.append(my_data.iloc[i+48]['power'])   # Original code
+        #y_ground.append(my_data.iloc[i]['power'])   
     y_ground=np.asarray(y_ground)
     pd.DataFrame(y_ground).to_csv(path_parent+'/data/outputs/y_ground.csv', header=None, index=None)
 
@@ -240,6 +241,10 @@ def processor():
     response.headers.add('Access-Control-Allow-Origin', '*')
     return response;
 
+@app.route('/api/v1/processor',methods = ['POST', 'GET'])
+def processor_call():
+
+    return 1
 
 @app.route('/api/v1/stability_check', methods = ['POST', 'GET'])
 def stability_check():

@@ -12130,3 +12130,36 @@
 2022-08-03 14:15:22,474 INFO werkzeug MainThread :  * Restarting with stat
 2022-08-03 14:15:33,468 DEBUG h5py._conv Thread-1 : Creating converter from 3 to 5
 2022-08-03 14:15:33,876 WARNING tensorflow Thread-1 : No training configuration found in the save file, so the model was *not* compiled. Compile it manually.
+2022-08-03 15:24:05,958 INFO werkzeug MainThread :  * Detected change in 'C:\\Users\\bhat970\\OneDrive - PNNL\\Documents\\Work\\netloadforecasting\\pyAPI\\app.py', reloading
+2022-08-03 15:24:10,783 INFO werkzeug MainThread :  * Restarting with stat
+2022-08-03 15:24:43,560 DEBUG h5py._conv Thread-1 : Creating converter from 3 to 5
+2022-08-03 15:24:44,357 WARNING tensorflow Thread-1 : No training configuration found in the save file, so the model was *not* compiled. Compile it manually.
+2022-08-03 15:24:45,593 INFO werkzeug Thread-3 : 127.0.0.1 - - [03/Aug/2022 15:24:45] "GET /favicon.ico HTTP/1.1" 200 -
+2022-08-03 15:25:41,741 INFO werkzeug Thread-7 : 127.0.0.1 - - [03/Aug/2022 15:25:41] "GET /api/v1/processor HTTP/1.1" 200 -
+2022-08-03 15:25:42,126 INFO werkzeug Thread-11 : 127.0.0.1 - - [03/Aug/2022 15:25:42] "GET /favicon.ico HTTP/1.1" 200 -
+2022-08-03 15:27:04,241 INFO werkzeug Thread-14 : 127.0.0.1 - - [03/Aug/2022 15:27:04] "GET /api/v1/processor HTTP/1.1" 200 -
+2022-08-03 15:27:04,609 INFO werkzeug Thread-16 : 127.0.0.1 - - [03/Aug/2022 15:27:04] "GET /favicon.ico HTTP/1.1" 200 -
+2022-08-03 15:28:08,544 INFO werkzeug MainThread :  * Detected change in 'C:\\Users\\bhat970\\OneDrive - PNNL\\Documents\\Work\\netloadforecasting\\pyAPI\\app.py', reloading
+2022-08-03 15:28:10,082 INFO werkzeug MainThread :  * Restarting with stat
+2022-08-03 15:28:20,021 DEBUG h5py._conv Thread-1 : Creating converter from 3 to 5
+2022-08-03 15:28:20,414 WARNING tensorflow Thread-1 : No training configuration found in the save file, so the model was *not* compiled. Compile it manually.
+2022-08-03 15:29:00,431 INFO werkzeug Thread-3 : 127.0.0.1 - - [03/Aug/2022 15:29:00] "GET /api/v1/processor HTTP/1.1" 200 -
+2022-08-03 15:29:00,812 INFO werkzeug Thread-7 : 127.0.0.1 - - [03/Aug/2022 15:29:00] "GET /favicon.ico HTTP/1.1" 200 -
+2022-08-03 15:29:30,209 INFO werkzeug MainThread :  * Detected change in 'C:\\Users\\bhat970\\OneDrive - PNNL\\Documents\\Work\\netloadforecasting\\pyAPI\\app.py', reloading
+2022-08-03 15:29:31,331 INFO werkzeug MainThread :  * Restarting with stat
+2022-08-03 15:29:40,862 DEBUG h5py._conv Thread-1 : Creating converter from 3 to 5
+2022-08-03 15:29:41,251 WARNING tensorflow Thread-1 : No training configuration found in the save file, so the model was *not* compiled. Compile it manually.
+2022-08-03 15:30:26,788 INFO werkzeug Thread-3 : 127.0.0.1 - - [03/Aug/2022 15:30:26] "GET /api/v1/processor HTTP/1.1" 200 -
+2022-08-03 15:30:27,159 INFO werkzeug Thread-7 : 127.0.0.1 - - [03/Aug/2022 15:30:27] "GET /favicon.ico HTTP/1.1" 200 -
+2022-08-03 15:50:47,452 INFO werkzeug MainThread :  * Detected change in 'C:\\Users\\bhat970\\OneDrive - PNNL\\Documents\\Work\\netloadforecasting\\pyAPI\\app.py', reloading
+2022-08-03 15:50:48,285 INFO werkzeug MainThread :  * Restarting with stat
+2022-08-03 15:50:59,943 DEBUG h5py._conv Thread-1 : Creating converter from 3 to 5
+2022-08-03 15:51:00,413 WARNING tensorflow Thread-1 : No training configuration found in the save file, so the model was *not* compiled. Compile it manually.
+2022-08-03 15:52:10,185 INFO werkzeug Thread-3 : 127.0.0.1 - - [03/Aug/2022 15:52:10] "GET /api/v1/processor HTTP/1.1" 200 -
+2022-08-03 15:52:10,218 INFO werkzeug Thread-4 : 127.0.0.1 - - [03/Aug/2022 15:52:10] "GET /favicon.ico HTTP/1.1" 200 -
+2022-08-03 15:53:08,192 INFO werkzeug MainThread :  * Detected change in 'C:\\Users\\bhat970\\OneDrive - PNNL\\Documents\\Work\\netloadforecasting\\pyAPI\\app.py', reloading
+2022-08-03 15:53:08,951 INFO werkzeug MainThread :  * Restarting with stat
+2022-08-03 15:53:21,802 DEBUG h5py._conv Thread-1 : Creating converter from 3 to 5
+2022-08-03 15:53:22,271 WARNING tensorflow Thread-1 : No training configuration found in the save file, so the model was *not* compiled. Compile it manually.
+2022-08-03 15:54:20,515 INFO werkzeug Thread-4 : 127.0.0.1 - - [03/Aug/2022 15:54:20] "GET /api/v1/processor HTTP/1.1" 200 -
+2022-08-03 15:54:20,896 INFO werkzeug Thread-7 : 127.0.0.1 - - [03/Aug/2022 15:54:20] "GET /favicon.ico HTTP/1.1" 200 -

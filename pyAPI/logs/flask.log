@@ -14422,3 +14422,16 @@
 2022-08-03 16:12:33,635 DEBUG matplotlib.font_manager Thread-3 : findfont: Matching sans\-serif:style=normal:variant=normal:weight=normal:stretch=normal:size=10.0 to DejaVu Sans ('C:\\Users\\bhat970\\AppData\\Local\\Programs\\Python\\Python39\\lib\\site-packages\\matplotlib\\mpl-data\\fonts\\ttf\\DejaVuSans.ttf') with score of 0.050000.
 2022-08-03 16:12:33,738 INFO werkzeug Thread-3 : 127.0.0.1 - - [03/Aug/2022 16:12:33] "GET /api/v1/processor HTTP/1.1" 200 -
 2022-08-03 16:12:34,105 INFO werkzeug Thread-7 : 127.0.0.1 - - [03/Aug/2022 16:12:34] "GET /favicon.ico HTTP/1.1" 200 -
+2022-08-03 16:19:13,343 INFO werkzeug MainThread :  * Detected change in 'C:\\Users\\bhat970\\OneDrive - PNNL\\Documents\\Work\\netloadforecasting\\pyAPI\\app.py', reloading
+2022-08-03 16:19:15,789 INFO werkzeug MainThread :  * Restarting with stat
+2022-08-03 16:19:30,910 DEBUG h5py._conv Thread-1 : Creating converter from 3 to 5
+2022-08-03 16:19:32,729 WARNING tensorflow Thread-1 : No training configuration found in the save file, so the model was *not* compiled. Compile it manually.
+2022-08-03 16:20:16,204 INFO werkzeug Thread-3 : 127.0.0.1 - - [03/Aug/2022 16:20:16] "GET /api/v1/processor HTTP/1.1" 200 -
+2022-08-03 16:20:16,587 INFO werkzeug Thread-7 : 127.0.0.1 - - [03/Aug/2022 16:20:16] "GET /favicon.ico HTTP/1.1" 200 -
+2022-08-03 16:21:03,405 INFO werkzeug Thread-9 : 127.0.0.1 - - [03/Aug/2022 16:21:03] "GET /api/v1/processor HTTP/1.1" 200 -
+2022-08-03 16:21:03,792 INFO werkzeug Thread-12 : 127.0.0.1 - - [03/Aug/2022 16:21:03] "GET /favicon.ico HTTP/1.1" 200 -
+2022-08-03 16:22:05,232 INFO werkzeug Thread-14 : 127.0.0.1 - - [03/Aug/2022 16:22:05] "GET /api/v1/processor HTTP/1.1" 200 -
+2022-08-03 16:22:05,594 INFO werkzeug Thread-17 : 127.0.0.1 - - [03/Aug/2022 16:22:05] "GET /favicon.ico HTTP/1.1" 200 -
+2022-08-03 16:24:40,320 INFO app Thread-20 : {'1. message': 'Program is stable', '2. Number of times executed': 5, '3. Average execution time (seconds)': 23.975, '4. MAE': 0.7959276029070219}
+2022-08-03 16:24:40,322 INFO werkzeug Thread-20 : 127.0.0.1 - - [03/Aug/2022 16:24:40] "GET /api/v1/stability_check?n=5 HTTP/1.1" 200 -
+2022-08-03 16:24:40,790 INFO werkzeug Thread-22 : 127.0.0.1 - - [03/Aug/2022 16:24:40] "GET /favicon.ico HTTP/1.1" 200 -

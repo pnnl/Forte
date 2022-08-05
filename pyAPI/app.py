@@ -333,7 +333,8 @@ def metrics_check():
     dates = [summer_48_hrs, winter_48_hrs]
     solar_penetration_array, start_date_array, end_date_array, time_taken_array, mae_array, mape_array, crps_array, pbb_array = [], [], [], [], [], [], [], []
     for solar_penetration in solar_penetration_levels:
-        for start_date, end_date in dates:
+        for date in dates:
+            start_date, end_date = date[0], date[1]
             resp = processor(start_date, end_date, solar_penetration)
             processor_result = resp.get_json()
             y_pred = processor_result["predicted_net_load"]

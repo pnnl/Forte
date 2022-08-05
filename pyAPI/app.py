@@ -87,15 +87,17 @@ def pbb_calculation(obs, pred):
     pbb = ((len(list(x for x in obs if lower_bound < x < upper_bound)))/len(obs))*100
     return pbb
 ### Loading the models ###
-autoencoder_model = tf.keras.models.load_model(path_parent+"/data/models/autoencoder.h5")
-encoder_model = tf.keras.models.load_model(path_parent+"/data/models/encoder.h5")
-lstm_model = tf.keras.models.load_model(path_parent+"/data/models/model_rnn_probab_nonsol.h5", custom_objects={'NLL': NLL})
+autoencoder_models, encoder_models, lstm_models = {}, {}, {}
+for i in ["0","10","20","50"]:
+    autoencoder_models[i] = tf.keras.models.load_model(path_parent+"/data/models/pen_"+i+"/autoencoder.h5")
+    encoder_models[i] = tf.keras.models.load_model(path_parent+"/data/models/pen_"+i+"/encoder.h5")
+    lstm_models[i] = tf.keras.models.load_model(path_parent+"/data/models/pen_"+i+"/model_rnn_probab_nonsol.h5", custom_objects={'NLL': NLL})
 
 ### Pipeline functions and others (non-callable externally) ###
 
-def prepare_input(start_date, end_date, filename):
+def prepare_input(start_date, end_date, solar_penetration):
     t = time.process_time()
-    A=pd.read_csv(path_parent+'/data/inputs/'+filename) # Reading file
+    A=pd.read_csv(path_parent+"/data/inputs/df1_solar_"+str(solar_penetration)+"_pen.csv") # Reading file
     my_data = A.loc[(A['min_t'] >= start_date) & (A['min_t'] < end_date)]
     #my_data = A
     my_data=my_data.drop(['min_t'], axis=1) # Drop this axis
@@ -113,7 +115,7 @@ def prepare_input(start_date, end_date, filename):
         y_ground.append(my_data.iloc[i+48]['power'])   # Original code
         #y_ground.append(my_data.iloc[i]['power'])   
     y_ground=np.asarray(y_ground)
-    pd.DataFrame(y_ground).to_csv(path_parent+'/data/outputs/y_ground.csv', header=None, index=None)
+    pd.DataFrame(y_ground).to_csv(path_parent+"/data/outputs/pen_"+str(solar_penetration)+"/y_ground.csv", header=None, index=None)
 
     temperature = []
     for i in range(len(sequence_input)):
@@ -137,22 +139,24 @@ def prepare_input(start_date, end_date, filename):
     elapsed_time_prepare_input = time.process_time() - t
     return sequence_input, y_ground, y_prev, temperature, humidity, apparent_power, elapsed_time_prepare_input
 
-def autoencoder_func(sequence_input):
+def autoencoder_func(sequence_input, solar_penetration):
     t = time.process_time()
     scaler_target = Scaler1D().fit(sequence_input)
     seq_inp_norm = scaler_target.transform(sequence_input)
     #pred_train=autoencoder_model.predict(seq_inp_norm) # this one does not work
+    encoder_model = encoder_models[str(solar_penetration)]
     pred_train=encoder_model.predict(seq_inp_norm)
     #print(pred_train)
-    #pd.DataFrame(pred_train).to_csv(path_parent+'/data/outputs/pred_train.csv', header=None, index=None)
+    #pd.DataFrame(pred_train).to_csv(path_parent+'/data/outputs/pen_"+str(solar_penetration)+"/pred_train.csv', header=None, index=None)
     elapsed_time_autoencoder = time.process_time() - t
     return pred_train, elapsed_time_autoencoder
 
-def kPF_func(pred_train):
+def kPF_func(pred_train, solar_penetration):
     t = time.process_time()
     nsamples = 10000
     gamma = 10
-    A = np.load('dict.npy', allow_pickle=True).item()
+    #A = np.load(path_parent+"/data/models/pen_"+str(solar_penetration)+"/dict.npy", allow_pickle=True).item()
+    A = np.load("dict.npy", allow_pickle=True).item()
     Kinv = A['kinv']
     L = A['L']
     z = A['z']
@@ -178,7 +182,7 @@ def kPF_func(pred_train):
     elapsed_time_kpf = time.process_time() - t
     return latent_gen, elapsed_time_kpf
 
-def lstm_func(latent_gen, sequence_input, pred_train, y_ground, y_prev):
+def lstm_func(latent_gen, sequence_input, pred_train, y_ground, y_prev, solar_penetration):
     t = time.process_time()
     aa = (latent_gen)
     #total_train=int(len(sequence_input) - 48) # did not use this since we are not using training data
@@ -197,14 +201,15 @@ def lstm_func(latent_gen, sequence_input, pred_train, y_ground, y_prev):
     X=total_norm_train[:,0:41].reshape((total_norm_train.shape[0],41,1))
     Y=total_norm_train[:,41]
 
+    lstm_model = lstm_models[str(solar_penetration)]
     y_pred = lstm_model.predict(X)
     y_pred=y_pred*(np.max(total_train_data[:,41])-np.min(total_train_data[:,41]))+np.min(total_train_data[:,41])
     Y_test=Y*(np.max(total_train_data[:,41])-np.min(total_train_data[:,41]))+np.min(total_train_data[:,41])
     #y_pred = y_pred.flatten()
     #print(y_pred, Y_test)
     print(y_pred.shape, Y_test.shape)
-    np.savetxt(path_parent+'/data/outputs/y_pred.csv', y_pred, delimiter=",")
-    np.savetxt(path_parent+'/data/outputs/Y_test.csv', Y_test, delimiter=",")
+    np.savetxt(path_parent+"/data/outputs/pen_"+str(solar_penetration)+"/y_pred.csv", y_pred, delimiter=",")
+    np.savetxt(path_parent+"/data/outputs/pen_"+str(solar_penetration)+"/Y_test.csv", Y_test, delimiter=",")
     mae = mean_absolute_error(Y_test, y_pred)
     # mape = mean_absolute_percentage_error(Y_test, y_pred)
     # crps = ps.crps_ensemble(y_pred.flatten(), Y_test).mean()
@@ -214,7 +219,7 @@ def lstm_func(latent_gen, sequence_input, pred_train, y_ground, y_prev):
     #return y_pred, Y_test, mae, mape, crps, pbb, mse, elapsed_time_lstm
     return y_pred, Y_test, mae, elapsed_time_lstm
 
-def generate_comparison_image(y_pred, Y_test):
+def generate_comparison_image(y_pred, Y_test, solar_penetration):
     """
     This function generates an image(through matplotlib) comparing 
     the actual and predicted net load values through line charts
@@ -233,7 +238,7 @@ def generate_comparison_image(y_pred, Y_test):
     plt.title("Comparison of Net Load Actual vs. Prediction")
     plt.xlabel("Time Interval Index")
     plt.ylabel("Net Load (kW)")
-    plt.savefig(path_parent+'/data/outputs/'+'comparison.png')
+    plt.savefig(path_parent+"/data/outputs/pen_"+str(solar_penetration)+"/comparison.png")
     return 1
 
 def validate_start_date(start_date):
@@ -256,12 +261,12 @@ def processor():
         end_date = req["end_date"]
         solar_penetration = req["solar_penetration"]
     filename = "df1_solar_"+str(solar_penetration)+"_pen.csv"
-    sequence_input, y_ground, y_prev, temperature, humidity, apparent_power, elapsed_time_prepare_input = prepare_input(start_date, end_date, filename)
-    pred_train, elapsed_time_autoencoder = autoencoder_func(sequence_input)
-    latent_gen, elapsed_time_kpf = kPF_func(pred_train)
+    sequence_input, y_ground, y_prev, temperature, humidity, apparent_power, elapsed_time_prepare_input = prepare_input(start_date, end_date, solar_penetration)
+    pred_train, elapsed_time_autoencoder = autoencoder_func(sequence_input, solar_penetration)
+    latent_gen, elapsed_time_kpf = kPF_func(pred_train, solar_penetration)
     #y_pred, Y_test, mae, mape, crps, pbb, mse, elapsed_time_lstm = lstm_func(latent_gen, sequence_input, pred_train, y_ground, y_prev)
-    y_pred, Y_test, mae, elapsed_time_lstm = lstm_func(latent_gen, sequence_input, pred_train, y_ground, y_prev)
-    #generate_comparison_image(y_pred, Y_test)
+    y_pred, Y_test, mae, elapsed_time_lstm = lstm_func(latent_gen, sequence_input, pred_train, y_ground, y_prev, solar_penetration)
+    #generate_comparison_image(y_pred, Y_test, solar_penetration)
     elapsed_time_total = time.process_time() - t
     #final_result ={"1. message":"Program executed", "2. time taken (prepare input)": elapsed_time_prepare_input, "3. time taken (autoencoder)":elapsed_time_autoencoder, "4. time taken (kPF)": elapsed_time_kpf, "5. time taken (LSTM)": elapsed_time_lstm, "6. total time taken":elapsed_time_total, "7. MAE": mae, "8. MAPE": mape, "9. CRPS": crps, "10. PBB": pbb, "11. MSE": mse}
     final_result ={"1. message":"Program executed", "2. time taken (prepare input)": elapsed_time_prepare_input, "3. time taken (autoencoder)":elapsed_time_autoencoder, "4. time taken (kPF)": elapsed_time_kpf, "5. time taken (LSTM)": elapsed_time_lstm, "6. total time taken":elapsed_time_total, "7. MAE": mae, "predicted_net_load":y_pred.flatten().tolist(), "actual_net_load": Y_test.tolist(), "temperature":temperature, "humidity":humidity, "apparent_power":apparent_power}

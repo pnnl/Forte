@@ -14579,3 +14579,37 @@
 2022-08-03 19:38:04,974 WARNING tensorflow Thread-1 : No training configuration found in the save file, so the model was *not* compiled. Compile it manually.
 2022-08-03 19:38:28,541 INFO werkzeug Thread-3 : 127.0.0.1 - - [03/Aug/2022 19:38:28] "GET /api/v1/processor HTTP/1.1" 200 -
 2022-08-03 19:38:28,975 INFO werkzeug Thread-7 : 127.0.0.1 - - [03/Aug/2022 19:38:28] "GET /favicon.ico HTTP/1.1" 200 -
+2022-08-04 12:12:04,247 DEBUG h5py._conv MainThread : Creating converter from 3 to 5
+2022-08-04 12:12:04,963 WARNING tensorflow MainThread : No training configuration found in the save file, so the model was *not* compiled. Compile it manually.
+2022-08-04 12:12:06,129 INFO werkzeug MainThread :  * Running on http://127.0.0.1:5000 (Press CTRL+C to quit)
+2022-08-04 12:12:06,132 INFO werkzeug MainThread :  * Restarting with stat
+2022-08-04 12:12:28,151 DEBUG h5py._conv Thread-1 : Creating converter from 3 to 5
+2022-08-04 12:12:28,765 WARNING tensorflow Thread-1 : No training configuration found in the save file, so the model was *not* compiled. Compile it manually.
+2022-08-04 12:13:08,459 INFO werkzeug Thread-3 : 127.0.0.1 - - [04/Aug/2022 12:13:08] "GET /api/v1/processor HTTP/1.1" 200 -
+2022-08-04 12:13:08,962 INFO werkzeug Thread-7 : 127.0.0.1 - - [04/Aug/2022 12:13:08] "GET /favicon.ico HTTP/1.1" 200 -
+2022-08-05 17:15:27,259 DEBUG h5py._conv MainThread : Creating converter from 3 to 5
+2022-08-05 17:15:27,993 WARNING tensorflow MainThread : No training configuration found in the save file, so the model was *not* compiled. Compile it manually.
+2022-08-05 17:15:29,366 WARNING tensorflow MainThread : No training configuration found in the save file, so the model was *not* compiled. Compile it manually.
+2022-08-05 17:15:31,565 WARNING tensorflow MainThread : No training configuration found in the save file, so the model was *not* compiled. Compile it manually.
+2022-08-05 17:15:32,961 WARNING tensorflow MainThread : No training configuration found in the save file, so the model was *not* compiled. Compile it manually.
+2022-08-05 17:15:33,666 INFO werkzeug MainThread :  * Running on http://127.0.0.1:5000 (Press CTRL+C to quit)
+2022-08-05 17:15:33,666 INFO werkzeug MainThread :  * Restarting with stat
+2022-08-05 17:15:48,721 DEBUG h5py._conv Thread-1 : Creating converter from 3 to 5
+2022-08-05 17:15:49,265 WARNING tensorflow Thread-1 : No training configuration found in the save file, so the model was *not* compiled. Compile it manually.
+2022-08-05 17:15:50,534 WARNING tensorflow Thread-1 : No training configuration found in the save file, so the model was *not* compiled. Compile it manually.
+2022-08-05 17:15:51,589 WARNING tensorflow Thread-1 : No training configuration found in the save file, so the model was *not* compiled. Compile it manually.
+2022-08-05 17:15:52,757 WARNING tensorflow Thread-1 : No training configuration found in the save file, so the model was *not* compiled. Compile it manually.
+2022-08-05 17:16:35,339 INFO werkzeug Thread-3 : 127.0.0.1 - - [05/Aug/2022 17:16:35] "GET /api/v1/processor HTTP/1.1" 200 -
+2022-08-05 17:16:35,815 INFO werkzeug Thread-7 : 127.0.0.1 - - [05/Aug/2022 17:16:35] "GET /favicon.ico HTTP/1.1" 200 -
+2022-08-05 17:19:19,360 INFO werkzeug MainThread :  * Detected change in 'C:\\Users\\bhat970\\OneDrive - PNNL\\Documents\\Work\\netloadforecasting\\pyAPI\\app.py', reloading
+2022-08-05 17:19:20,716 INFO werkzeug MainThread :  * Restarting with stat
+2022-08-05 17:19:33,941 DEBUG h5py._conv Thread-1 : Creating converter from 3 to 5
+2022-08-05 17:19:34,311 WARNING tensorflow Thread-1 : No training configuration found in the save file, so the model was *not* compiled. Compile it manually.
+2022-08-05 17:19:35,297 WARNING tensorflow Thread-1 : No training configuration found in the save file, so the model was *not* compiled. Compile it manually.
+2022-08-05 17:19:36,477 WARNING tensorflow Thread-1 : No training configuration found in the save file, so the model was *not* compiled. Compile it manually.
+2022-08-05 17:19:37,695 WARNING tensorflow Thread-1 : No training configuration found in the save file, so the model was *not* compiled. Compile it manually.
+2022-08-05 17:20:03,093 INFO werkzeug Thread-3 : 127.0.0.1 - - [05/Aug/2022 17:20:03] "GET /api/v1/processor HTTP/1.1" 200 -
+2022-08-05 17:20:03,496 INFO werkzeug Thread-7 : 127.0.0.1 - - [05/Aug/2022 17:20:03] "GET /favicon.ico HTTP/1.1" 200 -
+2022-08-05 17:23:01,084 INFO app Thread-9 : {'1. message': 'Program is stable', '2. Number of times executed': 5, '3. Average execution time (seconds)': 25.859375, '4. MAE': 0.7959276029070219}
+2022-08-05 17:23:01,085 INFO werkzeug Thread-9 : 127.0.0.1 - - [05/Aug/2022 17:23:01] "GET /api/v1/stability_check?n=5 HTTP/1.1" 200 -
+2022-08-05 17:23:01,476 INFO werkzeug Thread-12 : 127.0.0.1 - - [05/Aug/2022 17:23:01] "GET /favicon.ico HTTP/1.1" 200 -

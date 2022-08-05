@@ -16,7 +16,7 @@ from scipy.io import loadmat
 from keras.layers import Input, Dense, LSTM, Reshape, Conv1D, MaxPooling1D, Flatten,UpSampling1D,Conv1DTranspose
 from keras.models import Model
 from sklearn.metrics import mean_absolute_error, mean_squared_error, mean_absolute_percentage_error
-#import properscoring as ps
+import properscoring as ps
 import matplotlib.pyplot as plt
 from datetime import datetime, timedelta
 
@@ -79,6 +79,36 @@ def NLL(y, distr):
 def kernel(x, y):
     return math.exp(-np.linalg.norm(x - y)/2)
 
+#deprecated
+def kPF_func_calculation(solar_penetration):
+    nsamples = 10000
+    gamma = 10
+    A = np.load(path_parent+"/data/models/pen_"+str(solar_penetration)+"/dict.npy", allow_pickle=True).item()
+    #A = np.load("dict.npy", allow_pickle=True).item()
+    Kinv = A['kinv']
+    L = A['L']
+    z = A['z']
+    x = A['x']
+    ntrain = x.shape[0]
+    latent_dim = x.shape[1]
+    nz = np.random.multivariate_normal(np.zeros((latent_dim,)), np.eye(latent_dim), nsamples)
+
+    nv = np.zeros((ntrain, nsamples))
+    for i in range(ntrain):
+        for j in range(nsamples):
+            nv[i][j] = kernel(z[i], nz[j])
+    s = L@Kinv@nv   #matrix multiplication
+    ind = np.argsort(-s, 0)[:gamma,:]
+    latent_gen = np.zeros((nsamples, latent_dim))
+    for i in range(nsamples):
+        _sum = 0
+        for j in range(gamma):
+            latent_gen[i] += s[ind[j][i]][i] * x[ind[j][i]]
+            _sum += s[ind[j][i]][i]
+        latent_gen[i] /= _sum
+    #print(latent_gen)
+    return latent_gen
+
 def pbb_calculation(obs, pred):
     mean = np.mean(pred)
     sd = np.std(pred)
@@ -87,12 +117,19 @@ def pbb_calculation(obs, pred):
     pbb = ((len(list(x for x in obs if lower_bound < x < upper_bound)))/len(obs))*100
     return pbb
 ### Loading the models ###
-autoencoder_models, encoder_models, lstm_models = {}, {}, {}
-for i in ["0","10","20","50"]:
+t = time.process_time()
+print("#### Models and data loading: Started ####")
+autoencoder_models, encoder_models, lstm_models, latent_gens = {}, {}, {}, {}
+solar_penetration_levels = ["50"]
+for i in solar_penetration_levels:
     autoencoder_models[i] = tf.keras.models.load_model(path_parent+"/data/models/pen_"+i+"/autoencoder.h5")
     encoder_models[i] = tf.keras.models.load_model(path_parent+"/data/models/pen_"+i+"/encoder.h5")
     lstm_models[i] = tf.keras.models.load_model(path_parent+"/data/models/pen_"+i+"/model_rnn_probab_nonsol.h5", custom_objects={'NLL': NLL})
-
+    latent_gens[i] = np.load(path_parent+"/data/models/pen_"+i+"/latent_gen.npy")
+elapsed_time_model_load = time.process_time() - t
+loading_message = "#### Models and data loading: Completed in %f seconds or %f minutes ####" %(elapsed_time_model_load, (elapsed_time_model_load/60))
+print(loading_message)
+app.logger.info(loading_message)
 ### Pipeline functions and others (non-callable externally) ###
 
 def prepare_input(start_date, end_date, solar_penetration):
@@ -153,32 +190,7 @@ def autoencoder_func(sequence_input, solar_penetration):
 
 def kPF_func(pred_train, solar_penetration):
     t = time.process_time()
-    nsamples = 10000
-    gamma = 10
-    #A = np.load(path_parent+"/data/models/pen_"+str(solar_penetration)+"/dict.npy", allow_pickle=True).item()
-    A = np.load("dict.npy", allow_pickle=True).item()
-    Kinv = A['kinv']
-    L = A['L']
-    z = A['z']
-    x = A['x']
-    ntrain = x.shape[0]
-    latent_dim = x.shape[1]
-    nz = np.random.multivariate_normal(np.zeros((latent_dim,)), np.eye(latent_dim), nsamples)
-
-    nv = np.zeros((ntrain, nsamples))
-    for i in range(ntrain):
-        for j in range(nsamples):
-            nv[i][j] = kernel(z[i], nz[j])
-    s = L@Kinv@nv   #matrix multiplication
-    ind = np.argsort(-s, 0)[:gamma,:]
-    latent_gen = np.zeros((nsamples, latent_dim))
-    for i in range(nsamples):
-        _sum = 0
-        for j in range(gamma):
-            latent_gen[i] += s[ind[j][i]][i] * x[ind[j][i]]
-            _sum += s[ind[j][i]][i]
-        latent_gen[i] /= _sum
-    #print(latent_gen)
+    latent_gen = latent_gens[str(solar_penetration)]
     elapsed_time_kpf = time.process_time() - t
     return latent_gen, elapsed_time_kpf
 
@@ -219,7 +231,7 @@ def lstm_func(latent_gen, sequence_input, pred_train, y_ground, y_prev, solar_pe
     #return y_pred, Y_test, mae, mape, crps, pbb, mse, elapsed_time_lstm
     return y_pred, Y_test, mae, elapsed_time_lstm
 
-def generate_comparison_image(y_pred, Y_test, solar_penetration):
+def generate_comparison_image(y_pred, Y_test, solar_penetration, purpose):
     """
     This function generates an image(through matplotlib) comparing 
     the actual and predicted net load values through line charts
@@ -232,13 +244,17 @@ def generate_comparison_image(y_pred, Y_test, solar_penetration):
     Image: saved in the folder /data/outputs/comparison.png 
     (path is relative to the project folder)
     """
+    plt.rcParams["figure.figsize"] = (20,10)
+    plt.rcParams.update({'font.size': 18})
     plt.plot(Y_test, label="actual")
-    plt.plot(y_pred.flatten(), label="prediction")
+    if(purpose == "processor"): y_pred = y_pred.flatten()
+    plt.plot(y_pred, label="prediction")
     plt.legend(loc="upper right")
-    plt.title("Comparison of Net Load Actual vs. Prediction")
+    plt.title("Comparison of Net Load Actual vs. Prediction at Solar Penetration="+str(solar_penetration)+"%")
     plt.xlabel("Time Interval Index")
     plt.ylabel("Net Load (kW)")
-    plt.savefig(path_parent+"/data/outputs/pen_"+str(solar_penetration)+"/comparison.png")
+    plt.savefig(path_parent+"/data/outputs/pen_"+str(solar_penetration)+"/comparison.png", facecolor='w')
+    plt.rcParams["figure.figsize"] = plt.rcParamsDefault["figure.figsize"]
     return 1
 
 def validate_start_date(start_date):
@@ -250,23 +266,23 @@ def validate_start_date(start_date):
 ### Callable functions ###
 
 @app.route('/api/v1/processor',methods = ['POST', 'GET'])
-def processor():
+def processor(start_date="2020-05-01 00:00:00", end_date="2020-05-03 00:00:00", solar_penetration=50):
     t = time.process_time()
-    start_date, end_date, solar_penetration = "2020-05-01 00:00:00", "2020-05-03 00:00:00", 50
+    #start_date, end_date, solar_penetration = "2020-05-01 00:00:00", "2020-05-03 00:00:00", 50
     start_date = validate_start_date(start_date)
-    print(start_date)
     if(request.is_json):
         req = request.get_json()
+        print("Reading JSON")
         start_date = validate_start_date(req["start_date"])
         end_date = req["end_date"]
         solar_penetration = req["solar_penetration"]
-    filename = "df1_solar_"+str(solar_penetration)+"_pen.csv"
+    print(start_date)
     sequence_input, y_ground, y_prev, temperature, humidity, apparent_power, elapsed_time_prepare_input = prepare_input(start_date, end_date, solar_penetration)
     pred_train, elapsed_time_autoencoder = autoencoder_func(sequence_input, solar_penetration)
     latent_gen, elapsed_time_kpf = kPF_func(pred_train, solar_penetration)
     #y_pred, Y_test, mae, mape, crps, pbb, mse, elapsed_time_lstm = lstm_func(latent_gen, sequence_input, pred_train, y_ground, y_prev)
     y_pred, Y_test, mae, elapsed_time_lstm = lstm_func(latent_gen, sequence_input, pred_train, y_ground, y_prev, solar_penetration)
-    #generate_comparison_image(y_pred, Y_test, solar_penetration)
+    #generate_comparison_image(y_pred, Y_test, solar_penetration, "processor")
     elapsed_time_total = time.process_time() - t
     #final_result ={"1. message":"Program executed", "2. time taken (prepare input)": elapsed_time_prepare_input, "3. time taken (autoencoder)":elapsed_time_autoencoder, "4. time taken (kPF)": elapsed_time_kpf, "5. time taken (LSTM)": elapsed_time_lstm, "6. total time taken":elapsed_time_total, "7. MAE": mae, "8. MAPE": mape, "9. CRPS": crps, "10. PBB": pbb, "11. MSE": mse}
     final_result ={"1. message":"Program executed", "2. time taken (prepare input)": elapsed_time_prepare_input, "3. time taken (autoencoder)":elapsed_time_autoencoder, "4. time taken (kPF)": elapsed_time_kpf, "5. time taken (LSTM)": elapsed_time_lstm, "6. total time taken":elapsed_time_total, "7. MAE": mae, "predicted_net_load":y_pred.flatten().tolist(), "actual_net_load": Y_test.tolist(), "temperature":temperature, "humidity":humidity, "apparent_power":apparent_power}
@@ -309,6 +325,33 @@ def stability_check():
     app.logger.info(message)
     return message
 
+@app.route("/api/v1/metrics_check", methods = ['POST', 'GET'])
+def metrics_check():
+    global solar_penetration_levels
+    summer_48_hrs = ["2020-05-01 00:00:00", "2020-05-03 00:00:00"]
+    winter_48_hrs = ["2020-12-01 00:00:00", "2020-12-03 00:00:00"]
+    dates = [summer_48_hrs, winter_48_hrs]
+    solar_penetration_array, start_date_array, end_date_array, time_taken_array, mae_array, mape_array, crps_array, pbb_array = [], [], [], [], [], [], [], []
+    for solar_penetration in solar_penetration_levels:
+        for start_date, end_date in dates:
+            resp = processor(start_date, end_date, solar_penetration)
+            processor_result = resp.get_json()
+            y_pred = processor_result["predicted_net_load"]
+            Y_test = processor_result["actual_net_load"]
+            mae_array.append(processor_result["7. MAE"])
+            mape_array.append(mean_absolute_percentage_error(Y_test, y_pred))
+            crps_array.append(ps.crps_ensemble(y_pred, Y_test).mean())
+            pbb_array.append(pbb_calculation(Y_test, y_pred))
+            time_taken_array.append(processor_result["6. total time taken"])
+            solar_penetration_array.append(solar_penetration)
+            start_date_array.append(start_date)
+            end_date_array.append(end_date)
+            generate_comparison_image(y_pred, Y_test, solar_penetration, "metrics_check")
+    d = {"Solar_Penetration": solar_penetration_array, "Start_date": start_date_array, "End_date": end_date_array,
+            "Time_taken": time_taken_array, "MAE": mae_array, "MAPE": mape_array, "CRPS": crps_array, "PBB":pbb_array}   
+    df = pd.DataFrame(d)
+    df.to_csv(path_parent+"/metrics.csv", index=False)             
+    return "Output saved at metrics.csv"
 @app.errorhandler(404)
 def handle_404(e):
     # handle all other routes here

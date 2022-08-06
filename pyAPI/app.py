@@ -231,7 +231,7 @@ def lstm_func(latent_gen, sequence_input, pred_train, y_ground, y_prev, solar_pe
     #return y_pred, Y_test, mae, mape, crps, pbb, mse, elapsed_time_lstm
     return y_pred, Y_test, mae, elapsed_time_lstm
 
-def generate_comparison_image(y_pred, Y_test, solar_penetration, purpose):
+def generate_comparison_image(y_pred, Y_test, solar_penetration, purpose, start_date, end_date):
     """
     This function generates an image(through matplotlib) comparing 
     the actual and predicted net load values through line charts
@@ -244,6 +244,8 @@ def generate_comparison_image(y_pred, Y_test, solar_penetration, purpose):
     Image: saved in the folder /data/outputs/comparison.png 
     (path is relative to the project folder)
     """
+    safe_file_name = start_date.replace(" ", "T").replace(":","")+"_to_"+end_date.replace(" ", "T").replace(":","")
+    global plt
     plt.rcParams["figure.figsize"] = (20,10)
     plt.rcParams.update({'font.size': 18})
     plt.plot(Y_test, label="actual")
@@ -251,10 +253,11 @@ def generate_comparison_image(y_pred, Y_test, solar_penetration, purpose):
     plt.plot(y_pred, label="prediction")
     plt.legend(loc="upper right")
     plt.title("Comparison of Net Load Actual vs. Prediction at Solar Penetration="+str(solar_penetration)+"%")
-    plt.xlabel("Time Interval Index")
+    plt.xlabel("Time Intervals from %s to %s" %(start_date, end_date))
     plt.ylabel("Net Load (kW)")
-    plt.savefig(path_parent+"/data/outputs/pen_"+str(solar_penetration)+"/comparison.png", facecolor='w')
+    plt.savefig(path_parent+"/data/outputs/pen_"+str(solar_penetration)+"/comparison_"+safe_file_name+".png", facecolor='w')
     plt.rcParams["figure.figsize"] = plt.rcParamsDefault["figure.figsize"]
+    plt.clf()
     return 1
 
 def validate_start_date(start_date):
@@ -282,7 +285,7 @@ def processor(start_date="2020-05-01 00:00:00", end_date="2020-05-03 00:00:00", 
     latent_gen, elapsed_time_kpf = kPF_func(pred_train, solar_penetration)
     #y_pred, Y_test, mae, mape, crps, pbb, mse, elapsed_time_lstm = lstm_func(latent_gen, sequence_input, pred_train, y_ground, y_prev)
     y_pred, Y_test, mae, elapsed_time_lstm = lstm_func(latent_gen, sequence_input, pred_train, y_ground, y_prev, solar_penetration)
-    #generate_comparison_image(y_pred, Y_test, solar_penetration, "processor")
+    #generate_comparison_image(y_pred, Y_test, solar_penetration, "processor", start_date, end_date)
     elapsed_time_total = time.process_time() - t
     #final_result ={"1. message":"Program executed", "2. time taken (prepare input)": elapsed_time_prepare_input, "3. time taken (autoencoder)":elapsed_time_autoencoder, "4. time taken (kPF)": elapsed_time_kpf, "5. time taken (LSTM)": elapsed_time_lstm, "6. total time taken":elapsed_time_total, "7. MAE": mae, "8. MAPE": mape, "9. CRPS": crps, "10. PBB": pbb, "11. MSE": mse}
     final_result ={"1. message":"Program executed", "2. time taken (prepare input)": elapsed_time_prepare_input, "3. time taken (autoencoder)":elapsed_time_autoencoder, "4. time taken (kPF)": elapsed_time_kpf, "5. time taken (LSTM)": elapsed_time_lstm, "6. total time taken":elapsed_time_total, "7. MAE": mae, "predicted_net_load":y_pred.flatten().tolist(), "actual_net_load": Y_test.tolist(), "temperature":temperature, "humidity":humidity, "apparent_power":apparent_power}
@@ -331,7 +334,7 @@ def metrics_check():
     summer_48_hrs = ["2020-05-01 00:00:00", "2020-05-03 00:00:00"]
     winter_48_hrs = ["2020-12-01 00:00:00", "2020-12-03 00:00:00"]
     dates = [summer_48_hrs, winter_48_hrs]
-    solar_penetration_array, start_date_array, end_date_array, time_taken_array, mae_array, mape_array, crps_array, pbb_array = [], [], [], [], [], [], [], []
+    solar_penetration_array, start_date_array, end_date_array, season_array, time_taken_array, mae_array, mape_array, crps_array, pbb_array = [], [], [], [], [], [], [], [], []
     for solar_penetration in solar_penetration_levels:
         for date in dates:
             start_date, end_date = date[0], date[1]
@@ -347,9 +350,11 @@ def metrics_check():
             solar_penetration_array.append(solar_penetration)
             start_date_array.append(start_date)
             end_date_array.append(end_date)
-            generate_comparison_image(y_pred, Y_test, solar_penetration, "metrics_check")
+            season = "Summer" if(dates.index(date) == 0) else "Winter"
+            season_array.append(season)
+            generate_comparison_image(y_pred, Y_test, solar_penetration, "metrics_check", start_date, end_date)
     d = {"Solar_Penetration": solar_penetration_array, "Start_date": start_date_array, "End_date": end_date_array,
-            "Time_taken": time_taken_array, "MAE": mae_array, "MAPE": mape_array}#, "CRPS": crps_array, "PBB":pbb_array}   
+            "Season": season_array, "Time_taken": time_taken_array, "MAE": mae_array, "MAPE": mape_array}#, "CRPS": crps_array, "PBB":pbb_array}   
     df = pd.DataFrame(d)
     df.to_csv(path_parent+"/metrics.csv", index=False)             
     return "Output saved at metrics.csv"

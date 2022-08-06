@@ -120,7 +120,7 @@ def pbb_calculation(obs, pred):
 t = time.process_time()
 print("#### Models and data loading: Started ####")
 autoencoder_models, encoder_models, lstm_models, latent_gens = {}, {}, {}, {}
-solar_penetration_levels = ["50"]
+solar_penetration_levels = ["10","20","50"]
 for i in solar_penetration_levels:
     autoencoder_models[i] = tf.keras.models.load_model(path_parent+"/data/models/pen_"+i+"/autoencoder.h5")
     encoder_models[i] = tf.keras.models.load_model(path_parent+"/data/models/pen_"+i+"/encoder.h5")

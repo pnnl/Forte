@@ -116,6 +116,7 @@ def pbb_calculation(obs, pred):
     lower_bound = mean -sd
     pbb = ((len(list(x for x in obs if lower_bound < x < upper_bound)))/len(obs))*100
     return pbb
+
 ### Loading the models ###
 t = time.process_time()
 print("#### Models and data loading: Started ####")
@@ -130,6 +131,7 @@ elapsed_time_model_load = time.process_time() - t
 loading_message = "#### Models and data loading: Completed in %f seconds or %f minutes ####" %(elapsed_time_model_load, (elapsed_time_model_load/60))
 print(loading_message)
 app.logger.info(loading_message)
+
 ### Pipeline functions and others (non-callable externally) ###
 
 def prepare_input(start_date, end_date, solar_penetration):
@@ -310,9 +312,19 @@ def stability_check():
     Output:
     JSON output with the stability result, n, and average execution time
     """
-    time_array, mae_array, mape_array, crps_array, pbb_array, answer = [], [], [], [], [], ""
-    n = request.args.get('n', default = 3, type = int)
+    time_array, mae_array, mape_array, crps_array, pbb_array, answer, errors = [], [], [], [], [], "", ["None"]
+    n = request.args.get('n') 
+    try:
+        n = int(n)
+        if(n>500): raise Exception("High value of n")
+    except Exception as e:
+        n = 3
+        if(str(e) == "High value of n"): errors.append("Too high value for n, hence using the default value of 3")
+        else: errors.append("Incorrect value for n, hence using the default value of 3")   
     pen = request.args.get('pen', default =50, type = int)
+    if(str(pen) not in solar_penetration_levels):
+        pen =50 # handling errorneous inputs
+        errors.append("Incorrect solar penetration level sent, hence using the default level 50%")
     start_date="2020-05-01 00:00:00"
     end_date="2020-05-03 00:00:00"
     for i in range(n):
@@ -326,9 +338,11 @@ def stability_check():
         # pbb_array.append(output["10. PBB"])
     #if((len(set(mae_array)) == 1) & (len(set(mape_array)) == 1) & (len(set(crps_array)) == 1) & (len(set(pbb_array)) == 1)): answer = "Program is stable"
     if((len(set(mae_array)) == 1)): answer = "Program is stable"
-    else: answer = "Program is NOT stable"  
+    else: answer = "Program is NOT stable"
+    if(len(errors)>1): errors.pop(0) # Removing "None" if there are errors
+    error_message = "; ".join(errors) 
     #message={"1. message": answer, "2. Number of times executed": n, "3. Average execution time (seconds)": sum(time_array)/len(time_array), "4. MAE": mae_array[0], "5. MAPE": mape_array[0], "6. CRPS": crps_array[0], "7. PBB": pbb_array[0]}
-    message={"1. message": answer, "2. Number of times executed": n, "3. Solar penetration level (%)": pen, "4. Average execution time (seconds)": sum(time_array)/len(time_array), "5. MAE": mae_array[0]}
+    message={"1. message": answer, "2. Number of times executed": n, "3. Solar penetration level (%)": pen, "4. Average execution time (seconds)": sum(time_array)/len(time_array), "5. MAE": mae_array[0], "6. Errors": error_message}
     app.logger.info(message)
     return message
 

@@ -246,6 +246,7 @@ def generate_comparison_image(y_pred, Y_test, solar_penetration, purpose, start_
     """
     safe_file_name = start_date.replace(" ", "T").replace(":","")+"_to_"+end_date.replace(" ", "T").replace(":","")
     global plt
+    plt.switch_backend('agg') # Saves from the error "main not in main"
     plt.rcParams["figure.figsize"] = (20,10)
     plt.rcParams.update({'font.size': 18})
     plt.plot(Y_test, label="actual")

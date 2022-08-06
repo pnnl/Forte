@@ -349,7 +349,7 @@ def metrics_check():
             end_date_array.append(end_date)
             generate_comparison_image(y_pred, Y_test, solar_penetration, "metrics_check")
     d = {"Solar_Penetration": solar_penetration_array, "Start_date": start_date_array, "End_date": end_date_array,
-            "Time_taken": time_taken_array, "MAE": mae_array, "MAPE": mape_array, "CRPS": crps_array, "PBB":pbb_array}   
+            "Time_taken": time_taken_array, "MAE": mae_array, "MAPE": mape_array}#, "CRPS": crps_array, "PBB":pbb_array}   
     df = pd.DataFrame(d)
     df.to_csv(path_parent+"/metrics.csv", index=False)             
     return "Output saved at metrics.csv"

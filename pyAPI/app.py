@@ -120,7 +120,7 @@ def pbb_calculation(obs, pred):
 t = time.process_time()
 print("#### Models and data loading: Started ####")
 autoencoder_models, encoder_models, lstm_models, latent_gens = {}, {}, {}, {}
-solar_penetration_levels = ["10","20","50"]
+solar_penetration_levels = ["0","10","20","50"]
 for i in solar_penetration_levels:
     autoencoder_models[i] = tf.keras.models.load_model(path_parent+"/data/models/pen_"+i+"/autoencoder.h5")
     encoder_models[i] = tf.keras.models.load_model(path_parent+"/data/models/pen_"+i+"/encoder.h5")
@@ -312,9 +312,12 @@ def stability_check():
     """
     time_array, mae_array, mape_array, crps_array, pbb_array, answer = [], [], [], [], [], ""
     n = request.args.get('n', default = 3, type = int)
+    pen = request.args.get('pen', default =50, type = int)
+    start_date="2020-05-01 00:00:00"
+    end_date="2020-05-03 00:00:00"
     for i in range(n):
         print("Stability Check Round %d" %i)
-        output = processor()
+        output = processor(start_date, end_date, pen)
         output = output.get_json()
         time_array.append(output["6. total time taken"])
         mae_array.append(output["7. MAE"])
@@ -325,7 +328,7 @@ def stability_check():
     if((len(set(mae_array)) == 1)): answer = "Program is stable"
     else: answer = "Program is NOT stable"  
     #message={"1. message": answer, "2. Number of times executed": n, "3. Average execution time (seconds)": sum(time_array)/len(time_array), "4. MAE": mae_array[0], "5. MAPE": mape_array[0], "6. CRPS": crps_array[0], "7. PBB": pbb_array[0]}
-    message={"1. message": answer, "2. Number of times executed": n, "3. Average execution time (seconds)": sum(time_array)/len(time_array), "4. MAE": mae_array[0]}
+    message={"1. message": answer, "2. Number of times executed": n, "3. Solar penetration level (%)": pen, "4. Average execution time (seconds)": sum(time_array)/len(time_array), "5. MAE": mae_array[0]}
     app.logger.info(message)
     return message
 

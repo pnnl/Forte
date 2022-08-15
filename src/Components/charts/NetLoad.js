@@ -15,13 +15,15 @@ class NetLoad extends Component {
     }
     componentDidMount() {
         //this.setState({ temp: 0 });
-        this.create_line_chart();
+        //this.create_line_chart(this.props.net_load_df);
     }
     componentDidUpdate(prevProps, prevState) {
+        this.create_line_chart(this.props.net_load_df);
     }
 
-    create_line_chart(){
-        var the_id = "#netLoadChartDiv";    
+    create_line_chart(net_load_df){
+        var the_id = "#netLoadChartDiv";  
+        console.log(net_load_df);  
         const margin = {top: 10, right: 30, bottom: 30, left: 60},
         width = $(the_id).width() - margin.left - margin.right,
         height = $(the_id).height() - margin.top - margin.bottom;
@@ -38,12 +40,13 @@ class NetLoad extends Component {
 //Read the data
 d3.csv("https://raw.githubusercontent.com/holtzy/data_to_viz/master/Example_dataset/5_OneCatSevNumOrdered.csv").then( function(data) {
 
-// group the data: I want to draw one line per group
-const sumstat = d3.group(data, d => d.name); // nest function allows to group the calculation per level of a factor
+        // group the data: I want to draw one line per group
+        const sumstat = d3.group(data, d => d.name); // nest function allows to group the calculation per level of a factor
+        const sumstat2 = d3.group(net_load_df, d => d.net_load_type)
 
         /** Adding and calling X axis --> it is a date format */
         const x = d3.scaleLinear()
-        .domain(d3.extent(data, function(d) { return d.year; }))
+        .domain(d3.extent(net_load_df, function(d) { return d.years; }))
         .range([ 0, width ]);
         svg.selectAll(".g_X").data([0]).join("g")
         .attr("class", "g_X")  
@@ -52,7 +55,7 @@ const sumstat = d3.group(data, d => d.name); // nest function allows to group th
 
         /** Adding and calling Y axis */ 
         const y = d3.scaleLinear()
-        .domain([0, d3.max(data, function(d) { return +d.n; })])
+        .domain([d3.min(net_load_df, function(d) { return d.net_load; }), d3.max(net_load_df, function(d) { return d.net_load; })])
         .range([ height, 0 ]);
         svg.selectAll(".g_Y").data([0]).join("g")
         .attr("class", "g_Y")
@@ -64,15 +67,15 @@ const sumstat = d3.group(data, d => d.name); // nest function allows to group th
 
         /** Drawing the lines */ 
         svg.selectAll(".line")
-        .data(sumstat)
+        .data(sumstat2)
         .join("path")
             .attr("fill", "none")
             .attr("stroke", function(d){ return color(d[0]) })
             .attr("stroke-width", 1.5)
             .attr("d", function(d){
             return d3.line()
-                .x(function(d) { return x(d.year); })
-                .y(function(d) { return y(+d.n); })
+                .x(function(d) { return x(d.years); })
+                .y(function(d) { return y(d.net_load); })
                 (d[1])
             })
 
@@ -94,6 +97,7 @@ const sumstat = d3.group(data, d => d.name); // nest function allows to group th
 const maptstateToprop = (state) => {
     return {
         blank_placeholder:state.blank_placeholder,
+        net_load_df: state.net_load_df,
     }
 }
 const mapdispatchToprop = (dispatch) => {

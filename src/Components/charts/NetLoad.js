@@ -22,7 +22,7 @@ class NetLoad extends Component {
         // css design is in App.css
 
         return <div>
-        "Hello"
+        "Hello "
       </div>
        
     }

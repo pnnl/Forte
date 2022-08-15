@@ -6,6 +6,7 @@ import { Card, CardGroup} from 'react-bootstrap';
 import Grid from '@mui/material/Grid';
 import * as $ from "jquery";
 import 'bootstrap/dist/css/bootstrap.min.css';
+import NetLoad from '../charts/NetLoad';
 
 export class  CardLeft extends Component {
   //const classes = useStyles();
@@ -35,7 +36,7 @@ return (
         </Grid>
       </Card.Header>
       <Card.Body>
-          
+          <NetLoad></NetLoad>
       </Card.Body>
       </Card>
 

@@ -7,6 +7,11 @@ let initialState = {
     end_date_temp: 1578009600000,
     isLoadingUpdate: false,
     color_buttons: {"general": "rgb(224,224,224)", "focused": "rgb(108, 117, 125)"},
+    actual_net_load: [],
+    predicted_net_load: [],
+    apparent_power: [],
+    humidity: [],
+    temperature: [],
 }
 
 const reducer = (state = initialState, action) => {
@@ -28,6 +33,21 @@ const reducer = (state = initialState, action) => {
     if (action.type === "isLoadingUpdate") {
         return { ...state, isLoadingUpdate: action.value }
      }
+    if (action.type === "actual_net_load") {
+        return { ...state, actual_net_load: action.value }
+     } 
+    if (action.type === "predicted_net_load") {
+        return { ...state, predicted_net_load: action.value }
+     }
+    if (action.type === "apparent_power") {
+        return { ...state, apparent_power: action.value }
+     }
+    if (action.type === "humidity") {
+        return { ...state, humidity: action.value }
+     }
+    if (action.type === "temperature") {
+        return { ...state, temperature: action.value }
+     }  
 
     return state;
 }

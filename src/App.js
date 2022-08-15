@@ -21,8 +21,9 @@ class App extends Component{
   }
 
   componentDidMount(){
-    jsonCall.download(this.props.url + "/", {dummy: "abcd", dummy1: "abcd"}).then(res =>{
+    jsonCall.download(this.props.url + "/api/v1/processor", {start_date: "2020-05-01 00:00:00", end_date: "2020-05-03 00:00:00", solar_penetration:50}).then(res =>{
       console.log(res);
+      
       })
     
   }
@@ -52,12 +53,23 @@ const mapStateToProp = (state) => {
   return {
     blank_placeholder: state.blank_placeholder,
     url: state.url,
+    actual_net_load: state.actual_net_load,
+    predicted_net_load: state.predicted_net_load,
+    apparent_power: state.apparent_power,
+    humidity: state.humidity,
+    temperature: state.temperature,
+
   }
 }
 
 const mapDispatchToProp = (dispatch) => {
   return{
     set_blank_placeholder: (val) => dispatch({ type: "blank_placeholder", value: val}),
+    set_actual_net_load: (val) => dispatch({ type: "actual_net_load", value: val}),
+    set_predicted_net_load: (val) => dispatch({ type: "predicted_net_load", value: val}),
+    set_apparent_power: (val) => dispatch({ type: "apparent_power", value: val}),
+    set_humidity: (val) => dispatch({ type: "humidity", value: val}),
+    set_temperature: (val) => dispatch({ type: "temperature", value: val}),
   }
 }
 export default connect(mapStateToProp,mapDispatchToProp)(App);

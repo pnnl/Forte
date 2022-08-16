@@ -7,6 +7,7 @@ import * as d3 from "d3";
 import _ from 'lodash';
 import Button from 'react-bootstrap/Button';
 import 'bootstrap/dist/css/bootstrap.min.css';
+import * as jsonCall from "../../../Algorithms/JSONCall";
 
 
 
@@ -26,6 +27,12 @@ class UpdateButton extends Component {
         if(this.props.start_date_temp< this.props.end_date_temp){
             this.props.set_start_date(this.props.start_date_temp);
             this.props.set_end_date(this.props.end_date_temp);
+
+            jsonCall.download(this.props.url + "/api/v1/processor", {start_date: "2020-05-01 00:00:00", end_date: "2020-05-03 00:00:00", solar_penetration:50}).then(res =>{
+                console.log(res);
+                this.props.set_net_load_df(res["net_load_df"]);
+                
+                })
         }
         else{
            alert("Please select an end date later than the start date") 
@@ -55,6 +62,7 @@ class UpdateButton extends Component {
 const maptstateToprop = (state) => {
     return {
         blank_placeholder:state.blank_placeholder,
+        url: state.url,
         color_buttons: state.color_buttons,
         isLoadingUpdate: state.isLoadingUpdate,
         start_date: state.start_date,
@@ -69,6 +77,7 @@ const mapdispatchToprop = (dispatch) => {
         set_isLoadingUpdate: (val) => dispatch({ type: "isLoadingUpdate", value: val }),
         set_start_date: (val) => dispatch({ type: "start_date", value: val }),
         set_end_date: (val) => dispatch({ type: "end_date", value: val }),
+        set_net_load_df: (val) => dispatch({ type: "net_load_df", value: val}),
     }
 }
 export default connect(maptstateToprop, mapdispatchToprop)(UpdateButton);

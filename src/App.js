@@ -23,7 +23,6 @@ class App extends Component{
   componentDidMount(){
     jsonCall.download(this.props.url + "/api/v1/processor", {start_date: "2020-05-01 00:00:00", end_date: "2020-05-03 00:00:00", solar_penetration:50}).then(res =>{
       console.log(res);
-      //console.log(res["net_load_df"])
       this.props.set_net_load_df(res["net_load_df"]);
       
       })

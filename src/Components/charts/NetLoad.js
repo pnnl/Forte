@@ -15,7 +15,7 @@ class NetLoad extends Component {
     }
     componentDidMount() {
         //this.setState({ temp: 0 });
-        //this.create_line_chart(this.props.net_load_df);
+        this.create_line_chart(this.props.net_load_df);
     }
     componentDidUpdate(prevProps, prevState) {
         this.create_line_chart(this.props.net_load_df);
@@ -112,6 +112,7 @@ class NetLoad extends Component {
             .duration(animation_duration)
             .attr("d", function(d){
             return d3.line()
+                .curve(d3.curveStep)
                 .x(function(d) { return x(d.years); })
                 .y(function(d) { return y(d.net_load); })
                 (d[1])

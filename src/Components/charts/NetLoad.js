@@ -15,7 +15,7 @@ class NetLoad extends Component {
     }
     componentDidMount() {
         //this.setState({ temp: 0 });
-        //this.create_line_chart(this.props.net_load_df);
+        this.create_line_chart(this.props.net_load_df);
     }
     componentDidUpdate(prevProps, prevState) {
         this.create_line_chart(this.props.net_load_df);
@@ -59,9 +59,32 @@ class NetLoad extends Component {
         .call(d3.axisLeft(y));
 
         /** Color palette */ 
+        var keys = ["predicted", "actual"]
         const color = d3.scaleOrdinal()
         //.range(['#e41a1c','#377eb8','#4daf4a','#984ea3','#ff7f00','#ffff33','#a65628','#f781bf','#999999'])
         .range(["#F39C12", "#377eb8", "#999999"])
+
+        /** Adding one dot in the legend for each name */
+        svg.selectAll("legendDots")
+        .data(keys)
+        .join("circle")
+        .attr("class", "legendDots")
+        .attr("cx", 0.88*width)
+        .attr("cy", function(d,i){ return 100 + i*25}) // 100 is where the first dot appears. 25 is the distance between dots
+        .attr("r", 7)
+        .style("fill", function(d){ return color(d)})
+
+        /** Adding one dot in the legend for each name */ 
+        svg.selectAll("legendText")
+        .data(keys)
+        .join("text")
+        .attr("class", "legendText")
+        .attr("x", 0.9*width)
+        .attr("y", function(d,i){ return 100 + i*25}) // 100 is where the first dot appears. 25 is the distance between dots
+        .style("fill", function(d){ return color(d)})
+        .text(function(d){ return d})
+        .attr("text-anchor", "left")
+        .style("alignment-baseline", "middle")
 
         /** Drawing the lines */ 
         svg.selectAll(".line")

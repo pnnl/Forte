@@ -15,13 +15,14 @@ class NetLoad extends Component {
     }
     componentDidMount() {
         //this.setState({ temp: 0 });
-        this.create_line_chart(this.props.net_load_df);
+        //this.create_line_chart(this.props.net_load_df);
     }
     componentDidUpdate(prevProps, prevState) {
         this.create_line_chart(this.props.net_load_df);
     }
 
     create_line_chart(net_load_df){
+        var animation_duration = 1000;
         var the_id = "#netLoadChartDiv";   
         const margin = {top: 10, right: 30, bottom: 30, left: 60},
         width = $(the_id).width() - margin.left - margin.right,
@@ -29,6 +30,7 @@ class NetLoad extends Component {
         console.log(width, height); 
 
         /** svg1 just sets the width and height of the svg */
+        $(".netLoadChart").empty();
         const svg1 = d3.select(".netLoadChart")
         .attr("width", width + margin.left + margin.right)
         .attr("height", height + margin.top + margin.bottom)
@@ -97,6 +99,8 @@ class NetLoad extends Component {
             .attr("fill", "none")
             .attr("stroke", function(d){ return color(d[0]) })
             .attr("stroke-width", 1.5)
+            .transition()
+            .duration(animation_duration)
             .attr("d", function(d){
             return d3.line()
                 .x(function(d) { return x(d.years); })

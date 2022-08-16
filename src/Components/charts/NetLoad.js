@@ -69,8 +69,8 @@ class NetLoad extends Component {
         .data(keys)
         .join("circle")
         .attr("class", "legendDots")
-        .attr("cx", 0.88*width)
-        .attr("cy", function(d,i){ return 100 + i*25}) // 100 is where the first dot appears. 25 is the distance between dots
+        .attr("cx", 0.92*width) // must of 0.02 lesser than Text
+        .attr("cy", function(d,i){ return 0 + i*25}) // 100 is where the first dot appears. 25 is the distance between dots
         .attr("r", 7)
         .style("fill", function(d){ return color(d)})
 
@@ -79,8 +79,8 @@ class NetLoad extends Component {
         .data(keys)
         .join("text")
         .attr("class", "legendText")
-        .attr("x", 0.9*width)
-        .attr("y", function(d,i){ return 100 + i*25}) // 100 is where the first dot appears. 25 is the distance between dots
+        .attr("x", 0.94*width)
+        .attr("y", function(d,i){ return 0 + i*25}) // 100 is where the first dot appears. 25 is the distance between dots
         .style("fill", function(d){ return color(d)})
         .text(function(d){ return d})
         .attr("text-anchor", "left")

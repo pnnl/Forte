@@ -37,12 +37,9 @@ class NetLoad extends Component {
         .attr("class", "initial_g")    
         .attr("transform",`translate(${margin.left},${margin.top})`);
 
-//Read the data
-d3.csv("https://raw.githubusercontent.com/holtzy/data_to_viz/master/Example_dataset/5_OneCatSevNumOrdered.csv").then( function(data) {
 
-        // group the data: I want to draw one line per group
-        const sumstat = d3.group(data, d => d.name); // nest function allows to group the calculation per level of a factor
-        const sumstat2 = d3.group(net_load_df, d => d.net_load_type)
+        /** Grouping the data: in order to draw one line per group */
+        const sumstat2 = d3.group(net_load_df, d => d.net_load_type) // group function allows to group the calculation per level of a factor
 
         /** Adding and calling X axis --> it is a date format */
         const x = d3.scaleLinear()
@@ -63,7 +60,8 @@ d3.csv("https://raw.githubusercontent.com/holtzy/data_to_viz/master/Example_data
 
         /** Color palette */ 
         const color = d3.scaleOrdinal()
-        .range(['#e41a1c','#377eb8','#4daf4a','#984ea3','#ff7f00','#ffff33','#a65628','#f781bf','#999999'])
+        //.range(['#e41a1c','#377eb8','#4daf4a','#984ea3','#ff7f00','#ffff33','#a65628','#f781bf','#999999'])
+        .range(["#F39C12", "#377eb8", "#999999"])
 
         /** Drawing the lines */ 
         svg.selectAll(".line")
@@ -79,7 +77,6 @@ d3.csv("https://raw.githubusercontent.com/holtzy/data_to_viz/master/Example_data
                 (d[1])
             })
 
-})
 
     }
     render() {

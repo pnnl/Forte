@@ -22,11 +22,11 @@ class NetLoad extends Component {
     }
 
     create_line_chart(net_load_df){
-        var the_id = "#netLoadChartDiv";  
-        console.log(net_load_df);  
+        var the_id = "#netLoadChartDiv";   
         const margin = {top: 10, right: 30, bottom: 30, left: 60},
         width = $(the_id).width() - margin.left - margin.right,
         height = $(the_id).height() - margin.top - margin.bottom;
+        console.log(width, height); 
 
         /** svg1 just sets the width and height of the svg */
         const svg1 = d3.select(".netLoadChart")
@@ -69,9 +69,9 @@ class NetLoad extends Component {
         .data(keys)
         .join("rect")
         .attr("class", "legendDots")
-        .attr("x", 0.90*width) // must of 0.04 lesser than Text
+        .attr("x", 0.85*width) // must of 0.04 lesser than Text
         .attr("y", function(d,i){ return 0 + i*25}) // 100 is where the first dot appears. 25 is the distance between dots
-        .attr("width", 14)
+        .attr("width", 0.022*width)
         .attr("height", 2)
         //.attr("r", 7)
         .style("fill", function(d){ return color(d)})
@@ -81,10 +81,11 @@ class NetLoad extends Component {
         .data(keys)
         .join("text")
         .attr("class", "legendText")
-        .attr("x", 0.94*width)
+        .attr("x", 0.89*width)
         .attr("y", function(d,i){ return 0 + i*25}) // 100 is where the first dot appears. 25 is the distance between dots
         .style("fill", function(d){ return color(d)})
         .text(function(d){ return d})
+        .attr("font-size", "0.9em")
         .attr("text-anchor", "left")
         .style("alignment-baseline", "middle")
 

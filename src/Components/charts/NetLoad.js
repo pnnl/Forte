@@ -30,7 +30,7 @@ class NetLoad extends Component {
         console.log(width, height); 
 
         /** svg1 just sets the width and height of the svg */
-        $(".netLoadChart").empty();
+        //$(".netLoadChart").empty();
         const svg1 = d3.select(".netLoadChart")
         .attr("width", width + margin.left + margin.right)
         .attr("height", height + margin.top + margin.bottom)
@@ -50,6 +50,8 @@ class NetLoad extends Component {
         svg.selectAll(".g_X").data([0]).join("g")
         .attr("class", "g_X")  
         .attr("transform", `translate(0, ${height})`)
+        .transition()
+        .duration(animation_duration)
         .call(d3.axisBottom(x).ticks(5));
 
         /** Adding and calling Y axis */ 
@@ -59,19 +61,23 @@ class NetLoad extends Component {
         .range([ height, 0 ]);
         svg.selectAll(".g_Y").data([0]).join("g")
         .attr("class", "g_Y")
+        .transition()
+        .duration(animation_duration)
         .call(d3.axisLeft(y));
 
         /** Color palette */ 
-        var keys = ["predicted", "actual"]
+        var keys = ["actual", "predicted"]
         const color = d3.scaleOrdinal()
         //.range(['#e41a1c','#377eb8','#4daf4a','#984ea3','#ff7f00','#ffff33','#a65628','#f781bf','#999999'])
-        .range(["#F39C12", "#377eb8", "#999999"])
+        .range(["#377eb8", "#F39C12", "#999999"])
 
         /** Adding one dot in the legend for each name */
-        svg.selectAll("legendDots")
+        svg.selectAll(".legendDots")
         .data(keys)
         .join("rect")
         .attr("class", "legendDots")
+        .transition()
+        .duration(animation_duration)
         .attr("x", 0.85*width) // must of 0.04 lesser than Text
         .attr("y", function(d,i){ return 0 + i*25}) // 100 is where the first dot appears. 25 is the distance between dots
         .attr("width", 0.022*width)
@@ -80,10 +86,12 @@ class NetLoad extends Component {
         .style("fill", function(d){ return color(d)})
 
         /** Adding one dot in the legend for each name */ 
-        svg.selectAll("legendText")
+        svg.selectAll(".legendText")
         .data(keys)
         .join("text")
         .attr("class", "legendText")
+        .transition()
+        .duration(animation_duration)
         .attr("x", 0.89*width)
         .attr("y", function(d,i){ return 0 + i*25}) // 100 is where the first dot appears. 25 is the distance between dots
         .style("fill", function(d){ return color(d)})
@@ -93,9 +101,10 @@ class NetLoad extends Component {
         .style("alignment-baseline", "middle")
 
         /** Drawing the lines */ 
-        svg.selectAll(".line")
+        svg.selectAll(".lineCharts")
         .data(sumstat2)
         .join("path")
+            .attr("class", "lineCharts")
             .attr("fill", "none")
             .attr("stroke", function(d){ return color(d[0]) })
             .attr("stroke-width", 1.5)

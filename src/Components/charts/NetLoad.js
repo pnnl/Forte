@@ -67,11 +67,13 @@ class NetLoad extends Component {
         /** Adding one dot in the legend for each name */
         svg.selectAll("legendDots")
         .data(keys)
-        .join("circle")
+        .join("rect")
         .attr("class", "legendDots")
-        .attr("cx", 0.92*width) // must of 0.02 lesser than Text
-        .attr("cy", function(d,i){ return 0 + i*25}) // 100 is where the first dot appears. 25 is the distance between dots
-        .attr("r", 7)
+        .attr("x", 0.90*width) // must of 0.04 lesser than Text
+        .attr("y", function(d,i){ return 0 + i*25}) // 100 is where the first dot appears. 25 is the distance between dots
+        .attr("width", 14)
+        .attr("height", 2)
+        //.attr("r", 7)
         .style("fill", function(d){ return color(d)})
 
         /** Adding one dot in the legend for each name */ 

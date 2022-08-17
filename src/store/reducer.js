@@ -12,6 +12,7 @@ let initialState = {
     apparent_power: [],
     humidity: [],
     temperature: [],
+    net_load_df: [],
 }
 
 const reducer = (state = initialState, action) => {
@@ -47,7 +48,10 @@ const reducer = (state = initialState, action) => {
      }
     if (action.type === "temperature") {
         return { ...state, temperature: action.value }
-     }  
+     }
+     if (action.type === "net_load_df") {
+        return { ...state, net_load_df: action.value }
+     }   
 
     return state;
 }

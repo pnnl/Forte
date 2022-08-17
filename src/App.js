@@ -54,6 +54,7 @@ const mapStateToProp = (state) => {
   return {
     blank_placeholder: state.blank_placeholder,
     url: state.url,
+    isLoadingUpdate: state.isLoadingUpdate,
     actual_net_load: state.actual_net_load,
     predicted_net_load: state.predicted_net_load,
     apparent_power: state.apparent_power,

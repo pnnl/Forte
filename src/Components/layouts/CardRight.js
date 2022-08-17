@@ -34,7 +34,7 @@ return (
           <Grid item xs={12} sm={12}>{item}</Grid>
           </Grid>
         </Card.Header>
-        <Card.Body>
+        <Card.Body style={{opacity:(this.props.isLoadingUpdate)?0.4:1}}>
             
         </Card.Body>
         </Card>
@@ -50,6 +50,7 @@ return (
 const maptstateToprop = (state) => {
   return {
       blank_placeholder: state.blank_placeholder,
+      isLoadingUpdate: state.isLoadingUpdate,
   }
 }
 const mapdispatchToprop = (dispatch) => {

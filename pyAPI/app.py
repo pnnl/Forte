@@ -325,6 +325,7 @@ def processor_v1(start_date="2020-05-01 00:00:00", end_date="2020-05-03 00:00:00
     return response;
 
 @app.route('/api/v1.1/processor',methods = ['POST', 'GET'])
+@app.route('/api/v@latest/processor',methods = ['POST', 'GET'])
 def processor(start_date="2020-05-01 00:00:00", end_date="2020-05-03 00:00:00", solar_penetration=50):
     t = time.process_time()
     #start_date, end_date, solar_penetration = "2020-05-01 00:00:00", "2020-05-03 00:00:00", 50

@@ -44,15 +44,19 @@ class NetLoad extends Component {
         const sumstat2 = d3.group(net_load_df, d => d.net_load_type) // group function allows to group the calculation per level of a factor
 
         /** Adding and calling X axis --> it is a date format */
-        const x = d3.scaleLinear()
-        .domain(d3.extent(net_load_df, function(d) { return d.years; }))
+        var starting_date = net_load_df[0]["timeline"]
+        var ending_date = net_load_df[net_load_df.length -1]["timeline"]
+        console.log(starting_date, ending_date)
+        const x = d3.scaleTime()
+        //.domain(d3.extent(net_load_df, function(d) { return d.years; }))
+        .domain([new Date(starting_date), new Date(ending_date)])
         .range([ 0, width ]);
         svg.selectAll(".g_X").data([0]).join("g")
         .attr("class", "g_X")  
         .attr("transform", `translate(0, ${height})`)
         .transition()
         .duration(animation_duration)
-        .call(d3.axisBottom(x).ticks(5));
+        .call(d3.axisBottom(x)); //removed the ticks
 
         /** Adding and calling Y axis */ 
         var limit = 1.1*(Math.max(Math.abs(d3.min(net_load_df, function(d) { return d.net_load; })), Math.abs(d3.max(net_load_df, function(d) { return d.net_load; }))))
@@ -113,7 +117,7 @@ class NetLoad extends Component {
             .attr("d", function(d){
             return d3.line()
                 .curve(d3.curveStep)
-                .x(function(d) { return x(d.years); })
+                .x(function(d) { return x(new Date(d.timeline)); })
                 .y(function(d) { return y(d.net_load); })
                 (d[1])
             })

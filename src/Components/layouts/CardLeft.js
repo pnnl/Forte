@@ -36,7 +36,7 @@ return (
         </Grid>
       </Card.Header>
       <Card.Body>
-          <NetLoad></NetLoad>
+          {((this.props.net_load_df).length >0)?<NetLoad></NetLoad>:null}
       </Card.Body>
       </Card>
 
@@ -48,6 +48,7 @@ return (
 const maptstateToprop = (state) => {
   return {
       blank_placeholder: state.blank_placeholder,
+      net_load_df: state.net_load_df,
   }
 }
 const mapdispatchToprop = (dispatch) => {

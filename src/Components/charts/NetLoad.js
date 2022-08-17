@@ -50,7 +50,7 @@ class NetLoad extends Component {
         const x = d3.scaleTime()
         //.domain(d3.extent(net_load_df, function(d) { return d.years; }))
         .domain([new Date(starting_date), new Date(ending_date)])
-        .range([ 0, width ]);
+        .range([ 0, width ]); // can add .nice() to force the last tick
         svg.selectAll(".g_X").data([0]).join("g")
         .attr("class", "g_X")  
         .attr("transform", `translate(0, ${height})`)

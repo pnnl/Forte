@@ -149,7 +149,8 @@ def prepare_input(start_date, end_date, solar_penetration):
     t = time.process_time()
     A=pd.read_csv(path_parent+"/data/inputs/df1_solar_"+str(solar_penetration)+"_pen.csv") # Reading file
     my_data = A.loc[(A['min_t'] >= start_date) & (A['min_t'] < end_date)]
-    my_data=my_data.fillna(99999)
+    #my_data=my_data.fillna(99999)
+    my_data = my_data.interpolate(method="linear", axis=0, limit_direction='both') # linear interpolation column by column; both directions so that the first and last columns are not left alone
     #my_data = A
     timeline = my_data['min_t'].to_list() # capturing the timeline called
     timeline_original = timeline

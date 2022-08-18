@@ -27,7 +27,7 @@ class NetLoad extends Component {
         const margin = {top: 10, right: 30, bottom: 30, left: 60},
         width = $(the_id).width() - margin.left - margin.right,
         height = $(the_id).height() - margin.top - margin.bottom;
-        console.log(width, height); 
+        //console.log(width, height); 
 
         /** svg1 just sets the width and height of the svg */
         //$(".netLoadChart").empty();
@@ -46,7 +46,7 @@ class NetLoad extends Component {
         /** Adding and calling X axis --> it is a date format */
         var starting_date = net_load_df[0]["timeline"]
         var ending_date = net_load_df[net_load_df.length -1]["timeline"]
-        console.log(starting_date, ending_date)
+        //console.log(starting_date, ending_date)
         const x = d3.scaleTime()
         //.domain(d3.extent(net_load_df, function(d) { return d.years; }))
         .domain([new Date(starting_date), new Date(ending_date)])

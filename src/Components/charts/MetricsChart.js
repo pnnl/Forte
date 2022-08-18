@@ -47,7 +47,7 @@ class MetricsChart extends Component {
         /** Adding and calling X axis --> it is a date format */
         var starting_date = the_data[0]["timeline"]
         var ending_date = the_data[the_data.length -1]["timeline"]
-        console.log(starting_date, ending_date)
+        //console.log(starting_date, ending_date)
         const x = d3.scaleTime()
         //.domain(d3.extent(net_load_df, function(d) { return d.years; }))
         .domain([new Date(starting_date), new Date(ending_date)])

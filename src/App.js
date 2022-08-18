@@ -21,10 +21,14 @@ class App extends Component{
   }
 
   componentDidMount(){
+    this.props.set_isLoadingUpdate(true); 
     jsonCall.download(this.props.url + "/api/v@latest/processor", {start_date: "2020-05-01 00:00:00", end_date: "2020-05-03 00:00:00", solar_penetration:50}).then(res =>{
       console.log(res);
       this.props.set_net_load_df(res["net_load_df"]);
       this.props.set_temperature_df(res["temperature_df"]);
+      this.props.set_humidity_df(res["humidity_df"]);
+      this.props.set_apparent_power_df(res["apparent_power_df"]);
+      this.props.set_isLoadingUpdate(false);
       
       })
     
@@ -68,6 +72,7 @@ const mapStateToProp = (state) => {
 const mapDispatchToProp = (dispatch) => {
   return{
     set_blank_placeholder: (val) => dispatch({ type: "blank_placeholder", value: val}),
+    set_isLoadingUpdate: (val) => dispatch({ type: "isLoadingUpdate", value: val }),
     set_actual_net_load: (val) => dispatch({ type: "actual_net_load", value: val}),
     set_predicted_net_load: (val) => dispatch({ type: "predicted_net_load", value: val}),
     set_apparent_power: (val) => dispatch({ type: "apparent_power", value: val}),
@@ -75,6 +80,8 @@ const mapDispatchToProp = (dispatch) => {
     set_temperature: (val) => dispatch({ type: "temperature", value: val}),
     set_net_load_df: (val) => dispatch({ type: "net_load_df", value: val}),
     set_temperature_df: (val) => dispatch({ type: "temperature_df", value: val}),
+    set_humidity_df: (val) => dispatch({ type: "humidity_df", value: val}),
+    set_apparent_power_df: (val) => dispatch({ type: "apparent_power_df", value: val}),
   }
 }
 export default connect(mapStateToProp,mapDispatchToProp)(App);

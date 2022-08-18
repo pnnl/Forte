@@ -155,6 +155,8 @@ def prepare_input(start_date, end_date, solar_penetration):
     timeline = my_data['min_t'].to_list() # capturing the timeline called
     timeline_original = timeline
     temperature_original = my_data['temp'].to_list() # capturing the original temperature
+    humidity_original = my_data['humidity'].to_list() # capturing the original temperature
+    apparent_power_original = my_data['apparent_power'].to_list() # capturing the original temperature
     #temperature_original = [99999 if math.isnan(item) else item for item in temperature_original]
     timeline = timeline[48:] # removing the first 48 entries(i.e., 12 hours)
     my_data=my_data.drop(['min_t'], axis=1) # Drop this axis
@@ -194,7 +196,7 @@ def prepare_input(start_date, end_date, solar_penetration):
     y_prev=np.asarray(y_prev)
     y_prev=y_prev.reshape((y_prev.shape[0],y_prev.shape[1]))
     elapsed_time_prepare_input = time.process_time() - t
-    return sequence_input, y_ground, y_prev, temperature, temperature_original, humidity, apparent_power, elapsed_time_prepare_input, timeline, timeline_original
+    return sequence_input, y_ground, y_prev, temperature, temperature_original, humidity, humidity_original, apparent_power,apparent_power_original, elapsed_time_prepare_input, timeline, timeline_original
 
 def autoencoder_func(sequence_input, solar_penetration):
     t = time.process_time()
@@ -294,7 +296,7 @@ def validate_start_date(start_date):
     # Handle sending lesser than 1st Jan dates
     return edited_start_date
 
-def prepare_output_df(y_pred, Y_test, timeline, timeline_original, temperature, temperature_original):
+def prepare_output_df(y_pred, Y_test, timeline, timeline_original, temperature_original, humidity, humidity_original, apparent_power, apparent_power_original):
     net_load = ((Y_test.flatten()).tolist())
     net_load.extend(y_pred.tolist())
     net_load_type = (["actual"] * Y_test.size)
@@ -303,12 +305,16 @@ def prepare_output_df(y_pred, Y_test, timeline, timeline_original, temperature, 
     years.extend(list(range(1,y_pred.size+1)))
     # temperature_df = pd.DataFrame({"temperature": temperature, "timeline": timeline, "dummy":[1]*len(temperature)})
     temperature_df = pd.DataFrame({"temperature": temperature_original, "timeline": timeline_original, "dummy":[1]*len(temperature_original)})
+    humidity_df = pd.DataFrame({"humidity": humidity_original, "timeline": timeline_original, "dummy":[1]*len(humidity_original)})
+    apparent_power_df = pd.DataFrame({"apparent_power": apparent_power_original, "timeline": timeline_original, "dummy":[1]*len(apparent_power_original)})
     timeline.extend(timeline)
     net_load_df = pd.DataFrame({"net_load": net_load, "net_load_type": net_load_type, "years": years, "timeline": timeline})
     # net_load_df.to_csv(path_parent+"/data/outputs/pen_"+str(solar_penetration)+"/net_load_df.csv", index=False)
     net_load_df_safe = net_load_df.to_dict(orient="records")
     temperature_df_safe = temperature_df.to_dict(orient="records")
-    return net_load_df_safe, temperature_df_safe
+    humidity_df_safe = humidity_df.to_dict(orient="records")
+    apparent_power_df_safe = apparent_power_df.to_dict(orient="records")
+    return net_load_df_safe, temperature_df_safe, humidity_df_safe, apparent_power_df_safe
 
 ### Callable functions ###
 @app.route('/api/v1/processor',methods = ['POST', 'GET'])
@@ -349,16 +355,16 @@ def processor(start_date="2020-05-01 00:00:00", end_date="2020-05-03 00:00:00", 
         end_date = req["end_date"]
         solar_penetration = req["solar_penetration"]
     print(start_date)
-    sequence_input, y_ground, y_prev, temperature, temperature_original, humidity, apparent_power, elapsed_time_prepare_input, timeline, timeline_original = prepare_input(start_date, end_date, solar_penetration)
+    sequence_input, y_ground, y_prev, temperature, temperature_original, humidity, humidity_original, apparent_power, apparent_power_original, elapsed_time_prepare_input, timeline, timeline_original = prepare_input(start_date, end_date, solar_penetration)
     pred_train, elapsed_time_autoencoder = autoencoder_func(sequence_input, solar_penetration)
     latent_gen, elapsed_time_kpf = kPF_func(pred_train, solar_penetration)
     #y_pred, Y_test, mae, mape, crps, pbb, mse, elapsed_time_lstm = lstm_func(latent_gen, sequence_input, pred_train, y_ground, y_prev)
     y_pred, Y_test, mae, elapsed_time_lstm = lstm_func(latent_gen, sequence_input, pred_train, y_ground, y_prev, solar_penetration)
-    net_load_df_safe, temperature_df_safe = prepare_output_df(y_pred, Y_test, timeline, timeline_original, temperature, temperature_original)
+    net_load_df_safe, temperature_df_safe, humidity_df_safe, apparent_power_df_safe = prepare_output_df(y_pred, Y_test, timeline, timeline_original, temperature_original,humidity, humidity_original, apparent_power, apparent_power_original)
     #generate_comparison_image(y_pred, Y_test, solar_penetration, "processor", start_date, end_date)
     elapsed_time_total = time.process_time() - t
     #final_result ={"1. message":"Program executed", "2. time taken (prepare input)": elapsed_time_prepare_input, "3. time taken (autoencoder)":elapsed_time_autoencoder, "4. time taken (kPF)": elapsed_time_kpf, "5. time taken (LSTM)": elapsed_time_lstm, "6. total time taken":elapsed_time_total, "7. MAE": mae, "8. MAPE": mape, "9. CRPS": crps, "10. PBB": pbb, "11. MSE": mse}
-    final_result ={"1. message":"Program executed", "2. time taken (prepare input)": elapsed_time_prepare_input, "3. time taken (autoencoder)":elapsed_time_autoencoder, "4. time taken (kPF)": elapsed_time_kpf, "5. time taken (LSTM)": elapsed_time_lstm, "6. total time taken":elapsed_time_total, "7. MAE": mae, "predicted_net_load":y_pred.flatten().tolist(), "actual_net_load": Y_test.tolist(), "temperature":temperature, "humidity":humidity, "apparent_power":apparent_power, "net_load_df": net_load_df_safe, "temperature_df": temperature_df_safe}
+    final_result ={"1. message":"Program executed", "2. time taken (prepare input)": elapsed_time_prepare_input, "3. time taken (autoencoder)":elapsed_time_autoencoder, "4. time taken (kPF)": elapsed_time_kpf, "5. time taken (LSTM)": elapsed_time_lstm, "6. total time taken":elapsed_time_total, "7. MAE": mae, "predicted_net_load":y_pred.flatten().tolist(), "actual_net_load": Y_test.tolist(), "temperature":temperature, "humidity":humidity, "apparent_power":apparent_power, "net_load_df": net_load_df_safe, "temperature_df": temperature_df_safe, "humidity_df": humidity_df_safe, "apparent_power_df": apparent_power_df_safe}
     response=make_response(jsonify(final_result), 200) #removed processing
     response.headers.add('Access-Control-Allow-Origin', '*')
     return response;

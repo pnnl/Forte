@@ -36,6 +36,7 @@ class UpdateButton extends Component {
             jsonCall.download(this.props.url + "/api/v@latest/processor", {start_date: converted_start_date, end_date: converted_end_date, solar_penetration:50}).then(res =>{
                 console.log(res);
                 this.props.set_net_load_df(res["net_load_df"]);
+                this.props.set_temperature_df(res["temperature_df"]);
                 this.props.set_isLoadingUpdate(false);
                 
                 })
@@ -85,6 +86,7 @@ const mapdispatchToprop = (dispatch) => {
         set_start_date: (val) => dispatch({ type: "start_date", value: val }),
         set_end_date: (val) => dispatch({ type: "end_date", value: val }),
         set_net_load_df: (val) => dispatch({ type: "net_load_df", value: val}),
+        set_temperature_df: (val) => dispatch({ type: "temperature_df", value: val}),
     }
 }
 export default connect(maptstateToprop, mapdispatchToprop)(UpdateButton);

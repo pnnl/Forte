@@ -24,6 +24,7 @@ class App extends Component{
     jsonCall.download(this.props.url + "/api/v@latest/processor", {start_date: "2020-05-01 00:00:00", end_date: "2020-05-03 00:00:00", solar_penetration:50}).then(res =>{
       console.log(res);
       this.props.set_net_load_df(res["net_load_df"]);
+      this.props.set_temperature_df(res["temperature_df"]);
       
       })
     
@@ -73,6 +74,7 @@ const mapDispatchToProp = (dispatch) => {
     set_humidity: (val) => dispatch({ type: "humidity", value: val}),
     set_temperature: (val) => dispatch({ type: "temperature", value: val}),
     set_net_load_df: (val) => dispatch({ type: "net_load_df", value: val}),
+    set_temperature_df: (val) => dispatch({ type: "temperature_df", value: val}),
   }
 }
 export default connect(mapStateToProp,mapDispatchToProp)(App);

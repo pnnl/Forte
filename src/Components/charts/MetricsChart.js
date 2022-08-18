@@ -22,7 +22,7 @@ class MetricsChart extends Component {
     }
 
     create_line_chart(the_data){
-        var animation_duration = 1000;
+        var animation_duration = 2000;
         var the_id = "#metricChartDiv";   
         const margin = {top: 10, right: 30, bottom: 30, left: 60},
         width = $(the_id).width() - margin.left - margin.right,

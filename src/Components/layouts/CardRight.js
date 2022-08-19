@@ -24,19 +24,20 @@ shouldComponentUpdate(nextProps, nextState){
 
 
 render(){ 
-var metrics = ["temperature", "humidity", "apparent power"];
+var metrics = ["temperature", "humidity", "apparent_power"];
+var metrics_data = [this.props.temperature_df, this.props.humidity_df, this.props.apparent_power_df]
 var mini_card_height = (100/metrics.length) + "%";
 return (
     <div style={{height: "94vh"}}>
-    {metrics.map((metric, index) =>{
-        return <Card key={index} style={{height: mini_card_height}}>
+    {metrics.map((metric, metric_index) =>{
+        return <Card key={metric_index} style={{height: mini_card_height}}>
         <Card.Header>
           <Grid container direction="row" spacing={1}>
           <Grid item xs={12} sm={12}>{metric}</Grid>
           </Grid>
         </Card.Header>
         <Card.Body style={{opacity:(this.props.isLoadingUpdate)?0.4:1}}>
-            {(metric === "temperature" & (this.props.net_load_df).length >0 & (this.props.temperature_df).length >0)?<MetricsChart the_metric={metric} the_data={this.props.temperature_df}></MetricsChart>:null}
+            {(["temperature", "humidity", "apparent_power"].includes(metric) & (this.props.net_load_df).length >0 & (this.props.temperature_df).length >0)?<MetricsChart the_metric={metric} the_data={metrics_data[metric_index]}></MetricsChart>:null}
         </Card.Body>
         </Card>
     })}    
@@ -54,6 +55,8 @@ const maptstateToprop = (state) => {
       isLoadingUpdate: state.isLoadingUpdate,
       net_load_df: state.net_load_df,
       temperature_df: state.temperature_df,
+      humidity_df: state.humidity_df,
+      apparent_power_df : state.apparent_power_df,
   }
 }
 const mapdispatchToprop = (dispatch) => {

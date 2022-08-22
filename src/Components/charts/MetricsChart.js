@@ -97,7 +97,7 @@ class MetricsChart extends Component {
         //     .attr("offset", d => x(d.date) / width)
         //     .attr("stop-color", d => color(d.condition));
 
-        if(the_metric !== "temperature"){svg.selectAll(".lineCharts_metric_"+the_metric)
+        if(the_metric !== "temperature" && the_metric !== "humidity" && the_metric !== "apparent_power" ){svg.selectAll(".lineCharts_metric_"+the_metric)
         .data(sumstat2)
         .join("path")
             .attr("class", "lineCharts_metric_"+the_metric)
@@ -123,7 +123,7 @@ class MetricsChart extends Component {
                 .join("linearGradient")
                 .attr("class", "linearGradient_"+the_metric)
                 //.append("linearGradient")
-                .attr("id", "line-gradient")
+                .attr("id", "line-gradient_"+the_metric)
                 .attr("gradientUnits", "userSpaceOnUse")
                 .attr("x1", 0)
                 .attr("x2", width)
@@ -138,7 +138,7 @@ class MetricsChart extends Component {
             .join("path")
             .attr("class", "lineCharts_metric_"+the_metric)
             .attr("fill", "none")
-            .attr("stroke", function(d){return "url(#line-gradient)" })
+            .attr("stroke", function(d){return "url(#line-gradient_"+the_metric+")" })
             .attr("stroke-width", 1.5)
             .on("mousemove", (event)=>{console.log(this.roundToNearest15(x.invert(d3.pointer(event)[0])))})
             .transition()

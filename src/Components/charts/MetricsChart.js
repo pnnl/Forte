@@ -21,6 +21,13 @@ class MetricsChart extends Component {
         this.create_line_chart(this.props.the_data, this.props.the_metric);
     }
 
+    roundToNearest15(date = new Date()) {
+        const minutes = 15;
+        const ms = 1000 * 60 * minutes;
+      
+        return new Date(Math.floor(date.getTime() / ms) * ms);
+      }
+
     create_line_chart(the_data, the_metric){
         var animation_duration = 2000;
         var the_id = "#metricChartDiv_"+the_metric;   
@@ -90,7 +97,7 @@ class MetricsChart extends Component {
         //     .attr("offset", d => x(d.date) / width)
         //     .attr("stop-color", d => color(d.condition));
 
-        if(the_metric !== "temperatur"){svg.selectAll(".lineCharts_metric_"+the_metric)
+        if(the_metric !== "temperature"){svg.selectAll(".lineCharts_metric_"+the_metric)
         .data(sumstat2)
         .join("path")
             .attr("class", "lineCharts_metric_"+the_metric)
@@ -110,23 +117,21 @@ class MetricsChart extends Component {
         }
 
         else {
-
             // Set the gradient
-                svg.append("linearGradient")
+                svg.selectAll(".linearGradient_"+the_metric)
+                .data([0])
+                .join("linearGradient")
+                .attr("class", "linearGradient_"+the_metric)
+                //.append("linearGradient")
                 .attr("id", "line-gradient")
                 .attr("gradientUnits", "userSpaceOnUse")
                 .attr("x1", 0)
-                .attr("y1", y(lower_limit))
-                .attr("x2", 0)
-                .attr("y2", y(upper_limit))
+                .attr("x2", width)
                 .selectAll("stop")
-                .data([
-                    {offset: "0%", color: "#377eb8"},
-                    {offset: "100%", color: "red"}
-                ])
-                .enter().append("stop")
-                .attr("offset", function(d) { console.log(d); return d.offset; })
-                .attr("stop-color", function(d) { return d.color; });
+                .data(the_data)
+                .join("stop")
+                .attr("offset", function(d) { return x(new Date(d.timeline))/width; })
+                .attr("stop-color", function(d) { return (d.wasNan)?"red":"#377eb8"; });
 
             svg.selectAll(".lineCharts_metric_"+the_metric)
             .data(sumstat2)
@@ -135,6 +140,7 @@ class MetricsChart extends Component {
             .attr("fill", "none")
             .attr("stroke", function(d){return "url(#line-gradient)" })
             .attr("stroke-width", 1.5)
+            .on("mousemove", (event)=>{console.log(this.roundToNearest15(x.invert(d3.pointer(event)[0])))})
             .transition()
             .duration(animation_duration)
             .attr("d", function(d){
@@ -144,6 +150,7 @@ class MetricsChart extends Component {
                 .y(function(d) { return y(d[the_metric]); })
                 (d[1])
             })
+            
             }   
         
 

@@ -25,6 +25,7 @@ shouldComponentUpdate(nextProps, nextState){
 
 render(){ 
 var metrics = ["temperature", "humidity", "apparent_power"];
+var metrics_unit = [" (°F)", " (%)", " (kVA)"];
 var metrics_data = [this.props.temperature_df, this.props.humidity_df, this.props.apparent_power_df]
 var mini_card_height = (100/metrics.length) + "%";
 return (
@@ -33,7 +34,7 @@ return (
         return <Card key={metric_index} style={{height: mini_card_height}}>
         <Card.Header>
           <Grid container direction="row" spacing={1}>
-          <Grid item xs={12} sm={12}>{metric.replaceAll("_", " ")}</Grid>
+          <Grid item xs={12} sm={12}>{metric.replaceAll("_", " ")+metrics_unit[metric_index]}</Grid>
           </Grid>
         </Card.Header>
         <Card.Body style={{opacity:(this.props.isLoadingUpdate)?0.4:1}}>

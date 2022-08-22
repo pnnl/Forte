@@ -86,52 +86,20 @@ class MetricsChart extends Component {
 
 
         /** Drawing the lines */ 
-        // svg.append("linearGradient")
-        //     .attr("id", colorId.id)
-        //     .attr("gradientUnits", "userSpaceOnUse")
-        //     .attr("x1", 0)
-        //     .attr("x2", width)
-        //     .selectAll("stop")
-        //     .data(data)
-        //     .join("stop")
-        //     .attr("offset", d => x(d.date) / width)
-        //     .attr("stop-color", d => color(d.condition));
-
-        if(the_metric !== "temperature" && the_metric !== "humidity" && the_metric !== "apparent_power" ){svg.selectAll(".lineCharts_metric_"+the_metric)
-        .data(sumstat2)
-        .join("path")
-            .attr("class", "lineCharts_metric_"+the_metric)
-            .attr("fill", "none")
-            .attr("stroke", function(d){return color(d[0]) })
-            .attr("stroke-width", 1.5)
-            .transition()
-            .duration(animation_duration)
-            .attr("d", function(d){
-            return d3.line()
-                .curve(d3.curveStep)
-                .x(function(d) { return x(new Date(d.timeline)); })
-                .y(function(d) { return y(d[the_metric]); })
-                (d[1])
-            })
-            console.log(sumstat2)
-        }
-
-        else {
             // Set the gradient
-                svg.selectAll(".linearGradient_"+the_metric)
-                .data([0])
-                .join("linearGradient")
-                .attr("class", "linearGradient_"+the_metric)
-                //.append("linearGradient")
-                .attr("id", "line-gradient_"+the_metric)
-                .attr("gradientUnits", "userSpaceOnUse")
-                .attr("x1", 0)
-                .attr("x2", width)
-                .selectAll("stop")
-                .data(the_data)
-                .join("stop")
-                .attr("offset", function(d) { return x(new Date(d.timeline))/width; })
-                .attr("stop-color", function(d) { return (d.wasNan)?"red":"#377eb8"; });
+            svg.selectAll(".linearGradient_"+the_metric)
+            .data([0])
+            .join("linearGradient")
+            .attr("class", "linearGradient_"+the_metric)
+            .attr("id", "line-gradient_"+the_metric)
+            .attr("gradientUnits", "userSpaceOnUse")
+            .attr("x1", 0)
+            .attr("x2", width)
+            .selectAll("stop")
+            .data(the_data)
+            .join("stop")
+            .attr("offset", function(d) { return x(new Date(d.timeline))/width; })
+            .attr("stop-color", function(d) { return (d.wasNan)?"red":"#377eb8"; });
 
             svg.selectAll(".lineCharts_metric_"+the_metric)
             .data(sumstat2)
@@ -149,9 +117,9 @@ class MetricsChart extends Component {
                 .x(function(d) { return x(new Date(d.timeline)); })
                 .y(function(d) { return y(d[the_metric]); })
                 (d[1])
-            })
-            
-            }   
+            }) 
+            //.attr("stroke-linejoin", "arcs")
+            //.attr("stroke-linecap", "round") 
         
 
 

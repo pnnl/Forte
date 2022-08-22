@@ -79,12 +79,23 @@ class MetricsChart extends Component {
 
 
         /** Drawing the lines */ 
-        svg.selectAll(".lineCharts_metric_"+the_metric)
+        // svg.append("linearGradient")
+        //     .attr("id", colorId.id)
+        //     .attr("gradientUnits", "userSpaceOnUse")
+        //     .attr("x1", 0)
+        //     .attr("x2", width)
+        //     .selectAll("stop")
+        //     .data(data)
+        //     .join("stop")
+        //     .attr("offset", d => x(d.date) / width)
+        //     .attr("stop-color", d => color(d.condition));
+
+        if(the_metric !== "temperatur"){svg.selectAll(".lineCharts_metric_"+the_metric)
         .data(sumstat2)
         .join("path")
             .attr("class", "lineCharts_metric_"+the_metric)
             .attr("fill", "none")
-            .attr("stroke", function(d){ return color(d[0]) })
+            .attr("stroke", function(d){return color(d[0]) })
             .attr("stroke-width", 1.5)
             .transition()
             .duration(animation_duration)
@@ -95,6 +106,46 @@ class MetricsChart extends Component {
                 .y(function(d) { return y(d[the_metric]); })
                 (d[1])
             })
+            console.log(sumstat2)
+        }
+
+        else {
+
+            // Set the gradient
+                svg.append("linearGradient")
+                .attr("id", "line-gradient")
+                .attr("gradientUnits", "userSpaceOnUse")
+                .attr("x1", 0)
+                .attr("y1", y(lower_limit))
+                .attr("x2", 0)
+                .attr("y2", y(upper_limit))
+                .selectAll("stop")
+                .data([
+                    {offset: "0%", color: "#377eb8"},
+                    {offset: "100%", color: "red"}
+                ])
+                .enter().append("stop")
+                .attr("offset", function(d) { console.log(d); return d.offset; })
+                .attr("stop-color", function(d) { return d.color; });
+
+            svg.selectAll(".lineCharts_metric_"+the_metric)
+            .data(sumstat2)
+            .join("path")
+            .attr("class", "lineCharts_metric_"+the_metric)
+            .attr("fill", "none")
+            .attr("stroke", function(d){return "url(#line-gradient)" })
+            .attr("stroke-width", 1.5)
+            .transition()
+            .duration(animation_duration)
+            .attr("d", function(d){
+            return d3.line()
+                .curve(d3.curveStep)
+                .x(function(d) { return x(new Date(d.timeline)); })
+                .y(function(d) { return y(d[the_metric]); })
+                (d[1])
+            })
+            }   
+        
 
 
     }

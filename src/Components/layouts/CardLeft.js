@@ -32,7 +32,7 @@ return (
     <Card style={{height: "94vh"}}>
       <Card.Header>
         <Grid container direction="row" spacing={1}>
-        <Grid item xs={12} sm={12}>Net Load</Grid>
+        <Grid item xs={12} sm={12}>Net Load (kW)</Grid>
         </Grid>
       </Card.Header>
       <Card.Body style={{opacity:(this.props.isLoadingUpdate)?0.4:1}}>

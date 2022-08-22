@@ -33,7 +33,7 @@ return (
         return <Card key={metric_index} style={{height: mini_card_height}}>
         <Card.Header>
           <Grid container direction="row" spacing={1}>
-          <Grid item xs={12} sm={12}>{metric}</Grid>
+          <Grid item xs={12} sm={12}>{metric.replaceAll("_", " ")}</Grid>
           </Grid>
         </Card.Header>
         <Card.Body style={{opacity:(this.props.isLoadingUpdate)?0.4:1}}>

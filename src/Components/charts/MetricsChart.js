@@ -6,7 +6,7 @@ import * as $ from "jquery";
 import * as d3 from "d3";
 import _ from 'lodash';
 
-
+var tooltip;
 
 class MetricsChart extends Component {
     constructor(props) {
@@ -29,6 +29,7 @@ class MetricsChart extends Component {
       }
 
     create_line_chart(the_data, the_metric){
+        var self = this;
         var animation_duration = 2000;
         var the_id = "#metricChartDiv_"+the_metric;   
         const margin = {top: 10, right: 30, bottom: 30, left: 60},
@@ -121,11 +122,26 @@ class MetricsChart extends Component {
             //.attr("stroke-linejoin", "arcs")
             //.attr("stroke-linecap", "round") 
         
-
+            d3.selectAll(".matches_question_mark_"+the_metric).on("mouseover", function (event) {
+                tooltip.transition()
+                  .duration(200)
+                  .style("opacity", .9);
+                tooltip.html("Missing data: "+String(self.props.the_nans_percentage)+"% <br> These are interpolated and marked in <span style='color: red'>red</span>")
+                  .style("left", (event.pageX + 5) + "px")
+                  .style("top", (event.pageY - 10) + "px");
+              })
+                .on("mouseout", function (d) {
+                  tooltip.transition()
+                    .duration(500)
+                    .style("opacity", 0);
+                })
 
     }
     render() {
         // css design is in App.css
+        tooltip = d3.select("body").selectAll(".tooltip_matches").data([0]).join('div')
+            .attr("class", "tooltip_matches")
+            .style("opacity", 0);
 
         return <div>
         <div id={"metricChartDiv_"+this.props.the_metric} style={{height:"25vh"}}>

@@ -26,20 +26,23 @@ shouldComponentUpdate(nextProps, nextState){
 render(){ 
 var metrics = ["temperature", "humidity", "apparent_power"];
 var metrics_unit = [" (°F)", " (%)", " (kVA)"];
-var metrics_data = [this.props.temperature_df, this.props.humidity_df, this.props.apparent_power_df]
+var metrics_data = [this.props.temperature_df, this.props.humidity_df, this.props.apparent_power_df];
+var metrics_nan_percentage = [Math.round(this.props.temperature_nans_percentage), 0, 2];
 var mini_card_height = (100/metrics.length) + "%";
 console.log(this.props.temperature_nans_percentage);
+
+
 return (
     <div style={{height: "94vh"}}>
     {metrics.map((metric, metric_index) =>{
         return <Card key={metric_index} style={{height: mini_card_height}}>
         <Card.Header>
           <Grid container direction="row" spacing={1}>
-          <Grid item xs={12} sm={12}>{metric.replaceAll("_", " ")+metrics_unit[metric_index]}</Grid>
+          <Grid item xs={12} sm={12}>{metric.replaceAll("_", " ")+metrics_unit[metric_index]}   {(metrics_nan_percentage[metric_index] > 0)?<i class="fa fa-info-circle matches_question_mark_temperature" aria-hidden="true"></i>:null}</Grid>
           </Grid>
         </Card.Header>
         <Card.Body style={{opacity:(this.props.isLoadingUpdate)?0.4:1}}>
-            {(["temperature", "humidity", "apparent_power"].includes(metric) & (this.props.net_load_df).length >0 & (this.props.temperature_df).length >0)?<MetricsChart the_metric={metric} the_data={metrics_data[metric_index]}></MetricsChart>:null}
+            {(["temperature", "humidity", "apparent_power"].includes(metric) & (this.props.net_load_df).length >0 & (this.props.temperature_df).length >0)?<MetricsChart the_metric={metric} the_data={metrics_data[metric_index]} the_nans_percentage={metrics_nan_percentage[metric_index]}></MetricsChart>:null}
         </Card.Body>
         </Card>
     })}    

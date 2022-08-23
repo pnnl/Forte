@@ -59,9 +59,14 @@ class NetLoad extends Component {
         .call(d3.axisBottom(x)); //removed the ticks
 
         /** Adding and calling Y axis */ 
-        var limit = 1.1*(Math.max(Math.abs(d3.min(net_load_df, function(d) { return d.net_load; })), Math.abs(d3.max(net_load_df, function(d) { return d.net_load; }))))
+        //var limit = 1.1*(Math.max(Math.abs(d3.min(net_load_df, function(d) { return d.net_load; })), Math.abs(d3.max(net_load_df, function(d) { return d.net_load; }))))
+        var upper_limit = d3.max(net_load_df, (d) => { return d.net_load; });
+        upper_limit = (upper_limit>0)?(upper_limit*1.1):(upper_limit*0.9); // increasing upper limit
+        var lower_limit = d3.min(net_load_df, (d) => { return d.net_load; });
+        lower_limit = (lower_limit>0)?(lower_limit*0.9):(lower_limit*1.1); // decreasing lower limit
         const y = d3.scaleLinear()
-        .domain([-limit,limit])
+        //.domain([-limit,limit])
+        .domain([lower_limit,upper_limit])
         .range([ height, 0 ]);
         svg.selectAll(".g_Y").data([0]).join("g")
         .attr("class", "g_Y")

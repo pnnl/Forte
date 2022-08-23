@@ -305,7 +305,7 @@ def validate_start_date(start_date):
 
 def prepare_output_df(y_pred, Y_test, timeline, timeline_original, temperature_original, temperature_nans, humidity, humidity_original, humidity_nans, apparent_power, apparent_power_original, apparent_power_nans):
     net_load = ((Y_test.flatten()).tolist())
-    net_load.extend(y_pred.tolist())
+    net_load.extend((y_pred.flatten()).tolist())
     net_load_type = (["actual"] * Y_test.size)
     net_load_type.extend(["predicted"] * y_pred.size)
     years = (list(range(1,Y_test.size+1)))

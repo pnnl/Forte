@@ -19,6 +19,8 @@ let initialState = {
     temperature_nans_percentage: 0,
     humidity_nans_percentage: 0,
     apparent_power_nans_percentage: 0,
+    solar_penetration_temp: 50,
+    solar_penetration: 50,
 }
 
 const reducer = (state = initialState, action) => {
@@ -75,6 +77,12 @@ const reducer = (state = initialState, action) => {
      } 
     if (action.type === "apparent_power_nans_percentage") {
         return { ...state, apparent_power_nans_percentage: action.value }
+     }
+    if (action.type === "solar_penetration_temp") {
+        return { ...state, solar_penetration_temp: action.value }
+    } 
+    if (action.type === "solar_penetration") {
+        return { ...state, solar_penetration: action.value }
      }         
 
     return state;

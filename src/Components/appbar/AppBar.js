@@ -5,6 +5,7 @@ import { Navbar, Nav, Container } from 'react-bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import TimeSelection from './appbarOptions/TimeSelection';
 import UpdateButton from './appbarOptions/UpdateButton';
+import SolarPenetrationOption from './appbarOptions/SolarPenetrationOption';
 
 
 
@@ -34,6 +35,9 @@ return (
       <Nav  className="me-auto">
         {/* <Nav.Item style={{opacity:(this.props.isLoadingUpdate)?0.4:1}}><GranularitySelectionInitial location={"appbar"}></GranularitySelectionInitial></Nav.Item> */}
         <Nav.Item><TimeSelection></TimeSelection></Nav.Item>
+        <Nav.Item style={{opacity:(this.props.isLoadingUpdate)?0.4:1}}>
+        <SolarPenetrationOption></SolarPenetrationOption>
+        </Nav.Item>
         <Nav.Item style={{opacity:(this.props.isLoadingUpdate)?1:1}}>
         <UpdateButton></UpdateButton>
         </Nav.Item>

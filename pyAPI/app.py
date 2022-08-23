@@ -361,7 +361,7 @@ def processor(start_date="2020-05-01 00:00:00", end_date="2020-05-03 00:00:00", 
         start_date = validate_start_date(req["start_date"])
         end_date = req["end_date"]
         solar_penetration = req["solar_penetration"]
-    print(start_date)
+    print(start_date, solar_penetration)
     sequence_input, y_ground, y_prev, temperature, temperature_original, temperature_nans, temperature_nans_percentage, humidity, humidity_original, humidity_nans, humidity_nans_percentage, apparent_power, apparent_power_original, apparent_power_nans, apparent_power_nans_percentage, elapsed_time_prepare_input, timeline, timeline_original = prepare_input(start_date, end_date, solar_penetration)
     pred_train, elapsed_time_autoencoder = autoencoder_func(sequence_input, solar_penetration)
     latent_gen, elapsed_time_kpf = kPF_func(pred_train, solar_penetration)

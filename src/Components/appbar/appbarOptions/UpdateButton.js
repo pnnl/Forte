@@ -39,6 +39,7 @@ class UpdateButton extends Component {
                 this.props.set_temperature_df(res["temperature_df"]);
                 this.props.set_humidity_df(res["humidity_df"]);
                 this.props.set_apparent_power_df(res["apparent_power_df"]);
+                this.props.set_temperature_nans_percentage(res["temperature_nans_percentage"]);
                 this.props.set_isLoadingUpdate(false);
                 
                 })
@@ -91,6 +92,7 @@ const mapdispatchToprop = (dispatch) => {
         set_temperature_df: (val) => dispatch({ type: "temperature_df", value: val}),
         set_humidity_df: (val) => dispatch({ type: "humidity_df", value: val}),
         set_apparent_power_df: (val) => dispatch({ type: "apparent_power_df", value: val}),
+        set_temperature_nans_percentage: (val) => dispatch({ type: "temperature_nans_percentage", value: val}),
     }
 }
 export default connect(maptstateToprop, mapdispatchToprop)(UpdateButton);

@@ -28,6 +28,7 @@ var metrics = ["temperature", "humidity", "apparent_power"];
 var metrics_unit = [" (°F)", " (%)", " (kVA)"];
 var metrics_data = [this.props.temperature_df, this.props.humidity_df, this.props.apparent_power_df]
 var mini_card_height = (100/metrics.length) + "%";
+console.log(this.props.temperature_nans_percentage);
 return (
     <div style={{height: "94vh"}}>
     {metrics.map((metric, metric_index) =>{
@@ -58,6 +59,7 @@ const maptstateToprop = (state) => {
       temperature_df: state.temperature_df,
       humidity_df: state.humidity_df,
       apparent_power_df : state.apparent_power_df,
+      temperature_nans_percentage: state.temperature_nans_percentage,
   }
 }
 const mapdispatchToprop = (dispatch) => {

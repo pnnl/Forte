@@ -37,6 +37,7 @@ class SolarPenetrationOption extends Component {
         <Select
           labelId="demo-select-small"
           id="demo-select-small"
+          disabled={this.props.isLoadingUpdate}
           value={this.props.solar_penetration_temp}
           label="Solar Penetration Level"
           onChange={this.handleChange}
@@ -57,6 +58,7 @@ class SolarPenetrationOption extends Component {
 const maptstateToprop = (state) => {
     return {
         blank_placeholder:state.blank_placeholder,
+        isLoadingUpdate: state.isLoadingUpdate,
         solar_penetration_temp: state.solar_penetration_temp,
     }
 }

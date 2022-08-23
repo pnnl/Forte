@@ -126,7 +126,7 @@ class MetricsChart extends Component {
                 tooltip.transition()
                   .duration(200)
                   .style("opacity", .9);
-                tooltip.html("Missing data: "+String(self.props.the_nans_percentage)+"% <br> These are interpolated and marked in <span style='color: red'>red</span>")
+                tooltip.html("Missing data: "+String(self.props.the_nans_percentage)+"% <br> These are interpolated and marked in <span style='color: red; font-weight:bold'>red</span>")
                   .style("left", (event.pageX + 5) + "px")
                   .style("top", (event.pageY - 10) + "px");
               })

@@ -122,7 +122,7 @@ class MetricsChart extends Component {
             //.attr("stroke-linejoin", "arcs")
             //.attr("stroke-linecap", "round") 
         
-            d3.selectAll(".matches_question_mark_"+the_metric).on("mouseover", function (event) {
+            d3.selectAll(".metrics_nans_info_icon_"+the_metric).on("mouseover", function (event) {
                 tooltip.transition()
                   .duration(200)
                   .style("opacity", .9);

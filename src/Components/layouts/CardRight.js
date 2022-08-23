@@ -29,7 +29,6 @@ var metrics_unit = [" (°F)", " (%)", " (kVA)"];
 var metrics_data = [this.props.temperature_df, this.props.humidity_df, this.props.apparent_power_df];
 var metrics_nan_percentage = [Math.round(this.props.temperature_nans_percentage), Math.round(this.props.humidity_nans_percentage), Math.round(this.props.apparent_power_nans_percentage)];
 var mini_card_height = (100/metrics.length) + "%";
-console.log(this.props.temperature_nans_percentage);
 
 
 return (
@@ -38,7 +37,7 @@ return (
         return <Card key={metric_index} style={{height: mini_card_height}}>
         <Card.Header>
           <Grid container direction="row" spacing={1}>
-          <Grid item xs={12} sm={12}>{metric.replaceAll("_", " ")+metrics_unit[metric_index]}   {(metrics_nan_percentage[metric_index] > 0)?<i class={"fa fa-info-circle matches_question_mark_"+metric} aria-hidden="true"></i>:null}</Grid>
+          <Grid item xs={12} sm={12}>{metric.replaceAll("_", " ")+metrics_unit[metric_index]}   {(metrics_nan_percentage[metric_index] > 0)?<i className={"fa fa-info-circle metrics_nans_info_icon_"+metric} aria-hidden="true"></i>:null}</Grid>
           </Grid>
         </Card.Header>
         <Card.Body style={{opacity:(this.props.isLoadingUpdate)?0.4:1}}>

@@ -17,6 +17,8 @@ let initialState = {
     humidity_df: [],
     apparent_power_df: [],
     temperature_nans_percentage: 0,
+    humidity_nans_percentage: 0,
+    apparent_power_nans_percentage: 0,
 }
 
 const reducer = (state = initialState, action) => {
@@ -67,7 +69,13 @@ const reducer = (state = initialState, action) => {
      } 
     if (action.type === "temperature_nans_percentage") {
         return { ...state, temperature_nans_percentage: action.value }
-     }       
+     } 
+    if (action.type === "humidity_nans_percentage") {
+        return { ...state, humidity_nans_percentage: action.value }
+     } 
+    if (action.type === "apparent_power_nans_percentage") {
+        return { ...state, apparent_power_nans_percentage: action.value }
+     }         
 
     return state;
 }

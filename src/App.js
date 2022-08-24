@@ -22,7 +22,11 @@ class App extends Component{
 
   componentDidMount(){
     this.props.set_isLoadingUpdate(true); 
-    jsonCall.download(this.props.url + "/api/v@latest/processor", {start_date: "2020-05-01 00:00:00", end_date: "2020-05-03 00:00:00", solar_penetration:50}).then(res =>{
+    var converted_start_date = new Date(this.props.start_date)
+    converted_start_date = (converted_start_date.toISOString()).replace("T", " ").replace(".000Z", "")
+    var converted_end_date = new Date(this.props.end_date)
+    converted_end_date = (converted_end_date.toISOString()).replace("T", " ").replace(".000Z", "")
+    jsonCall.download(this.props.url + "/api/v@latest/processor", {start_date: converted_start_date, end_date: converted_end_date, solar_penetration:this.props.solar_penetration}).then(res =>{
       console.log(res);
       this.props.set_net_load_df(res["net_load_df"]);
       this.props.set_temperature_df(res["temperature_df"]);
@@ -68,6 +72,9 @@ const mapStateToProp = (state) => {
     apparent_power: state.apparent_power,
     humidity: state.humidity,
     temperature: state.temperature,
+    solar_penetration: state.solar_penetration,
+    start_date: state.start_date,
+    end_date: state.end_date,
 
   }
 }

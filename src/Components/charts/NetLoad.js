@@ -22,12 +22,12 @@ class NetLoad extends Component {
     }
 
     create_line_chart(net_load_df){
-        var animation_duration = 1000;
+        var animation_duration = 2000;
         var the_id = "#netLoadChartDiv";   
         const margin = {top: 10, right: 30, bottom: 30, left: 60},
         width = $(the_id).width() - margin.left - margin.right,
         height = $(the_id).height() - margin.top - margin.bottom;
-        console.log(width, height); 
+        //console.log(width, height); 
 
         /** svg1 just sets the width and height of the svg */
         //$(".netLoadChart").empty();
@@ -44,20 +44,29 @@ class NetLoad extends Component {
         const sumstat2 = d3.group(net_load_df, d => d.net_load_type) // group function allows to group the calculation per level of a factor
 
         /** Adding and calling X axis --> it is a date format */
-        const x = d3.scaleLinear()
-        .domain(d3.extent(net_load_df, function(d) { return d.years; }))
-        .range([ 0, width ]);
+        var starting_date = net_load_df[0]["timeline"]
+        var ending_date = net_load_df[net_load_df.length -1]["timeline"]
+        //console.log(starting_date, ending_date)
+        const x = d3.scaleTime()
+        //.domain(d3.extent(net_load_df, function(d) { return d.years; }))
+        .domain([new Date(starting_date), new Date(ending_date)])
+        .range([ 0, width ]); // can add .nice() to force the last tick
         svg.selectAll(".g_X").data([0]).join("g")
         .attr("class", "g_X")  
         .attr("transform", `translate(0, ${height})`)
         .transition()
         .duration(animation_duration)
-        .call(d3.axisBottom(x).ticks(5));
+        .call(d3.axisBottom(x)); //removed the ticks
 
         /** Adding and calling Y axis */ 
-        var limit = 1.1*(Math.max(Math.abs(d3.min(net_load_df, function(d) { return d.net_load; })), Math.abs(d3.max(net_load_df, function(d) { return d.net_load; }))))
+        //var limit = 1.1*(Math.max(Math.abs(d3.min(net_load_df, function(d) { return d.net_load; })), Math.abs(d3.max(net_load_df, function(d) { return d.net_load; }))))
+        var upper_limit = d3.max(net_load_df, (d) => { return d.net_load; });
+        upper_limit = (upper_limit>0)?(upper_limit*1.1):(upper_limit*0.9); // increasing upper limit
+        var lower_limit = d3.min(net_load_df, (d) => { return d.net_load; });
+        lower_limit = (lower_limit>0)?(lower_limit*0.9):(lower_limit*1.1); // decreasing lower limit
         const y = d3.scaleLinear()
-        .domain([-limit,limit])
+        //.domain([-limit,limit])
+        .domain([lower_limit,upper_limit])
         .range([ height, 0 ]);
         svg.selectAll(".g_Y").data([0]).join("g")
         .attr("class", "g_Y")
@@ -113,7 +122,7 @@ class NetLoad extends Component {
             .attr("d", function(d){
             return d3.line()
                 .curve(d3.curveStep)
-                .x(function(d) { return x(d.years); })
+                .x(function(d) { return x(new Date(d.timeline)); })
                 .y(function(d) { return y(d.net_load); })
                 (d[1])
             })

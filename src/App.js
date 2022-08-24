@@ -21,9 +21,21 @@ class App extends Component{
   }
 
   componentDidMount(){
-    jsonCall.download(this.props.url + "/api/v@latest/processor", {start_date: "2020-05-01 00:00:00", end_date: "2020-05-03 00:00:00", solar_penetration:50}).then(res =>{
+    this.props.set_isLoadingUpdate(true); 
+    var converted_start_date = new Date(this.props.start_date)
+    converted_start_date = (converted_start_date.toISOString()).replace("T", " ").replace(".000Z", "")
+    var converted_end_date = new Date(this.props.end_date)
+    converted_end_date = (converted_end_date.toISOString()).replace("T", " ").replace(".000Z", "")
+    jsonCall.download(this.props.url + "/api/v@latest/processor", {start_date: converted_start_date, end_date: converted_end_date, solar_penetration:this.props.solar_penetration}).then(res =>{
       console.log(res);
       this.props.set_net_load_df(res["net_load_df"]);
+      this.props.set_temperature_df(res["temperature_df"]);
+      this.props.set_humidity_df(res["humidity_df"]);
+      this.props.set_apparent_power_df(res["apparent_power_df"]);
+      this.props.set_temperature_nans_percentage(res["temperature_nans_percentage"]);
+      this.props.set_humidity_nans_percentage(res["humidity_nans_percentage"]);
+      this.props.set_apparent_power_nans_percentage(res["apparent_power_nans_percentage"]);
+      this.props.set_isLoadingUpdate(false);
       
       })
     
@@ -54,11 +66,15 @@ const mapStateToProp = (state) => {
   return {
     blank_placeholder: state.blank_placeholder,
     url: state.url,
+    isLoadingUpdate: state.isLoadingUpdate,
     actual_net_load: state.actual_net_load,
     predicted_net_load: state.predicted_net_load,
     apparent_power: state.apparent_power,
     humidity: state.humidity,
     temperature: state.temperature,
+    solar_penetration: state.solar_penetration,
+    start_date: state.start_date,
+    end_date: state.end_date,
 
   }
 }
@@ -66,12 +82,19 @@ const mapStateToProp = (state) => {
 const mapDispatchToProp = (dispatch) => {
   return{
     set_blank_placeholder: (val) => dispatch({ type: "blank_placeholder", value: val}),
+    set_isLoadingUpdate: (val) => dispatch({ type: "isLoadingUpdate", value: val }),
     set_actual_net_load: (val) => dispatch({ type: "actual_net_load", value: val}),
     set_predicted_net_load: (val) => dispatch({ type: "predicted_net_load", value: val}),
     set_apparent_power: (val) => dispatch({ type: "apparent_power", value: val}),
     set_humidity: (val) => dispatch({ type: "humidity", value: val}),
     set_temperature: (val) => dispatch({ type: "temperature", value: val}),
     set_net_load_df: (val) => dispatch({ type: "net_load_df", value: val}),
+    set_temperature_df: (val) => dispatch({ type: "temperature_df", value: val}),
+    set_humidity_df: (val) => dispatch({ type: "humidity_df", value: val}),
+    set_apparent_power_df: (val) => dispatch({ type: "apparent_power_df", value: val}),
+    set_temperature_nans_percentage: (val) => dispatch({ type: "temperature_nans_percentage", value: val}),
+    set_humidity_nans_percentage: (val) => dispatch({ type: "humidity_nans_percentage", value: val}),
+    set_apparent_power_nans_percentage: (val) => dispatch({ type: "apparent_power_nans_percentage", value: val}),
   }
 }
 export default connect(mapStateToProp,mapDispatchToProp)(App);

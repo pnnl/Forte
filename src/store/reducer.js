@@ -1,10 +1,10 @@
 let initialState = {
     blank_placeholder: null,
     url: "http://localhost:5000",
-    start_date: 1577923200000,
-    end_date: 1578009600000,
-    start_date_temp: 1577923200000,
-    end_date_temp: 1578009600000,
+    start_date: 1588291200000, // https://www.epochconverter.com/ (Use the timestamp in milliseconds)
+    end_date: 1588464000000,
+    start_date_temp: 1588291200000,
+    end_date_temp: 1588464000000,
     isLoadingUpdate: false,
     color_buttons: {"general": "rgb(224,224,224)", "focused": "rgb(108, 117, 125)"},
     actual_net_load: [],
@@ -13,6 +13,14 @@ let initialState = {
     humidity: [],
     temperature: [],
     net_load_df: [],
+    temperature_df: [],
+    humidity_df: [],
+    apparent_power_df: [],
+    temperature_nans_percentage: 0,
+    humidity_nans_percentage: 0,
+    apparent_power_nans_percentage: 0,
+    solar_penetration_temp: 50,
+    solar_penetration: 50,
 }
 
 const reducer = (state = initialState, action) => {
@@ -49,9 +57,33 @@ const reducer = (state = initialState, action) => {
     if (action.type === "temperature") {
         return { ...state, temperature: action.value }
      }
-     if (action.type === "net_load_df") {
+    if (action.type === "net_load_df") {
         return { ...state, net_load_df: action.value }
-     }   
+     }
+    if (action.type === "temperature_df") {
+        return { ...state, temperature_df: action.value }
+     } 
+    if (action.type === "humidity_df") {
+        return { ...state, humidity_df: action.value }
+     } 
+    if (action.type === "apparent_power_df") {
+        return { ...state, apparent_power_df: action.value }
+     } 
+    if (action.type === "temperature_nans_percentage") {
+        return { ...state, temperature_nans_percentage: action.value }
+     } 
+    if (action.type === "humidity_nans_percentage") {
+        return { ...state, humidity_nans_percentage: action.value }
+     } 
+    if (action.type === "apparent_power_nans_percentage") {
+        return { ...state, apparent_power_nans_percentage: action.value }
+     }
+    if (action.type === "solar_penetration_temp") {
+        return { ...state, solar_penetration_temp: action.value }
+    } 
+    if (action.type === "solar_penetration") {
+        return { ...state, solar_penetration: action.value }
+     }         
 
     return state;
 }

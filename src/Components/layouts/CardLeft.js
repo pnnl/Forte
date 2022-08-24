@@ -32,11 +32,11 @@ return (
     <Card style={{height: "94vh"}}>
       <Card.Header>
         <Grid container direction="row" spacing={1}>
-        <Grid item xs={12} sm={12}>Net Load</Grid>
+        <Grid item xs={12} sm={12}>Net Load (kW)</Grid>
         </Grid>
       </Card.Header>
-      <Card.Body>
-          <NetLoad></NetLoad>
+      <Card.Body style={{opacity:(this.props.isLoadingUpdate)?0.4:1}}>
+          {((this.props.net_load_df).length >0)?<NetLoad></NetLoad>:null}
       </Card.Body>
       </Card>
 
@@ -48,6 +48,8 @@ return (
 const maptstateToprop = (state) => {
   return {
       blank_placeholder: state.blank_placeholder,
+      isLoadingUpdate: state.isLoadingUpdate,
+      net_load_df: state.net_load_df,
   }
 }
 const mapdispatchToprop = (dispatch) => {

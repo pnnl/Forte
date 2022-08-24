@@ -33,6 +33,7 @@ class TimeSelection extends Component {
         <LocalizationProvider dateAdapter={AdapterMoment} >   
             <DateTimePicker
                 label="Start date"
+                disabled={this.props.isLoadingUpdate}
                 renderInput={(params) => <TextField {...params} />}
                 //value={new Date(this.props.start_date_temp).toLocaleString("en-US", {timeZone: "UTC"})}
                 value={new Date(this.props.start_date_temp)}
@@ -42,6 +43,7 @@ class TimeSelection extends Component {
             />&nbsp;
              <DateTimePicker
                 label="End date"
+                disabled={this.props.isLoadingUpdate}
                 renderInput={(params) => <TextField {...params} />}
                 // value={new Date(this.props.end_date_temp).toLocaleString("en-US", {timeZone: "UTC"})}
                 value={new Date(this.props.end_date_temp)}
@@ -58,6 +60,7 @@ class TimeSelection extends Component {
 const maptstateToprop = (state) => {
     return {
         blank_placeholder:state.blank_placeholder,
+        isLoadingUpdate: state.isLoadingUpdate,
         start_date_temp: state.start_date_temp,
         end_date_temp: state.end_date_temp,
     }

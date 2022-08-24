@@ -27,6 +27,14 @@ class MetricsChart extends Component {
       
         return new Date(Math.floor(date.getTime() / ms) * ms);
       }
+    convert_to_Array_of_Arrays(input){
+        var output = input.map(function(obj) {
+            return Object.keys(obj).sort().map(function(key) { 
+              return obj[key];
+            });
+          });
+        return output;  
+    }  
 
     create_line_chart(the_data, the_metric){
         var self = this;
@@ -85,6 +93,26 @@ class MetricsChart extends Component {
         //.range(['#e41a1c','#377eb8','#4daf4a','#984ea3','#ff7f00','#ffff33','#a65628','#f781bf','#999999'])
         .range(["#377eb8"])
 
+        function dragstarted(d) {
+            d3.select(this).raise().classed('active', true);
+        }
+        
+        function dragged(event, d) {
+            d[0] = x.invert(event.x);
+            d[1] = y.invert(event.y);
+            d3.select(this)
+                .attr('cx', x(d[0]))
+                .attr('cy', y(d[1]))
+            //svg.select('path').attr('d', line);
+        }
+        
+        function dragended(d) {
+            d3.select(this).classed('active', false);
+        }
+        var drag = d3.drag()
+                    .on('start', dragstarted)
+                    .on('drag', dragged)
+                    .on('end', dragended);
 
         /** Drawing the lines */ 
             // Set the gradient
@@ -121,7 +149,21 @@ class MetricsChart extends Component {
             }) 
             //.attr("stroke-linejoin", "arcs")
             //.attr("stroke-linecap", "round") 
-        
+            // var points = this.convert_to_Array_of_Arrays(the_data);
+            // console.log(points);
+            svg.selectAll('.my_circles_'+the_metric)
+                .data(the_data, (d)=>[d.net_load, d.dummy, d.timeline, d.wasNan])
+                .join("circle")
+                .attr("class", "my_circles_"+the_metric)
+                .attr('r', 1.0)
+                .attr('cx', function(d) { console.log(d); return x(new Date(d.timeline));  }) 
+                .attr('cy', function(d) { return y(d[the_metric]); }) 
+                .style('cursor', 'pointer')
+                .style('fill', 'steelblue');
+
+            // focus.selectAll('circle')
+            //             .call(drag);
+            // info icon about missing data
             d3.selectAll(".metrics_nans_info_icon_"+the_metric).on("mouseover", function (event) {
                 tooltip.transition()
                   .duration(200)

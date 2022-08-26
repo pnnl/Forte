@@ -72,3 +72,6 @@ This section has moved here: [https://facebook.github.io/create-react-app/docs/t
 
 # Interface
 ![Screenshot on 08/25/2022](images/Screenshot_08252022.png)
+
+# Interface GIF
+![Screen Capture GIF on 08/25/2022](images/ScreenCapture.gif)

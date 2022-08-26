@@ -6,7 +6,7 @@ import { Card, CardGroup} from 'react-bootstrap';
 import Grid from '@mui/material/Grid';
 import * as $ from "jquery";
 import 'bootstrap/dist/css/bootstrap.min.css';
-import MetricsChart from '../charts/MetricsChart';
+import MetricsChart from '../charts/MetricsChart2';
 
 export class  CardRight extends Component {
   

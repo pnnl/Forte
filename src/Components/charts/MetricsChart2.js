@@ -31,7 +31,7 @@ class MetricsChart extends Component {
     convert_to_Array_of_Arrays(input, the_metric){
         var output = input.map(function(obj) {
             return [obj.dummy, obj.timeline, obj.wasNan, obj[the_metric]]
-          });
+          }); 
         return output;  
     }  
 
@@ -95,6 +95,11 @@ class MetricsChart extends Component {
         //.range(['#e41a1c','#377eb8','#4daf4a','#984ea3','#ff7f00','#ffff33','#a65628','#f781bf','#999999'])
         .range(["#377eb8"]);
 
+        var line = d3.line()
+            .curve(d3.curveStep)
+            .x(function(d) { return xScale(new Date(d[1])); })
+            .y(function(d) { return yScale(d[3]); });
+
         
         function dragstarted(d) {
             d3.select(this).raise().classed('active', true);
@@ -107,23 +112,15 @@ class MetricsChart extends Component {
                 .attr('cx', xScale(d[0]))
                 .attr('cy', yScale(d[1]))
             // need to update net_load_df and then sumstat2   
-            var edited_timeline = (d[0].toISOString()).replace("T", " ").replace(".000Z", "");
-            //console.log(edited_timeline);
-            var obj = the_data.find(f=>f.timeline===edited_timeline);
-            if(obj){obj.net_load=d[1];}
-            sumstat2 =  d3.group(the_data, d => d.dummy);
+            // var edited_timeline = (d[0].toISOString()).replace("T", " ").replace(".000Z", "");
+            // //console.log(edited_timeline);
+            // var obj = the_data.find(f=>f.timeline===edited_timeline);
+            // if(obj){obj.net_load=d[1];}
+            // formatted_array = self.convert_to_Array_of_Arrays(the_data, the_metric)
+            // sumstat2 =  d3.group(the_data, d => d.dummy);
             // console.log(edited_timeline, sumstat2);
+            svg.selectAll(".lineCharts_metric_"+the_metric).attr("d", (el) =>{return line(el)})
             
-            // svg.selectAll(".lineCharts_metric_"+the_metric).data(sumstat2).join("path").attr("class", "lineCharts_metric_"+the_metric).attr("fill", "none")
-            // .attr("stroke", function(d){return "url(#line-gradient_"+the_metric+")" })
-            // .attr("stroke-width", 1.5)
-            // .attr('d',  function(d){
-            //     return d3.line()
-            //         .curve(d3.curveStep)
-            //         .x(function(d) { return x(new Date(d.timeline)); })
-            //         .y(function(d) { return y(d[the_metric]); })
-            //         (d[1])
-            //     });
         }
         
         function dragended(d) {
@@ -138,10 +135,7 @@ class MetricsChart extends Component {
                     .on('end', dragended);
 
         /** Drawing the lines */ 
-            var line = d3.line()
-            //.curve(d3.curveStep)
-            .x(function(d) { return xScale(new Date(d[1])); })
-            .y(function(d) { return yScale(d[3]); });
+            
             // Set the gradient
             svg.selectAll(".linearGradient_"+the_metric)
             .data([0])
@@ -152,10 +146,8 @@ class MetricsChart extends Component {
             .attr("x1", 0)
             .attr("x2", width)
             .selectAll("stop")
-            .data(the_data)
+            .data(formatted_array)
             .join("stop")
-            // .attr("offset", function(d) { return x(new Date(d.timeline))/width; })
-            // .attr("stop-color", function(d) { return (d.wasNan)?"red":"#377eb8"; });
             .attr("offset", function(d) { return xScale(new Date(d[1]))/width; })
             .attr("stop-color", function(d) { return (d[2])?"red":"#377eb8"; });
 
@@ -170,26 +162,19 @@ class MetricsChart extends Component {
             //.on("mousemove", (event)=>{console.log(this.roundToNearest15(x.invert(d3.pointer(event)[0])))})
             .transition()
             .duration(animation_duration)
-            .attr("d", (el) =>{console.log(line);return line});
-            // .attr("d", function(d){
-            // return d3.line()
-            //     .curve(d3.curveStep)
-            //     .x(function(d) { return x(new Date(d.timeline)); })
-            //     .y(function(d) { return y(d[the_metric]); })
-            //     (d[1])
-            // }) 
+            .attr("d", (el) =>{return line(el)});
             //.attr("stroke-linejoin", "arcs")
             //.attr("stroke-linecap", "round") 
             
-            // svg.selectAll('.my_circles_'+the_metric)
-            //     .data(the_data, (d)=>[d.net_load, d.dummy, d.timeline, d.wasNan])
-            //     .join("circle")
-            //     .attr("class", "my_circles_"+the_metric)
-            //     .attr('r', 1.0)
-            //     .attr('cx', function(d) { return x(new Date(d.timeline));  }) 
-            //     .attr('cy', function(d) { return y(d[the_metric]); }) 
-            //     .style('cursor', 'pointer')
-            //     .style('fill', 'steelblue');
+            svg.selectAll('.my_circles_'+the_metric)
+                .data(the_data, (d)=>[d.net_load, d.dummy, d.timeline, d.wasNan])
+                .join("circle")
+                .attr("class", "my_circles_"+the_metric)
+                .attr('r', 1.0)
+                .attr('cx', function(d) { return xScale(new Date(d.timeline));  }) 
+                .attr('cy', function(d) { return yScale(d[the_metric]); }) 
+                .style('cursor', 'pointer')
+                .style('fill', 'steelblue');
 
             svg.selectAll('.my_circles_'+the_metric)
                         .call(drag);

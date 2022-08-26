@@ -106,28 +106,31 @@ class MetricsChart extends Component {
         }
         
         function dragged(event, d) {
-            d[0] = self.roundToNearest15(xScale.invert(event.x)); //this.roundToNearest15(x.invert(event.x))
-            d[1] = yScale.invert(event.y);
+            console.log(event.x, event.y, d);
+            var d_0 = self.roundToNearest15(xScale.invert(event.x)); //this.roundToNearest15(x.invert(event.x))
+            var d_1 = yScale.invert(event.y);
             d3.select(this)
-                .attr('cx', xScale(d[0]))
-                .attr('cy', yScale(d[1]))
-            // need to update net_load_df and then sumstat2   
-            // var edited_timeline = (d[0].toISOString()).replace("T", " ").replace(".000Z", "");
-            // //console.log(edited_timeline);
-            // var obj = the_data.find(f=>f.timeline===edited_timeline);
-            // if(obj){obj.net_load=d[1];}
-            // formatted_array = self.convert_to_Array_of_Arrays(the_data, the_metric)
-            // sumstat2 =  d3.group(the_data, d => d.dummy);
-            // console.log(edited_timeline, sumstat2);
-            svg.selectAll(".lineCharts_metric_"+the_metric).attr("d", (el) =>{return line(el)})
+                .attr('cx', xScale(d_0))
+                .attr('cy', yScale(d_1))
+            //need to update net_load_df and then sumstat2   
+            var edited_timeline = (d_0.toISOString()).replace("T", " ").replace(".000Z", "");
+            //console.log(edited_timeline);
+            var obj = the_data.find(f=>f.timeline===edited_timeline);
+            if(obj){obj[the_metric]=d_1;}
+            var old_formatted_array = formatted_array;
+            formatted_array = self.convert_to_Array_of_Arrays(the_data, the_metric)
+            console.log(obj, old_formatted_array, formatted_array)
+            //console.log(old_formatted_array === formatted_array)
+            //sumstat2 =  d3.group(the_data, d => d.dummy);
+            //console.log(edited_timeline, sumstat2);
+            svg.selectAll(".lineCharts_metric_"+the_metric).data([formatted_array])
+            .attr("d", (el) =>{return line(el)})
             
         }
         
-        function dragended(d) {
+        function dragended(event,d) {
             d3.select(this).classed('active', false);
-            var tempo = {...self.props.temp_check};
-            tempo[the_metric] = sumstat2;
-            self.props.set_temp_check(tempo);
+            
         }
         var drag = d3.drag()
                     .on('start', dragstarted)

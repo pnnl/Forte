@@ -119,8 +119,8 @@ class MetricsChart extends Component {
             var d_0 = self.roundToNearest15(xScale.invert(event.x));
             var d_1 = yScale.invert(event.y);
             d3.select(this)
-                .attr('cx', xScale(d_0))
-                .attr('cy', yScale(d_1))
+                .attr('x', xScale(d_0))
+                .attr('y', yScale(d_1))
             //need to update net_load_df and then sumstat2   
             var edited_timeline = toLocaleUTCDateString(d_0);
             var obj = the_data.find(f=>f.timeline===edited_timeline);
@@ -177,18 +177,20 @@ class MetricsChart extends Component {
             //.attr("stroke-linejoin", "arcs")
             //.attr("stroke-linecap", "round") 
             
-            svg.selectAll('.my_circles_'+the_metric)
-                .data(the_data, (d)=>[d.net_load, d.dummy, d.timeline, d.wasNan])
-                .join("circle")
-                .attr("class", "my_circles_"+the_metric)
-                .attr('r', 1.0)
-                .attr('cx', function(d) { return xScale(new Date(d.timeline));  }) 
-                .attr('cy', function(d) { return yScale(d[the_metric]); }) 
-                .style('cursor', 'pointer')
-                .style('fill', 'steelblue');
+            // svg.selectAll('.my_circles_'+the_metric)
+            //     .data(the_data, (d)=>[d.net_load, d.dummy, d.timeline, d.wasNan])
+            //     .join("circle")
+            //     .attr("class", "my_circles_"+the_metric)
+            //     .attr('r', 1.0)
+            //     .attr('cx', function(d) { return xScale(new Date(d.timeline));  }) 
+            //     .attr('cy', function(d) { return yScale(d[the_metric]); }) 
+            //     .style('cursor', 'pointer')
+            //     .style('fill', 'steelblue');
 
-            svg.selectAll('.my_circles_'+the_metric)
-                        .call(drag);
+            // svg.selectAll('.my_circles_'+the_metric)
+            //             .call(drag);
+            svg.selectAll(".lineCharts_metric_"+the_metric)
+                        .call(drag);            
 
             // info icon about missing data
             d3.selectAll(".metrics_nans_info_icon_"+the_metric).on("mouseover", function (event) {

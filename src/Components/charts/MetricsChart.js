@@ -12,6 +12,7 @@ class MetricsChart extends Component {
     constructor(props) {
         super(props)
         console.log();
+
     }
     componentDidMount() {
         //this.setState({ temp: 0 });
@@ -27,11 +28,9 @@ class MetricsChart extends Component {
       
         return new Date(Math.floor(date.getTime() / ms) * ms);
       }
-    convert_to_Array_of_Arrays(input){
+    convert_to_Array_of_Arrays(input, the_metric){
         var output = input.map(function(obj) {
-            return Object.keys(obj).sort().map(function(key) { 
-              return obj[key];
-            });
+            return [obj.dummy, obj.timeline, obj.wasNan, obj[the_metric]]
           });
         return output;  
     }  
@@ -43,6 +42,9 @@ class MetricsChart extends Component {
         const margin = {top: 10, right: 30, bottom: 30, left: 60},
         width = $(the_id).width() - margin.left - margin.right,
         height = $(the_id).height() - margin.top - margin.bottom;
+
+        var formatted_array = this.convert_to_Array_of_Arrays(the_data, the_metric);
+        console.log(formatted_array);
 
         //the_data = the_data.filter((d) => d.temperature !== 99999); // removing NaN
 
@@ -58,7 +60,7 @@ class MetricsChart extends Component {
 
 
         /** Grouping the data: in order to draw one line per group */
-        var sumstat2 = d3.group(the_data, d => d.dummy) // group function allows to group the calculation per level of a factor
+        var sumstat2 = (((this.props.temp_check)[the_metric]).length === 0)?(d3.group(the_data, d => d.dummy)):((this.props.temp_check)[the_metric]) // group function allows to group the calculation per level of a factor
 
         /** Adding and calling X axis --> it is a date format */
         var starting_date = the_data[0]["timeline"]
@@ -93,9 +95,6 @@ class MetricsChart extends Component {
         //.range(['#e41a1c','#377eb8','#4daf4a','#984ea3','#ff7f00','#ffff33','#a65628','#f781bf','#999999'])
         .range(["#377eb8"]);
 
-        var line = d3.line()
-                .x(function(d) { return x(new Date(d.timeline)); })
-                .y(function(d) { return y(d[the_metric]); });
         
         function dragstarted(d) {
             d3.select(this).raise().classed('active', true);
@@ -114,17 +113,24 @@ class MetricsChart extends Component {
             if(obj){obj.net_load=d[1];}
             sumstat2 =  d3.group(the_data, d => d.dummy);
             console.log(edited_timeline, sumstat2);
-            svg.select(".lineCharts_metric_"+the_metric).data(sumstat2).join("path").attr("class", "lineCharts_metric_"+the_metric).attr('d',  function(d){
-                return d3.line()
-                    .curve(d3.curveStep)
-                    .x(function(d) { return x(new Date(d.timeline)); })
-                    .y(function(d) { return y(d[the_metric]); })
-                    (d[1])
-                });
+            
+            // svg.selectAll(".lineCharts_metric_"+the_metric).data(sumstat2).join("path").attr("class", "lineCharts_metric_"+the_metric).attr("fill", "none")
+            // .attr("stroke", function(d){return "url(#line-gradient_"+the_metric+")" })
+            // .attr("stroke-width", 1.5)
+            // .attr('d',  function(d){
+            //     return d3.line()
+            //         .curve(d3.curveStep)
+            //         .x(function(d) { return x(new Date(d.timeline)); })
+            //         .y(function(d) { return y(d[the_metric]); })
+            //         (d[1])
+            //     });
         }
         
         function dragended(d) {
             d3.select(this).classed('active', false);
+            var tempo = {...self.props.temp_check};
+            tempo[the_metric] = sumstat2;
+            self.props.set_temp_check(tempo);
         }
         var drag = d3.drag()
                     .on('start', dragstarted)
@@ -168,15 +174,15 @@ class MetricsChart extends Component {
             //.attr("stroke-linejoin", "arcs")
             //.attr("stroke-linecap", "round") 
             
-            // svg.selectAll('.my_circles_'+the_metric)
-            //     .data(the_data, (d)=>[d.net_load, d.dummy, d.timeline, d.wasNan])
-            //     .join("circle")
-            //     .attr("class", "my_circles_"+the_metric)
-            //     .attr('r', 1.0)
-            //     .attr('cx', function(d) { return x(new Date(d.timeline));  }) 
-            //     .attr('cy', function(d) { return y(d[the_metric]); }) 
-            //     .style('cursor', 'pointer')
-            //     .style('fill', 'steelblue');
+            svg.selectAll('.my_circles_'+the_metric)
+                .data(the_data, (d)=>[d.net_load, d.dummy, d.timeline, d.wasNan])
+                .join("circle")
+                .attr("class", "my_circles_"+the_metric)
+                .attr('r', 1.0)
+                .attr('cx', function(d) { return x(new Date(d.timeline));  }) 
+                .attr('cy', function(d) { return y(d[the_metric]); }) 
+                .style('cursor', 'pointer')
+                .style('fill', 'steelblue');
 
             svg.selectAll('.my_circles_'+the_metric)
                         .call(drag);
@@ -216,11 +222,13 @@ const maptstateToprop = (state) => {
     return {
         blank_placeholder:state.blank_placeholder,
         net_load_df: state.net_load_df,
+        temp_check: state.temp_check,
     }
 }
 const mapdispatchToprop = (dispatch) => {
     return {
         set_blank_placeholder: (val) => dispatch({ type: "blank_placeholder", value: val }),
+        set_temp_check: (val) => dispatch({ type: "temp_check", value: val }),
     }
 }
 export default connect(maptstateToprop, mapdispatchToprop)(MetricsChart);

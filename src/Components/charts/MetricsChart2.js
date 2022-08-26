@@ -5,12 +5,14 @@ import { connect } from "react-redux";
 import * as $ from "jquery";
 import * as d3 from "d3";
 import _ from 'lodash';
+import moment from 'moment-timezone';
 
 var tooltip;
 
 class MetricsChart extends Component {
     constructor(props) {
-        super(props)
+        super(props);
+        moment.tz.setDefault('UTC');
         console.log();
 
     }
@@ -22,7 +24,7 @@ class MetricsChart extends Component {
         this.create_line_chart(this.props.the_data, this.props.the_metric);
     }
 
-    roundToNearest15(date = new Date()) {
+    roundToNearest15(date) {
         const minutes = 15;
         const ms = 1000 * 60 * minutes;
       
@@ -104,22 +106,28 @@ class MetricsChart extends Component {
         function dragstarted(d) {
             d3.select(this).raise().classed('active', true);
         }
+
+        function toLocaleUTCDateString(date) {
+            // https://stackoverflow.com/a/55571869/13125348
+            const timeDiff = date.getTimezoneOffset() * 60000;
+            const adjustedDate = new Date(date.valueOf() - timeDiff);
+            return adjustedDate.toISOString().replace("T", " ").replace(".000Z", "");
+        }
         
         function dragged(event, d) {
-            console.log(event.x, event.y, d);
-            var d_0 = self.roundToNearest15(xScale.invert(event.x)); //this.roundToNearest15(x.invert(event.x))
+            console.log(event.x, event.y, d, xScale.invert(event.x));
+            var d_0 = self.roundToNearest15(xScale.invert(event.x));
             var d_1 = yScale.invert(event.y);
             d3.select(this)
                 .attr('cx', xScale(d_0))
                 .attr('cy', yScale(d_1))
             //need to update net_load_df and then sumstat2   
-            var edited_timeline = (d_0.toISOString()).replace("T", " ").replace(".000Z", "");
-            //console.log(edited_timeline);
+            var edited_timeline = toLocaleUTCDateString(d_0);
             var obj = the_data.find(f=>f.timeline===edited_timeline);
             if(obj){obj[the_metric]=d_1;}
             var old_formatted_array = formatted_array;
             formatted_array = self.convert_to_Array_of_Arrays(the_data, the_metric)
-            console.log(obj, old_formatted_array, formatted_array)
+            //console.log(obj, old_formatted_array, formatted_array)
             //console.log(old_formatted_array === formatted_array)
             //sumstat2 =  d3.group(the_data, d => d.dummy);
             //console.log(edited_timeline, sumstat2);

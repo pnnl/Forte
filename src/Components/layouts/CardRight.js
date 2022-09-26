@@ -49,7 +49,7 @@ return (
             converted_end_date = (converted_end_date.toISOString()).replace("T", " ").replace(".000Z", "")
             console.log(this.props.updated_temperature);
 
-            jsonCall.download(this.props.url + "/api/v1.2/processor", {start_date: converted_start_date, end_date: converted_end_date, solar_penetration:this.props.solar_penetration_temp}).then(res =>{
+            jsonCall.download(this.props.url + "/api/v1.2/processor", {start_date: converted_start_date, end_date: converted_end_date, solar_penetration:this.props.solar_penetration_temp, temperature_updated:1, updated_temperature:this.props.updated_temperature}).then(res =>{
               console.log(res);
               this.props.set_net_load_df(res["net_load_df"]);
               this.props.set_temperature_df(res["temperature_df"]);

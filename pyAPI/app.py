@@ -145,8 +145,9 @@ app.logger.info(loading_message)
 
 ### Pipeline functions and others (non-callable externally) ###
 
-def prepare_input(start_date, end_date, solar_penetration):
+def prepare_input(start_date, end_date, solar_penetration, updated_temperature):
     t = time.process_time()
+    if(len(updated_temperature)>0): print(updated_temperature)
     A=pd.read_csv(path_parent+"/data/inputs/df1_solar_"+str(solar_penetration)+"_pen.csv") # Reading file
     my_data = A.loc[(A['min_t'] >= start_date) & (A['min_t'] < end_date)]
     my_data.reset_index(inplace=True, drop=True)
@@ -157,6 +158,11 @@ def prepare_input(start_date, end_date, solar_penetration):
     humidity_nans_percentage = (sum(humidity_nans)/len(humidity_nans))*100
     apparent_power_nans_percentage = (sum(apparent_power_nans)/len(apparent_power_nans))*100
     #my_data=my_data.fillna(99999)
+    # Injecting updated temperature
+    temperature_column =[]
+    if(len(updated_temperature)>0):
+        for item in updated_temperature: temperature_column.append(item[3])
+        my_data['temp'] = temperature_column    
     my_data = my_data.interpolate(method="linear", axis=0, limit_direction='both') # linear interpolation column by column; both directions so that the first and last columns are not left alone
     #my_data = A
     timeline = my_data['min_t'].to_list() # capturing the timeline called
@@ -350,7 +356,7 @@ def processor_v1(start_date="2020-05-01 00:00:00", end_date="2020-05-03 00:00:00
     return response;
 
 @app.route('/api/v1.1/processor',methods = ['POST', 'GET'])
-@app.route('/api/v@latest/processor',methods = ['POST', 'GET'])
+#@app.route('/api/v@latest/processor',methods = ['POST', 'GET'])
 def processor(start_date="2020-05-01 00:00:00", end_date="2020-05-03 00:00:00", solar_penetration=50):
     t = time.process_time()
     #start_date, end_date, solar_penetration = "2020-05-01 00:00:00", "2020-05-03 00:00:00", 50
@@ -377,19 +383,22 @@ def processor(start_date="2020-05-01 00:00:00", end_date="2020-05-03 00:00:00", 
     return response;
 
 @app.route('/api/v1.2/processor',methods = ['POST', 'GET'])
-#@app.route('/api/v@latest/processor',methods = ['POST', 'GET'])
+@app.route('/api/v@latest/processor',methods = ['POST', 'GET'])
 def processor2(start_date="2020-05-01 00:00:00", end_date="2020-05-03 00:00:00", solar_penetration=50):
     t = time.process_time()
     #start_date, end_date, solar_penetration = "2020-05-01 00:00:00", "2020-05-03 00:00:00", 50
     start_date = validate_start_date(start_date)
+    updated_temperature =[]
     if(request.is_json):
         req = request.get_json()
         print("Reading JSON")
         start_date = validate_start_date(req["start_date"])
         end_date = req["end_date"]
         solar_penetration = req["solar_penetration"]
+        if(req["temperature_updated"] ==1): 
+            updated_temperature = req["updated_temperature"]
     print(start_date, solar_penetration)
-    sequence_input, y_ground, y_prev, temperature, temperature_original, temperature_nans, temperature_nans_percentage, humidity, humidity_original, humidity_nans, humidity_nans_percentage, apparent_power, apparent_power_original, apparent_power_nans, apparent_power_nans_percentage, elapsed_time_prepare_input, timeline, timeline_original = prepare_input(start_date, end_date, solar_penetration)
+    sequence_input, y_ground, y_prev, temperature, temperature_original, temperature_nans, temperature_nans_percentage, humidity, humidity_original, humidity_nans, humidity_nans_percentage, apparent_power, apparent_power_original, apparent_power_nans, apparent_power_nans_percentage, elapsed_time_prepare_input, timeline, timeline_original = prepare_input(start_date, end_date, solar_penetration, updated_temperature)
     pred_train, elapsed_time_autoencoder = autoencoder_func(sequence_input, solar_penetration)
     latent_gen, elapsed_time_kpf = kPF_func(pred_train, solar_penetration)
     #y_pred, Y_test, mae, mape, crps, pbb, mse, elapsed_time_lstm = lstm_func(latent_gen, sequence_input, pred_train, y_ground, y_prev)

@@ -47,7 +47,7 @@ return (
             {/* <Grid item xs={1} sm={1}></Grid> */}
             <Grid item xs={3} sm={3}>
               <Grid container direction="row" spacing={3}>
-                <Grid item xs={5} sm={5}>{(["temperature"].includes(metric))?<Tooltip title={(this.props.isLoadingUpdate)?"Loading":(((this.props.updated_temperature).length===0)?"Drag this chart to make changes":"Click the button to see the changes")} placement="top" arrow><span><Button size="small"  color="secondary"  disabled={this.props.isLoadingUpdate || (this.props.updated_temperature).length===0}  style={{ backgroundColor: "#efefef", opacity: 1, borderRadius: 0, color: (this.props.isLoadingUpdate || (this.props.updated_temperature).length===0)?null:"black",  marginTop: -2, textTransform: 'none' }}
+                <Grid item xs={5} sm={5}>{(["temperature", "humidity"].includes(metric))?<Tooltip title={(this.props.isLoadingUpdate)?"Loading":(((this.props.updated_temperature).length===0)?"Drag this chart to make changes":"Click the button to see the changes")} placement="top" arrow><span><Button size="small"  color="secondary"  disabled={this.props.isLoadingUpdate || (this.props.updated_temperature).length===0}  style={{ backgroundColor: "#efefef", opacity: 1, borderRadius: 0, color: (this.props.isLoadingUpdate || (this.props.updated_temperature).length===0)?null:"black",  marginTop: -2, textTransform: 'none' }}
                 onClick={()=>{
                   this.props.set_isLoadingUpdate(true);
                   var converted_start_date = new Date(this.props.start_date_temp)
@@ -56,7 +56,7 @@ return (
                   converted_end_date = (converted_end_date.toISOString()).replace("T", " ").replace(".000Z", "")
                   
 
-                  jsonCall.download(this.props.url + "/api/v1.2/processor", {start_date: converted_start_date, end_date: converted_end_date, solar_penetration:this.props.solar_penetration_temp, temperature_updated:0}).then(res =>{
+                  jsonCall.download(this.props.url + "/api/v@latest/processor", {start_date: converted_start_date, end_date: converted_end_date, solar_penetration:this.props.solar_penetration_temp, temperature_updated:0}).then(res =>{
                     console.log(res);
                     this.props.set_net_load_df(res["net_load_df"]);
                     this.props.set_temperature_df(res["temperature_df"]);
@@ -70,7 +70,7 @@ return (
                     
                     })
                 }}>{this.props.isLoadingUpdate ? 'Loading...' : 'Reset'}</Button></span></Tooltip>:null}</Grid>
-                <Grid item xs={5} sm={5}>{(["temperature"].includes(metric))?<Tooltip title={(this.props.isLoadingUpdate)?"Loading":(((this.props.updated_temperature).length===0)?"Drag this chart to make changes":"Click the button to see the changes")} placement="top" arrow><span><Button size="small"  color="secondary"  disabled={this.props.isLoadingUpdate || (this.props.updated_temperature).length===0}  style={{ backgroundColor: "#efefef", opacity: 1, borderRadius: 0, color: (this.props.isLoadingUpdate || (this.props.updated_temperature).length===0)?null:"black",  marginTop: -2, textTransform: 'none' }}
+                <Grid item xs={5} sm={5}>{(["temperature", "humidity"].includes(metric))?<Tooltip title={(this.props.isLoadingUpdate)?"Loading":(((this.props.updated_temperature).length===0)?"Drag this chart to make changes":"Click the button to see the changes")} placement="top" arrow><span><Button size="small"  color="secondary"  disabled={this.props.isLoadingUpdate || (this.props.updated_temperature).length===0}  style={{ backgroundColor: "#efefef", opacity: 1, borderRadius: 0, color: (this.props.isLoadingUpdate || (this.props.updated_temperature).length===0)?null:"black",  marginTop: -2, textTransform: 'none' }}
                 onClick={()=>{
                   this.props.set_isLoadingUpdate(true);
                   var converted_start_date = new Date(this.props.start_date_temp)
@@ -79,7 +79,7 @@ return (
                   converted_end_date = (converted_end_date.toISOString()).replace("T", " ").replace(".000Z", "")
                   
 
-                  jsonCall.download(this.props.url + "/api/v1.2/processor", {start_date: converted_start_date, end_date: converted_end_date, solar_penetration:this.props.solar_penetration_temp, temperature_updated:1, updated_temperature:this.props.updated_temperature}).then(res =>{
+                  jsonCall.download(this.props.url + "/api/v@latest/processor", {start_date: converted_start_date, end_date: converted_end_date, solar_penetration:this.props.solar_penetration_temp, temperature_updated:((this.props.updated_temperature).length>0)?1:0, updated_temperature:this.props.updated_temperature, humidity_updated:((this.props.updated_humidity).length>0)?1:0, updated_humidity:this.props.updated_humidity, apparent_power_updated:((this.props.updated_apparent_power).length>0)?1:0, updated_apparent_power:this.props.updated_apparent_power}).then(res =>{
                     console.log(res);
                     this.props.set_net_load_df(res["net_load_df"]);
                     this.props.set_temperature_df(res["temperature_df"]);
@@ -127,6 +127,8 @@ const maptstateToprop = (state) => {
       humidity_nans_percentage: state.humidity_nans_percentage,
       apparent_power_nans_percentage: state.apparent_power_nans_percentage,
       updated_temperature: state.updated_temperature,
+      updated_humidity: state.updated_humidity,
+      updated_apparent_power: state.updated_apparent_power,
   }
 }
 const mapdispatchToprop = (dispatch) => {
@@ -144,6 +146,8 @@ const mapdispatchToprop = (dispatch) => {
       set_apparent_power_nans_percentage: (val) => dispatch({ type: "apparent_power_nans_percentage", value: val}),
       set_solar_penetration: (val) => dispatch({ type: "solar_penetration", value: val}),
       set_updated_temperature: (val) => dispatch({ type: "updated_temperature", value: val }),
+      set_updated_humidity: (val) => dispatch({ type: "updated_humidity", value: val }),
+      set_updated_apparent_power: (val) => dispatch({ type: "updated_apparent_power", value: val }),
   }
 }
 

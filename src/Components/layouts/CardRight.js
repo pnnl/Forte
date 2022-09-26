@@ -43,30 +43,57 @@ return (
         return <Card key={metric_index} style={{height: mini_card_height}}>
         <Card.Header>
           <Grid container direction="row" spacing={1}>
-          <Grid item xs={11} sm={11}>{metric.replaceAll("_", " ")+metrics_unit[metric_index]}   {(metrics_nan_percentage[metric_index] > 0)?<i className={"fa fa-info-circle metrics_nans_info_icon_"+metric} aria-hidden="true"></i>:null}</Grid>
-          <Grid item xs={1} sm={1}>{(["temperature"].includes(metric))?<Tooltip title={(this.props.isLoadingUpdate)?"Loading":(((this.props.updated_temperature).length===0)?"Drag this chart to make changes":"Click the button to see the changes")} placement="top" arrow><span><Button size="small"  color="secondary"  disabled={this.props.isLoadingUpdate || (this.props.updated_temperature).length===0}  style={{ backgroundColor: "#efefef", opacity: 1, borderRadius: 0, color: (this.props.isLoadingUpdate || (this.props.updated_temperature).length===0)?null:"black",  marginTop: -2, textTransform: 'none' }}
-          onClick={()=>{
-            this.props.set_isLoadingUpdate(true);
-            var converted_start_date = new Date(this.props.start_date_temp)
-            converted_start_date = (converted_start_date.toISOString()).replace("T", " ").replace(".000Z", "")
-            var converted_end_date = new Date(this.props.end_date_temp)
-            converted_end_date = (converted_end_date.toISOString()).replace("T", " ").replace(".000Z", "")
-            
+            <Grid item xs={9} sm={9}>{metric.replaceAll("_", " ")+metrics_unit[metric_index]}   {(metrics_nan_percentage[metric_index] > 0)?<i className={"fa fa-info-circle metrics_nans_info_icon_"+metric} aria-hidden="true"></i>:null}</Grid>
+            {/* <Grid item xs={1} sm={1}></Grid> */}
+            <Grid item xs={3} sm={3}>
+              <Grid container direction="row" spacing={3}>
+                <Grid item xs={5} sm={5}>{(["temperature"].includes(metric))?<Tooltip title={(this.props.isLoadingUpdate)?"Loading":(((this.props.updated_temperature).length===0)?"Drag this chart to make changes":"Click the button to see the changes")} placement="top" arrow><span><Button size="small"  color="secondary"  disabled={this.props.isLoadingUpdate || (this.props.updated_temperature).length===0}  style={{ backgroundColor: "#efefef", opacity: 1, borderRadius: 0, color: (this.props.isLoadingUpdate || (this.props.updated_temperature).length===0)?null:"black",  marginTop: -2, textTransform: 'none' }}
+                onClick={()=>{
+                  this.props.set_isLoadingUpdate(true);
+                  var converted_start_date = new Date(this.props.start_date_temp)
+                  converted_start_date = (converted_start_date.toISOString()).replace("T", " ").replace(".000Z", "")
+                  var converted_end_date = new Date(this.props.end_date_temp)
+                  converted_end_date = (converted_end_date.toISOString()).replace("T", " ").replace(".000Z", "")
+                  
 
-            jsonCall.download(this.props.url + "/api/v1.2/processor", {start_date: converted_start_date, end_date: converted_end_date, solar_penetration:this.props.solar_penetration_temp, temperature_updated:1, updated_temperature:this.props.updated_temperature}).then(res =>{
-              console.log(res);
-              this.props.set_net_load_df(res["net_load_df"]);
-              this.props.set_temperature_df(res["temperature_df"]);
-              this.props.set_humidity_df(res["humidity_df"]);
-              this.props.set_apparent_power_df(res["apparent_power_df"]);
-              this.props.set_temperature_nans_percentage(res["temperature_nans_percentage"]);
-              this.props.set_humidity_nans_percentage(res["humidity_nans_percentage"]);
-              this.props.set_apparent_power_nans_percentage(res["apparent_power_nans_percentage"]);
-              this.props.set_updated_temperature([]); // resetting the updated temperature thing
-              this.props.set_isLoadingUpdate(false);
-              
-              })
-          }}>{this.props.isLoadingUpdate ? 'Loading...' : 'Update'}</Button></span></Tooltip>:null}</Grid>
+                  jsonCall.download(this.props.url + "/api/v1.2/processor", {start_date: converted_start_date, end_date: converted_end_date, solar_penetration:this.props.solar_penetration_temp, temperature_updated:0}).then(res =>{
+                    console.log(res);
+                    this.props.set_net_load_df(res["net_load_df"]);
+                    this.props.set_temperature_df(res["temperature_df"]);
+                    this.props.set_humidity_df(res["humidity_df"]);
+                    this.props.set_apparent_power_df(res["apparent_power_df"]);
+                    this.props.set_temperature_nans_percentage(res["temperature_nans_percentage"]);
+                    this.props.set_humidity_nans_percentage(res["humidity_nans_percentage"]);
+                    this.props.set_apparent_power_nans_percentage(res["apparent_power_nans_percentage"]);
+                    this.props.set_updated_temperature([]); // resetting the updated temperature thing
+                    this.props.set_isLoadingUpdate(false);
+                    
+                    })
+                }}>{this.props.isLoadingUpdate ? 'Loading...' : 'Reset'}</Button></span></Tooltip>:null}</Grid>
+                <Grid item xs={5} sm={5}>{(["temperature"].includes(metric))?<Tooltip title={(this.props.isLoadingUpdate)?"Loading":(((this.props.updated_temperature).length===0)?"Drag this chart to make changes":"Click the button to see the changes")} placement="top" arrow><span><Button size="small"  color="secondary"  disabled={this.props.isLoadingUpdate || (this.props.updated_temperature).length===0}  style={{ backgroundColor: "#efefef", opacity: 1, borderRadius: 0, color: (this.props.isLoadingUpdate || (this.props.updated_temperature).length===0)?null:"black",  marginTop: -2, textTransform: 'none' }}
+                onClick={()=>{
+                  this.props.set_isLoadingUpdate(true);
+                  var converted_start_date = new Date(this.props.start_date_temp)
+                  converted_start_date = (converted_start_date.toISOString()).replace("T", " ").replace(".000Z", "")
+                  var converted_end_date = new Date(this.props.end_date_temp)
+                  converted_end_date = (converted_end_date.toISOString()).replace("T", " ").replace(".000Z", "")
+                  
+
+                  jsonCall.download(this.props.url + "/api/v1.2/processor", {start_date: converted_start_date, end_date: converted_end_date, solar_penetration:this.props.solar_penetration_temp, temperature_updated:1, updated_temperature:this.props.updated_temperature}).then(res =>{
+                    console.log(res);
+                    this.props.set_net_load_df(res["net_load_df"]);
+                    this.props.set_temperature_df(res["temperature_df"]);
+                    this.props.set_humidity_df(res["humidity_df"]);
+                    this.props.set_apparent_power_df(res["apparent_power_df"]);
+                    this.props.set_temperature_nans_percentage(res["temperature_nans_percentage"]);
+                    this.props.set_humidity_nans_percentage(res["humidity_nans_percentage"]);
+                    this.props.set_apparent_power_nans_percentage(res["apparent_power_nans_percentage"]);
+                    this.props.set_isLoadingUpdate(false);
+                    
+                    })
+                }}>{this.props.isLoadingUpdate ? 'Loading...' : 'Update'}</Button></span></Tooltip>:null}</Grid>
+              </Grid>
+            </Grid>  
           </Grid>
         </Card.Header>
         <Card.Body style={{opacity:(this.props.isLoadingUpdate)?0.4:1}}>

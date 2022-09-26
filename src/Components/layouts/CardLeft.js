@@ -7,6 +7,8 @@ import Grid from '@mui/material/Grid';
 import * as $ from "jquery";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import NetLoad from '../charts/NetLoad';
+import Button from '@mui/material/Button';
+import Tooltip from '@mui/material/Tooltip';
 
 export class  CardLeft extends Component {
   //const classes = useStyles();
@@ -32,7 +34,9 @@ return (
     <Card style={{height: "94vh"}}>
       <Card.Header>
         <Grid container direction="row" spacing={1}>
-        <Grid item xs={12} sm={12}>Net Load (kW)</Grid>
+        <Grid item xs={11} sm={11}>Net Load (kW)</Grid>
+        <Grid item xs={1} sm={1}>{(true)?<span style={{opacity:0}}><Button size="small"  color="secondary"  disabled={true}  style={{ backgroundColor: "#efefef", opacity: 1, borderRadius: 0, color: "black",  marginTop: -2, textTransform: 'none' }}
+         >Update</Button></span>:null}</Grid>
         </Grid>
       </Card.Header>
       <Card.Body style={{opacity:(this.props.isLoadingUpdate)?0.4:1}}>

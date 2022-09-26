@@ -12,6 +12,10 @@ import 'font-awesome/css/font-awesome.min.css';
 
 const store=configureStore({
   reducer: myreducer,
+  middleware: (getDefaultMiddleware) => getDefaultMiddleware({
+    immutableCheck: false,
+    serializableCheck: false,
+  })
 });
 
 const root = createRoot(document.getElementById('root'));

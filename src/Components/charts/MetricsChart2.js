@@ -115,7 +115,7 @@ class MetricsChart extends Component {
         }
         
         function dragged(event, d) {
-            console.log(event.x, event.y, d, xScale.invert(event.x));
+            //console.log(event.x, event.y, d, xScale.invert(event.x));
             var d_0 = self.roundToNearest15(xScale.invert(event.x));
             var d_1 = yScale.invert(event.y);
             d3.select(this)
@@ -128,16 +128,19 @@ class MetricsChart extends Component {
             var old_formatted_array = formatted_array;
             formatted_array = self.convert_to_Array_of_Arrays(the_data, the_metric)
             //console.log(obj, old_formatted_array, formatted_array)
-            //console.log(old_formatted_array === formatted_array)
+            console.log(old_formatted_array === formatted_array)
             //sumstat2 =  d3.group(the_data, d => d.dummy);
             //console.log(edited_timeline, sumstat2);
             svg.selectAll(".lineCharts_metric_"+the_metric).data([formatted_array])
             .attr("d", (el) =>{return line(el)})
+
+            //self.props.set_updated_temperature(formatted_array);
             
         }
         
         function dragended(event,d) {
             d3.select(this).classed('active', false);
+            self.props.set_updated_temperature(formatted_array);
             
         }
         var drag = d3.drag()
@@ -234,6 +237,7 @@ const mapdispatchToprop = (dispatch) => {
     return {
         set_blank_placeholder: (val) => dispatch({ type: "blank_placeholder", value: val }),
         set_temp_check: (val) => dispatch({ type: "temp_check", value: val }),
+        set_updated_temperature: (val) => dispatch({ type: "updated_temperature", value: val }),
     }
 }
 export default connect(maptstateToprop, mapdispatchToprop)(MetricsChart);

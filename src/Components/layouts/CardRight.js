@@ -43,7 +43,7 @@ return (
         <Card.Header>
           <Grid container direction="row" spacing={1}>
           <Grid item xs={11} sm={11}>{metric.replaceAll("_", " ")+metrics_unit[metric_index]}   {(metrics_nan_percentage[metric_index] > 0)?<i className={"fa fa-info-circle metrics_nans_info_icon_"+metric} aria-hidden="true"></i>:null}</Grid>
-          <Grid item xs={1} sm={1}>{(["temperature"].includes(metric))?<Button size="small"  color="secondary"  disabled={this.props.isLoadingUpdate}  style={{ backgroundColor: "#efefef", opacity: 1, borderRadius: 0, color: "black", marginTop: -2, textTransform: 'none' }}
+          <Grid item xs={1} sm={1}>{(["temperature"].includes(metric))?<Button size="small"  color="secondary"  disabled={this.props.isLoadingUpdate || (this.props.updated_temperature).length===0}  style={{ backgroundColor: "#efefef", opacity: 1, borderRadius: 0, color: (this.props.isLoadingUpdate || (this.props.updated_temperature).length===0)?null:"black",  marginTop: -2, textTransform: 'none' }}
           onClick={()=>{
             this.props.set_isLoadingUpdate(true);
             var converted_start_date = new Date(this.props.start_date_temp)
@@ -61,6 +61,7 @@ return (
               this.props.set_temperature_nans_percentage(res["temperature_nans_percentage"]);
               this.props.set_humidity_nans_percentage(res["humidity_nans_percentage"]);
               this.props.set_apparent_power_nans_percentage(res["apparent_power_nans_percentage"]);
+              this.props.set_updated_temperature([]); // resetting the updated temperature thing
               this.props.set_isLoadingUpdate(false);
               
               })
@@ -114,6 +115,7 @@ const mapdispatchToprop = (dispatch) => {
       set_humidity_nans_percentage: (val) => dispatch({ type: "humidity_nans_percentage", value: val}),
       set_apparent_power_nans_percentage: (val) => dispatch({ type: "apparent_power_nans_percentage", value: val}),
       set_solar_penetration: (val) => dispatch({ type: "solar_penetration", value: val}),
+      set_updated_temperature: (val) => dispatch({ type: "updated_temperature", value: val }),
   }
 }
 

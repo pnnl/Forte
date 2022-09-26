@@ -8,6 +8,9 @@ import * as $ from "jquery";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import MetricsChart from '../charts/MetricsChart2';
 import Button from '@mui/material/Button';
+//import LoadingButton from '@mui/lab/LoadingButton';
+//import Button from 'react-bootstrap/Button';
+//import 'bootstrap/dist/css/bootstrap.min.css';
 import * as jsonCall from "../../Algorithms/JSONCall"
 
 export class  CardRight extends Component {
@@ -39,8 +42,8 @@ return (
         return <Card key={metric_index} style={{height: mini_card_height}}>
         <Card.Header>
           <Grid container direction="row" spacing={1}>
-          <Grid item xs={9} sm={9}>{metric.replaceAll("_", " ")+metrics_unit[metric_index]}   {(metrics_nan_percentage[metric_index] > 0)?<i className={"fa fa-info-circle metrics_nans_info_icon_"+metric} aria-hidden="true"></i>:null}</Grid>
-          <Grid item xs={3} sm={3}>{(["temperature"].includes(metric))?<Button size="small" color="secondary" style={{ backgroundColor: "#efefef", opacity: 1, borderRadius: 0, color: "black", marginTop: -2 }}
+          <Grid item xs={11} sm={11}>{metric.replaceAll("_", " ")+metrics_unit[metric_index]}   {(metrics_nan_percentage[metric_index] > 0)?<i className={"fa fa-info-circle metrics_nans_info_icon_"+metric} aria-hidden="true"></i>:null}</Grid>
+          <Grid item xs={1} sm={1}>{(["temperature"].includes(metric))?<Button size="small"  color="secondary"  disabled={this.props.isLoadingUpdate}  style={{ backgroundColor: "#efefef", opacity: 1, borderRadius: 0, color: "black", marginTop: -2, textTransform: 'none' }}
           onClick={()=>{
             this.props.set_isLoadingUpdate(true);
             var converted_start_date = new Date(this.props.start_date_temp)
@@ -61,7 +64,7 @@ return (
               this.props.set_isLoadingUpdate(false);
               
               })
-          }}>{this.props.isLoadingUpdate ? 'Loading…' : 'Update'}</Button>:null}</Grid>
+          }}>{this.props.isLoadingUpdate ? 'Loading...' : 'Update'}</Button>:null}</Grid>
           </Grid>
         </Card.Header>
         <Card.Body style={{opacity:(this.props.isLoadingUpdate)?0.4:1}}>

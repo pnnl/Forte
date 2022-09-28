@@ -47,7 +47,7 @@ return (
             {/* <Grid item xs={1} sm={1}></Grid> */}
             <Grid item xs={3} sm={3}>
               <Grid container direction="row" spacing={3}>
-                <Grid item xs={5} sm={5}>{(["temperature", "humidity"].includes(metric))?<Tooltip title={(this.props.isLoadingUpdate)?"Loading":(((this.props.updated_temperature).length===0)?"Drag this chart to make changes":"Click the button to see the changes")} placement="top" arrow><span><Button size="small"  color="secondary"  disabled={this.props.isLoadingUpdate || (this.props.updated_temperature).length===0}  style={{ backgroundColor: "#efefef", opacity: 1, borderRadius: 0, color: (this.props.isLoadingUpdate || (this.props.updated_temperature).length===0)?null:"black",  marginTop: -2, textTransform: 'none' }}
+                <Grid item xs={5} sm={5}>{(["temperature", "humidity"].includes(metric))?<Tooltip title={(this.props.isLoadingUpdate)?"Loading":(((this.props.updated_temperature).length===0)?"Drag this chart to make changes":"Click the button to see the changes")} placement="top" arrow><span><Button size="small"  color="secondary"  disabled={this.props.isLoadingUpdate || (metric==="temperature")?((this.props.updated_temperature).length===0):((metric==="humidity")?((this.props.updated_humidity).length===0):((this.props.updated_apparent_power).length===0))}  style={{ backgroundColor: "#efefef", opacity: 1, borderRadius: 0, color: (this.props.isLoadingUpdate || (metric==="temperature")?((this.props.updated_temperature).length===0):((metric==="humidity")?((this.props.updated_humidity).length===0):((this.props.updated_apparent_power).length===0)))?null:"black",  marginTop: -2, textTransform: 'none' }}
                 onClick={()=>{
                   this.props.set_isLoadingUpdate(true);
                   var converted_start_date = new Date(this.props.start_date_temp)
@@ -75,8 +75,8 @@ return (
                     })
                 }}>{this.props.isLoadingUpdate ? 'Loading...' : 'Reset'}</Button></span></Tooltip>:null}</Grid>
 
-                
-                <Grid item xs={5} sm={5}>{(["temperature", "humidity"].includes(metric))?<Tooltip title={(this.props.isLoadingUpdate)?"Loading":(((this.props.updated_temperature).length===0)?"Drag this chart to make changes":"Click the button to see the changes")} placement="top" arrow><span><Button size="small"  color="secondary"  disabled={this.props.isLoadingUpdate || (this.props.updated_temperature).length===0}  style={{ backgroundColor: "#efefef", opacity: 1, borderRadius: 0, color: (this.props.isLoadingUpdate || (this.props.updated_temperature).length===0)?null:"black",  marginTop: -2, textTransform: 'none' }}
+
+                <Grid item xs={5} sm={5}>{(["temperature", "humidity"].includes(metric))?<Tooltip title={(this.props.isLoadingUpdate)?"Loading":(((this.props.updated_temperature).length===0)?"Drag this chart to make changes":"Click the button to see the changes")} placement="top" arrow><span><Button size="small"  color="secondary"  disabled={this.props.isLoadingUpdate || (metric==="temperature")?((this.props.updated_temperature).length===0):((metric==="humidity")?((this.props.updated_humidity).length===0):((this.props.updated_apparent_power).length===0))}  style={{ backgroundColor: "#efefef", opacity: 1, borderRadius: 0, color: (this.props.isLoadingUpdate || (metric==="temperature")?((this.props.updated_temperature).length===0):((metric==="humidity")?((this.props.updated_humidity).length===0):((this.props.updated_apparent_power).length===0)))?null:"black",  marginTop: -2, textTransform: 'none' }}
                 onClick={()=>{
                   this.props.set_isLoadingUpdate(true);
                   var converted_start_date = new Date(this.props.start_date_temp)

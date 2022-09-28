@@ -102,17 +102,17 @@ class MetricsChart extends Component {
             .x(function(d) { return xScale(new Date(d[1])); })
             .y(function(d) { return yScale(d[3]); });
 
-        
-        function dragstarted(d) {
-            d3.select(this).raise().classed('active', true);
-        }
-
         function toLocaleUTCDateString(date) {
             // https://stackoverflow.com/a/55571869/13125348
             const timeDiff = date.getTimezoneOffset() * 60000;
             const adjustedDate = new Date(date.valueOf() - timeDiff);
             return adjustedDate.toISOString().replace("T", " ").replace(".000Z", "");
+        }    
+        
+        function dragstarted(d) {
+            d3.select(this).raise().classed('active', true);
         }
+
         
         function dragged(event, d) {
             //console.log(event.x, event.y, d, xScale.invert(event.x));
@@ -175,6 +175,7 @@ class MetricsChart extends Component {
             .attr("fill", "none")
             .attr("stroke", function(d){return "url(#line-gradient_"+the_metric+")" })
             .attr("stroke-width", 1.5)
+            .style('cursor', 'pointer')
             //.on("mousemove", (event)=>{console.log(this.roundToNearest15(x.invert(d3.pointer(event)[0])))})
             .transition()
             .duration(animation_duration)
@@ -183,12 +184,12 @@ class MetricsChart extends Component {
             //.attr("stroke-linecap", "round") 
             
             // svg.selectAll('.my_circles_'+the_metric)
-            //     .data(the_data, (d)=>[d.net_load, d.dummy, d.timeline, d.wasNan])
+            //     .data(formatted_array)
             //     .join("circle")
             //     .attr("class", "my_circles_"+the_metric)
-            //     .attr('r', 1.0)
-            //     .attr('cx', function(d) { return xScale(new Date(d.timeline));  }) 
-            //     .attr('cy', function(d) { return yScale(d[the_metric]); }) 
+            //     .attr('r', 4.0)
+            //     .attr('cx', function(d) { return xScale(new Date(d[1]));  }) 
+            //     .attr('cy', function(d) { return yScale(d[3]); }) 
             //     .style('cursor', 'pointer')
             //     .style('fill', 'steelblue');
 

@@ -339,6 +339,7 @@ def prepare_output_df(y_pred, Y_test, timeline, timeline_original, temperature_o
     return net_load_df_safe, temperature_df_safe, humidity_df_safe, apparent_power_df_safe
 
 ### Callable functions ###
+# deprecated
 @app.route('/api/v1/processor',methods = ['POST', 'GET'])
 def processor_v1(start_date="2020-05-01 00:00:00", end_date="2020-05-03 00:00:00", solar_penetration=50):
     t = time.process_time()
@@ -364,9 +365,10 @@ def processor_v1(start_date="2020-05-01 00:00:00", end_date="2020-05-03 00:00:00
     response.headers.add('Access-Control-Allow-Origin', '*')
     return response;
 
+# deprecated
 @app.route('/api/v1.1/processor',methods = ['POST', 'GET'])
 #@app.route('/api/v@latest/processor',methods = ['POST', 'GET'])
-def processor(start_date="2020-05-01 00:00:00", end_date="2020-05-03 00:00:00", solar_penetration=50):
+def processor_v1_1(start_date="2020-05-01 00:00:00", end_date="2020-05-03 00:00:00", solar_penetration=50):
     t = time.process_time()
     #start_date, end_date, solar_penetration = "2020-05-01 00:00:00", "2020-05-03 00:00:00", 50
     start_date = validate_start_date(start_date)
@@ -393,7 +395,7 @@ def processor(start_date="2020-05-01 00:00:00", end_date="2020-05-03 00:00:00", 
 
 @app.route('/api/v1.2/processor',methods = ['POST', 'GET'])
 @app.route('/api/v@latest/processor',methods = ['POST', 'GET'])
-def processor2(start_date="2020-05-01 00:00:00", end_date="2020-05-03 00:00:00", solar_penetration=50):
+def processor(start_date="2020-05-01 00:00:00", end_date="2020-05-03 00:00:00", solar_penetration=50):
     t = time.process_time()
     #start_date, end_date, solar_penetration = "2020-05-01 00:00:00", "2020-05-03 00:00:00", 50
     start_date = validate_start_date(start_date)

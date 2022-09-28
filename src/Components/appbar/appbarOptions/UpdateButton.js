@@ -34,7 +34,11 @@ class UpdateButton extends Component {
             converted_end_date = (converted_end_date.toISOString()).replace("T", " ").replace(".000Z", "")
             console.log(converted_start_date, converted_end_date)
 
-            jsonCall.download(this.props.url + "/api/v@latest/processor", {start_date: converted_start_date, end_date: converted_end_date, solar_penetration:this.props.solar_penetration_temp}).then(res =>{
+            var metrics_updated ={}
+            var metrics = ["temperature", "humidity", "apparent_power"]
+            metrics.map(em => {metrics_updated[em]=((this.props.updated_metric[em]).length>0)?1:0}) // capturing which metrics are updated
+
+            jsonCall.download(this.props.url + "/api/v@latest/processor", {start_date: converted_start_date, end_date: converted_end_date, solar_penetration:this.props.solar_penetration_temp, temperature_updated:0, humidity_updated:0, apparent_power_updated:0, metrics_updated:metrics_updated, updated_metric:this.props.updated_metric}).then(res =>{
                 console.log(res);
                 this.props.set_net_load_df(res["net_load_df"]);
                 this.props.set_temperature_df(res["temperature_df"]);
@@ -84,6 +88,7 @@ const maptstateToprop = (state) => {
         start_date_temp: state.start_date_temp,
         end_date_temp: state.end_date_temp,
         solar_penetration_temp: state.solar_penetration_temp,
+        updated_metric: state.updated_metric,
     }
 }
 const mapdispatchToprop = (dispatch) => {

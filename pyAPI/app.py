@@ -21,6 +21,8 @@ import properscoring as ps
 import matplotlib.pyplot as plt
 from datetime import datetime, timedelta
 
+pd.options.mode.chained_assignment = None  # default='warn'
+
 app = Flask(__name__)
 CORS(app)
 logging.basicConfig(filename='pyAPI/logs/flask.log',level=logging.DEBUG,format='%(asctime)s %(levelname)s %(name)s %(threadName)s : %(message)s') #https://www.scalyr.com/blog/getting-started-quickly-with-flask-logging/
@@ -145,7 +147,7 @@ app.logger.info(loading_message)
 
 ### Pipeline functions and others (non-callable externally) ###
 
-def prepare_input(start_date, end_date, solar_penetration):
+def prepare_input(start_date, end_date, solar_penetration, updated_metric):
     t = time.process_time()
     A=pd.read_csv(path_parent+"/data/inputs/df1_solar_"+str(solar_penetration)+"_pen.csv") # Reading file
     my_data = A.loc[(A['min_t'] >= start_date) & (A['min_t'] < end_date)]
@@ -157,6 +159,21 @@ def prepare_input(start_date, end_date, solar_penetration):
     humidity_nans_percentage = (sum(humidity_nans)/len(humidity_nans))*100
     apparent_power_nans_percentage = (sum(apparent_power_nans)/len(apparent_power_nans))*100
     #my_data=my_data.fillna(99999)
+    # Injecting updated temperature
+    temperature_column =[]
+    if(len(updated_metric["temperature"])>0):
+        for item in updated_metric["temperature"]: temperature_column.append(item[3])
+        my_data['temp'] = temperature_column
+    # Injecting updated humidity
+    humidity_column =[]
+    if(len(updated_metric["humidity"])>0):
+        for item in updated_metric["humidity"]: humidity_column.append(item[3])
+        my_data['humidity'] = humidity_column
+    # Injecting updated apparent_power
+    apparent_power_column =[]
+    if(len(updated_metric["apparent_power"])>0):
+        for item in updated_metric["apparent_power"]: apparent_power_column.append(item[3])
+        my_data['apparent_power'] = apparent_power_column            
     my_data = my_data.interpolate(method="linear", axis=0, limit_direction='both') # linear interpolation column by column; both directions so that the first and last columns are not left alone
     #my_data = A
     timeline = my_data['min_t'].to_list() # capturing the timeline called
@@ -249,8 +266,8 @@ def lstm_func(latent_gen, sequence_input, pred_train, y_ground, y_prev, solar_pe
     #y_pred = y_pred.flatten()
     #print(y_pred, Y_test)
     print(y_pred.shape, Y_test.shape)
-    np.savetxt(path_parent+"/data/outputs/pen_"+str(solar_penetration)+"/y_pred.csv", y_pred, delimiter=",")
-    np.savetxt(path_parent+"/data/outputs/pen_"+str(solar_penetration)+"/Y_test.csv", Y_test, delimiter=",")
+    #np.savetxt(path_parent+"/data/outputs/pen_"+str(solar_penetration)+"/y_pred.csv", y_pred, delimiter=",")
+    #np.savetxt(path_parent+"/data/outputs/pen_"+str(solar_penetration)+"/Y_test.csv", Y_test, delimiter=",")
     mae = mean_absolute_error(Y_test, y_pred)
     # mape = mean_absolute_percentage_error(Y_test, y_pred)
     # crps = ps.crps_ensemble(y_pred.flatten(), Y_test).mean()
@@ -324,6 +341,7 @@ def prepare_output_df(y_pred, Y_test, timeline, timeline_original, temperature_o
     return net_load_df_safe, temperature_df_safe, humidity_df_safe, apparent_power_df_safe
 
 ### Callable functions ###
+# deprecated
 @app.route('/api/v1/processor',methods = ['POST', 'GET'])
 def processor_v1(start_date="2020-05-01 00:00:00", end_date="2020-05-03 00:00:00", solar_penetration=50):
     t = time.process_time()
@@ -349,9 +367,10 @@ def processor_v1(start_date="2020-05-01 00:00:00", end_date="2020-05-03 00:00:00
     response.headers.add('Access-Control-Allow-Origin', '*')
     return response;
 
+# deprecated
 @app.route('/api/v1.1/processor',methods = ['POST', 'GET'])
-@app.route('/api/v@latest/processor',methods = ['POST', 'GET'])
-def processor(start_date="2020-05-01 00:00:00", end_date="2020-05-03 00:00:00", solar_penetration=50):
+#@app.route('/api/v@latest/processor',methods = ['POST', 'GET'])
+def processor_v1_1(start_date="2020-05-01 00:00:00", end_date="2020-05-03 00:00:00", solar_penetration=50):
     t = time.process_time()
     #start_date, end_date, solar_penetration = "2020-05-01 00:00:00", "2020-05-03 00:00:00", 50
     start_date = validate_start_date(start_date)
@@ -363,6 +382,38 @@ def processor(start_date="2020-05-01 00:00:00", end_date="2020-05-03 00:00:00", 
         solar_penetration = req["solar_penetration"]
     print(start_date, solar_penetration)
     sequence_input, y_ground, y_prev, temperature, temperature_original, temperature_nans, temperature_nans_percentage, humidity, humidity_original, humidity_nans, humidity_nans_percentage, apparent_power, apparent_power_original, apparent_power_nans, apparent_power_nans_percentage, elapsed_time_prepare_input, timeline, timeline_original = prepare_input(start_date, end_date, solar_penetration)
+    pred_train, elapsed_time_autoencoder = autoencoder_func(sequence_input, solar_penetration)
+    latent_gen, elapsed_time_kpf = kPF_func(pred_train, solar_penetration)
+    #y_pred, Y_test, mae, mape, crps, pbb, mse, elapsed_time_lstm = lstm_func(latent_gen, sequence_input, pred_train, y_ground, y_prev)
+    y_pred, Y_test, mae, elapsed_time_lstm = lstm_func(latent_gen, sequence_input, pred_train, y_ground, y_prev, solar_penetration)
+    net_load_df_safe, temperature_df_safe, humidity_df_safe, apparent_power_df_safe = prepare_output_df(y_pred, Y_test, timeline, timeline_original, temperature_original, temperature_nans,  humidity, humidity_original, humidity_nans, apparent_power, apparent_power_original, apparent_power_nans)
+    #generate_comparison_image(y_pred, Y_test, solar_penetration, "processor", start_date, end_date)
+    elapsed_time_total = time.process_time() - t
+    #final_result ={"1. message":"Program executed", "2. time taken (prepare input)": elapsed_time_prepare_input, "3. time taken (autoencoder)":elapsed_time_autoencoder, "4. time taken (kPF)": elapsed_time_kpf, "5. time taken (LSTM)": elapsed_time_lstm, "6. total time taken":elapsed_time_total, "7. MAE": mae, "8. MAPE": mape, "9. CRPS": crps, "10. PBB": pbb, "11. MSE": mse}
+    final_result ={"1. message":"Program executed", "2. time taken (prepare input)": elapsed_time_prepare_input, "3. time taken (autoencoder)":elapsed_time_autoencoder, "4. time taken (kPF)": elapsed_time_kpf, "5. time taken (LSTM)": elapsed_time_lstm, "6. total time taken":elapsed_time_total, "7. MAE": mae, "predicted_net_load":y_pred.flatten().tolist(), "actual_net_load": Y_test.tolist(), "temperature":temperature, "humidity":humidity, "apparent_power":apparent_power, "net_load_df": net_load_df_safe, "temperature_df": temperature_df_safe, "temperature_nans_percentage":temperature_nans_percentage, "humidity_df": humidity_df_safe, "humidity_nans_percentage": humidity_nans_percentage, "apparent_power_df": apparent_power_df_safe, "apparent_power_nans_percentage": apparent_power_nans_percentage}
+    response=make_response(jsonify(final_result), 200) #removed processing
+    response.headers.add('Access-Control-Allow-Origin', '*')
+    return response;
+
+@app.route('/api/v1.2/processor',methods = ['POST', 'GET'])
+@app.route('/api/v@latest/processor',methods = ['POST', 'GET'])
+def processor(start_date="2020-05-01 00:00:00", end_date="2020-05-03 00:00:00", solar_penetration=50):
+    t = time.process_time()
+    #start_date, end_date, solar_penetration = "2020-05-01 00:00:00", "2020-05-03 00:00:00", 50
+    start_date = validate_start_date(start_date)
+    updated_metric = {}
+    metrics = ["temperature", "humidity", "apparent_power"]
+    for i in metrics: updated_metric[i] = []
+    if(request.is_json):
+        req = request.get_json()
+        print("Reading JSON")
+        start_date = validate_start_date(req["start_date"])
+        end_date = req["end_date"]
+        solar_penetration = req["solar_penetration"]
+        for metric in metrics:
+            if(req["metrics_updated"][metric] == 1): updated_metric[metric] = req["updated_metric"][metric]        
+    print(start_date, solar_penetration)
+    sequence_input, y_ground, y_prev, temperature, temperature_original, temperature_nans, temperature_nans_percentage, humidity, humidity_original, humidity_nans, humidity_nans_percentage, apparent_power, apparent_power_original, apparent_power_nans, apparent_power_nans_percentage, elapsed_time_prepare_input, timeline, timeline_original = prepare_input(start_date, end_date, solar_penetration, updated_metric)
     pred_train, elapsed_time_autoencoder = autoencoder_func(sequence_input, solar_penetration)
     latent_gen, elapsed_time_kpf = kPF_func(pred_train, solar_penetration)
     #y_pred, Y_test, mae, mape, crps, pbb, mse, elapsed_time_lstm = lstm_func(latent_gen, sequence_input, pred_train, y_ground, y_prev)

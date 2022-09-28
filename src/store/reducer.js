@@ -22,6 +22,10 @@ let initialState = {
     solar_penetration_temp: 50,
     solar_penetration: 50,
     temp_check: {"temperature":[], "humidity":[], "apparent_power":[]},
+    updated_temperature:[],
+    updated_humidity:[],
+    updated_apparent_power:[], // need to keep this to trigger an update
+    updated_metric:{"temperature":[], "humidity":[], "apparent_power":[]}
 }
 
 const reducer = (state = initialState, action) => {
@@ -85,9 +89,21 @@ const reducer = (state = initialState, action) => {
     if (action.type === "solar_penetration") {
         return { ...state, solar_penetration: action.value }
      }
-     if (action.type === "temp_check") {
+    if (action.type === "temp_check") {
         return { ...state, temp_check: action.value }
-     }          
+    }  
+    if (action.type === "updated_temperature") {
+        return { ...state, updated_temperature: action.value }
+    }
+    if (action.type === "updated_humidity") {
+        return { ...state, updated_humidity: action.value }
+    }
+    if (action.type === "updated_apparent_power") {
+        return { ...state, updated_apparent_power: action.value }
+    }
+    if (action.type === "updated_metric") {
+        return { ...state, updated_metric: action.value }
+    }         
 
     return state;
 }

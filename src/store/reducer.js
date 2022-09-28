@@ -24,7 +24,7 @@ let initialState = {
     temp_check: {"temperature":[], "humidity":[], "apparent_power":[]},
     updated_temperature:[],
     updated_humidity:[],
-    updated_apparent_power:[],
+    updated_apparent_power:[], // need to keep this to trigger an update
     updated_metric:{"temperature":[], "humidity":[], "apparent_power":[]}
 }
 

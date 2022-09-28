@@ -138,7 +138,7 @@ const maptstateToprop = (state) => {
       apparent_power_nans_percentage: state.apparent_power_nans_percentage,
       updated_temperature: state.updated_temperature,
       updated_humidity: state.updated_humidity,
-      updated_apparent_power: state.updated_apparent_power,
+      updated_apparent_power: state.updated_apparent_power, // need to keep this to trigger an update
       updated_metric: state.updated_metric,
   }
 }

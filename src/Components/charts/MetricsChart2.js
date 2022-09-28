@@ -145,7 +145,7 @@ class MetricsChart extends Component {
             self.props.set_updated_metric(updated_metric);
             if(the_metric==="temperature"){self.props.set_updated_temperature(formatted_array);}
             else if(the_metric==="humidity"){self.props.set_updated_humidity(formatted_array);}
-            else if(the_metric==="apparent_power"){self.props.set_updated_apparent_power(formatted_array);}
+            else if(the_metric==="apparent_power"){self.props.set_updated_apparent_power(formatted_array);} // need to do this to trigger an update
             
         }
         var drag = d3.drag()

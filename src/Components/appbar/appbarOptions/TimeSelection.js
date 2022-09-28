@@ -26,6 +26,12 @@ class TimeSelection extends Component {
     }
     componentDidUpdate(prevProps, prevState) {
     }
+
+    enable_seasons(){
+        var time_difference = this.props.end_date_temp - this.props.start_date_temp;
+        if(time_difference>=10520000000){this.props.set_enable_seasons_flag(1);}
+        else{this.props.set_enable_seasons_flag(0);}
+    }
     render() {
 
         return <div>
@@ -49,6 +55,7 @@ class TimeSelection extends Component {
                 value={new Date(this.props.end_date_temp)}
                 onChange={(newValue) => {
                     this.props.set_end_date_temp(newValue.valueOf());
+                    console.log("Seasons: ",this.enable_seasons())
                   }}
             />
         </LocalizationProvider>
@@ -70,6 +77,7 @@ const mapdispatchToprop = (dispatch) => {
         set_blank_placeholder: (val) => dispatch({ type: "blank_placeholder", value: val }),
         set_start_date_temp: (val) => dispatch({ type: "start_date_temp", value: val }),
         set_end_date_temp: (val) => dispatch({ type: "end_date_temp", value: val }),
+        set_enable_seasons_flag: (val) => dispatch({ type: "enable_seasons_flag", value: val }),
     }
 }
 export default connect(maptstateToprop, mapdispatchToprop)(TimeSelection);

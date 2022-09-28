@@ -6,6 +6,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import TimeSelection from './appbarOptions/TimeSelection';
 import UpdateButton from './appbarOptions/UpdateButton';
 import SolarPenetrationOption from './appbarOptions/SolarPenetrationOption';
+import SeasonSelector from './appbarOptions/SeasonSelector';
 
 
 
@@ -38,6 +39,9 @@ return (
         <Nav.Item style={{opacity:(this.props.isLoadingUpdate)?0.4:1}}>
         <SolarPenetrationOption></SolarPenetrationOption>
         </Nav.Item>
+        {(this.props.enable_seasons_flag)?<Nav.Item style={{opacity:(this.props.isLoadingUpdate)?0.4:1}}>
+        <SeasonSelector></SeasonSelector>
+        </Nav.Item>:null}
         <Nav.Item style={{opacity:(this.props.isLoadingUpdate)?1:1}}>
         <UpdateButton></UpdateButton>
         </Nav.Item>
@@ -54,6 +58,7 @@ return (
 const maptstateToprop = (state) => {
   return {
     blank_placeholder: state.blank_placeholder,
+    enable_seasons_flag: state.enable_seasons_flag,
     
   }
 }

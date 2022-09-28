@@ -25,7 +25,10 @@ let initialState = {
     updated_temperature:[],
     updated_humidity:[],
     updated_apparent_power:[], // need to keep this to trigger an update
-    updated_metric:{"temperature":[], "humidity":[], "apparent_power":[]}
+    updated_metric:{"temperature":[], "humidity":[], "apparent_power":[]},
+    enable_seasons_flag:0,
+    enable_seasons_choice_temp:0,
+    enable_seasons_choice:0,
 }
 
 const reducer = (state = initialState, action) => {
@@ -103,6 +106,15 @@ const reducer = (state = initialState, action) => {
     }
     if (action.type === "updated_metric") {
         return { ...state, updated_metric: action.value }
+    }
+    if (action.type === "enable_seasons_flag") {
+        return { ...state, enable_seasons_flag: action.value }
+    } 
+    if (action.type === "enable_seasons_choice_temp") {
+        return { ...state, enable_seasons_choice_temp: action.value }
+    } 
+    if (action.type === "enable_seasons_choice") {
+        return { ...state, enable_seasons_choice: action.value }
     }         
 
     return state;

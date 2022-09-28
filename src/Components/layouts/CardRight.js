@@ -54,9 +54,11 @@ return (
                   converted_start_date = (converted_start_date.toISOString()).replace("T", " ").replace(".000Z", "")
                   var converted_end_date = new Date(this.props.end_date_temp)
                   converted_end_date = (converted_end_date.toISOString()).replace("T", " ").replace(".000Z", "")
+
+
                   
 
-                  jsonCall.download(this.props.url + "/api/v@latest/processor", {start_date: converted_start_date, end_date: converted_end_date, solar_penetration:this.props.solar_penetration_temp, temperature_updated:0}).then(res =>{
+                  jsonCall.download(this.props.url + "/api/v@latest/processor", {start_date: converted_start_date, end_date: converted_end_date, solar_penetration:this.props.solar_penetration_temp, temperature_updated:((this.props.updated_temperature).length===0 || metric==="temperature")?0:1, updated_temperature:this.props.updated_temperature, humidity_updated:((this.props.updated_humidity).length===0 || metric==="humidity")?0:1, updated_humidity:this.props.updated_humidity, apparent_power_updated:((this.props.updated_apparent_power).length===0 || metric==="apparent_power")?0:1, updated_apparent_power:this.props.updated_apparent_power}).then(res =>{
                     console.log(res);
                     this.props.set_net_load_df(res["net_load_df"]);
                     this.props.set_temperature_df(res["temperature_df"]);
@@ -65,11 +67,15 @@ return (
                     this.props.set_temperature_nans_percentage(res["temperature_nans_percentage"]);
                     this.props.set_humidity_nans_percentage(res["humidity_nans_percentage"]);
                     this.props.set_apparent_power_nans_percentage(res["apparent_power_nans_percentage"]);
-                    this.props.set_updated_temperature([]); // resetting the updated temperature thing
+                    if(metric === "temperature"){this.props.set_updated_temperature([]);} // resetting the updated temperature thing
+                    else if(metric === "humidity"){this.props.set_updated_humidity([]);} // resetting the updated humidity thing
+                    else if(metric === "apparent_power"){this.props.set_updated_apparent_power([]);} // resetting the updated apparent power thing
                     this.props.set_isLoadingUpdate(false);
                     
                     })
                 }}>{this.props.isLoadingUpdate ? 'Loading...' : 'Reset'}</Button></span></Tooltip>:null}</Grid>
+
+                
                 <Grid item xs={5} sm={5}>{(["temperature", "humidity"].includes(metric))?<Tooltip title={(this.props.isLoadingUpdate)?"Loading":(((this.props.updated_temperature).length===0)?"Drag this chart to make changes":"Click the button to see the changes")} placement="top" arrow><span><Button size="small"  color="secondary"  disabled={this.props.isLoadingUpdate || (this.props.updated_temperature).length===0}  style={{ backgroundColor: "#efefef", opacity: 1, borderRadius: 0, color: (this.props.isLoadingUpdate || (this.props.updated_temperature).length===0)?null:"black",  marginTop: -2, textTransform: 'none' }}
                 onClick={()=>{
                   this.props.set_isLoadingUpdate(true);

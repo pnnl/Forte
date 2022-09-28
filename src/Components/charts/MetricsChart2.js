@@ -142,7 +142,7 @@ class MetricsChart extends Component {
             d3.select(this).classed('active', false);
             if(the_metric==="temperature"){self.props.set_updated_temperature(formatted_array);}
             else if(the_metric==="humidity"){self.props.set_updated_humidity(formatted_array);}
-            else if(the_metric=="apparent_power"){self.props.set_updated_apparent_power(formatted_array);}
+            else if(the_metric==="apparent_power"){self.props.set_updated_apparent_power(formatted_array);}
             
         }
         var drag = d3.drag()

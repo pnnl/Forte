@@ -95,7 +95,7 @@ const reducer = (state = initialState, action) => {
         return { ...state, updated_temperature: action.value }
     }
     if (action.type === "updated_humidity") {
-        return { ...state, updated_apparent_power: action.value }
+        return { ...state, updated_humidity: action.value }
     }
     if (action.type === "updated_apparent_power") {
         return { ...state, updated_apparent_power: action.value }

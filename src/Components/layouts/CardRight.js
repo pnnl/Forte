@@ -47,7 +47,7 @@ return (
             {/* <Grid item xs={1} sm={1}></Grid> */}
             <Grid item xs={3} sm={3}>
               <Grid container direction="row" spacing={3}>
-                <Grid item xs={5} sm={5}>{(["temperature", "humidity", "apparent_power"].includes(metric))?<Tooltip title={(this.props.isLoadingUpdate)?"Loading":(((metric==="temperature")?((this.props.updated_temperature).length===0):((metric==="humidity")?((this.props.updated_humidity).length===0):((this.props.updated_apparent_power).length===0)))?"Drag this chart to make changes":"Use this button to reset the changes")} placement="top" arrow><span><Button size="small"  color="secondary"  disabled={this.props.isLoadingUpdate || (metric==="temperature")?((this.props.updated_temperature).length===0):((metric==="humidity")?((this.props.updated_humidity).length===0):((this.props.updated_apparent_power).length===0))}  style={{ backgroundColor: "#efefef", opacity: 1, borderRadius: 0, color: (this.props.isLoadingUpdate || (metric==="temperature")?((this.props.updated_temperature).length===0):((metric==="humidity")?((this.props.updated_humidity).length===0):((this.props.updated_apparent_power).length===0)))?null:"black",  marginTop: -2, textTransform: 'none' }}
+                <Grid item xs={5} sm={5}>{(["temperature", "humidity", "apparent_power"].includes(metric))?<Tooltip title={(this.props.isLoadingUpdate)?"Loading":(((this.props.updated_metric[metric]).length === 0)?"Drag this chart to make changes":"Click the button to reset the changes")} placement="top" arrow><span><Button size="small"  color="secondary"  disabled={this.props.isLoadingUpdate || ((this.props.updated_metric[metric]).length === 0)}  style={{ backgroundColor: "#efefef", opacity: 1, borderRadius: 0, color: (this.props.isLoadingUpdate || ((this.props.updated_metric[metric]).length === 0))?null:"black",  marginTop: -2, textTransform: 'none' }}
                 onClick={()=>{
                   this.props.set_isLoadingUpdate(true);
                   var converted_start_date = new Date(this.props.start_date_temp)
@@ -77,7 +77,7 @@ return (
                 }}>{this.props.isLoadingUpdate ? 'Loading...' : 'Reset'}</Button></span></Tooltip>:null}</Grid>
 
 
-                <Grid item xs={5} sm={5}>{(["temperature", "humidity", "apparent_power"].includes(metric))?<Tooltip title={(this.props.isLoadingUpdate)?"Loading":(((metric==="temperature")?((this.props.updated_temperature).length===0):((metric==="humidity")?((this.props.updated_humidity).length===0):((this.props.updated_apparent_power).length===0)))?"Drag this chart to make changes":"Click the button to see the changes")} placement="top" arrow><span><Button size="small"  color="secondary"  disabled={this.props.isLoadingUpdate || (metric==="temperature")?((this.props.updated_temperature).length===0):((metric==="humidity")?((this.props.updated_humidity).length===0):((this.props.updated_apparent_power).length===0))}  style={{ backgroundColor: "#efefef", opacity: 1, borderRadius: 0, color: (this.props.isLoadingUpdate || (metric==="temperature")?((this.props.updated_temperature).length===0):((metric==="humidity")?((this.props.updated_humidity).length===0):((this.props.updated_apparent_power).length===0)))?null:"black",  marginTop: -2, textTransform: 'none' }}
+                <Grid item xs={5} sm={5}>{(["temperature", "humidity", "apparent_power"].includes(metric))?<Tooltip title={(this.props.isLoadingUpdate)?"Loading":(((this.props.updated_metric[metric]).length === 0)?"Drag this chart to make changes":"Click the button to see the changes")} placement="top" arrow><span><Button size="small"  color="secondary"  disabled={this.props.isLoadingUpdate || ((this.props.updated_metric[metric]).length === 0)}  style={{ backgroundColor: "#efefef", opacity: 1, borderRadius: 0, color: (this.props.isLoadingUpdate || ((this.props.updated_metric[metric]).length === 0))?null:"black",  marginTop: -2, textTransform: 'none' }}
                 onClick={()=>{
                   this.props.set_isLoadingUpdate(true);
                   var converted_start_date = new Date(this.props.start_date_temp)
@@ -136,9 +136,6 @@ const maptstateToprop = (state) => {
       temperature_nans_percentage: state.temperature_nans_percentage,
       humidity_nans_percentage: state.humidity_nans_percentage,
       apparent_power_nans_percentage: state.apparent_power_nans_percentage,
-      updated_temperature: state.updated_temperature,
-      updated_humidity: state.updated_humidity,
-      updated_apparent_power: state.updated_apparent_power,
       updated_metric: state.updated_metric,
   }
 }
@@ -156,9 +153,6 @@ const mapdispatchToprop = (dispatch) => {
       set_humidity_nans_percentage: (val) => dispatch({ type: "humidity_nans_percentage", value: val}),
       set_apparent_power_nans_percentage: (val) => dispatch({ type: "apparent_power_nans_percentage", value: val}),
       set_solar_penetration: (val) => dispatch({ type: "solar_penetration", value: val}),
-      set_updated_temperature: (val) => dispatch({ type: "updated_temperature", value: val }),
-      set_updated_humidity: (val) => dispatch({ type: "updated_humidity", value: val }),
-      set_updated_apparent_power: (val) => dispatch({ type: "updated_apparent_power", value: val }),
       set_updated_metric: (val) => dispatch({ type: "updated_metric", value: val }),
   }
 }

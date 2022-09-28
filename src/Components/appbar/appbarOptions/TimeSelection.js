@@ -29,7 +29,8 @@ class TimeSelection extends Component {
 
     enable_seasons(){
         var time_difference = this.props.end_date_temp - this.props.start_date_temp;
-        if(time_difference>=10520000000){this.props.set_enable_seasons_flag(1);}
+        //if(time_difference>=10520000000){this.props.set_enable_seasons_flag(1);}
+        if(time_difference>=1052){this.props.set_enable_seasons_flag(1);}
         else{this.props.set_enable_seasons_flag(0);}
     }
     render() {

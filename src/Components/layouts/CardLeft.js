@@ -30,8 +30,9 @@ shouldComponentUpdate(nextProps, nextState){
 render(){ 
 //const { selected_list } = this.state;  
 return (
-    
-    <Card style={{height: "94vh"}}>
+    <div>
+    {(!this.props.enable_seasons_choice)?
+      <Card style={{height: "94vh"}}>
       <Card.Header>
         <Grid container direction="row" spacing={1}>
         <Grid item xs={11} sm={11}>Net Load (kW)</Grid>
@@ -43,7 +44,37 @@ return (
           {((this.props.net_load_df).length >0)?<NetLoad></NetLoad>:null}
       </Card.Body>
       </Card>
+      :
+      <div>
+      <Card style={{height: "47vh"}}>
+      <Card.Header>
+        <Grid container direction="row" spacing={1}>
+        <Grid item xs={11} sm={11}>Net Load(kW)</Grid>
+        <Grid item xs={1} sm={1}>{(true)?<span style={{opacity:0}}><Button size="small"  color="secondary"  disabled={true}  style={{ backgroundColor: "#efefef", opacity: 1, borderRadius: 0, color: "black",  marginTop: -2, textTransform: 'none' }}
+         >Update</Button></span>:null}</Grid>
+        </Grid>
+      </Card.Header>
+      <Card.Body style={{opacity:(this.props.isLoadingUpdate)?0.4:1}}>
+          {((this.props.net_load_df).length >0)?<NetLoad></NetLoad>:null}
+      </Card.Body>
+      </Card>
 
+      <Card style={{height: "47vh"}}>
+      <Card.Header>
+        <Grid container direction="row" spacing={1}>
+        <Grid item xs={11} sm={11}>Net Load (kW)</Grid>
+        <Grid item xs={1} sm={1}>{(true)?<span style={{opacity:0}}><Button size="small"  color="secondary"  disabled={true}  style={{ backgroundColor: "#efefef", opacity: 1, borderRadius: 0, color: "black",  marginTop: -2, textTransform: 'none' }}
+         >Update</Button></span>:null}</Grid>
+        </Grid>
+      </Card.Header>
+      <Card.Body style={{opacity:(this.props.isLoadingUpdate)?0.4:1}}>
+          {((this.props.net_load_df).length >0)?<NetLoad></NetLoad>:null}
+      </Card.Body>
+      </Card>
+      </div>
+      
+    }  
+    </div>
     
   );
  } //return ends
@@ -54,6 +85,7 @@ const maptstateToprop = (state) => {
       blank_placeholder: state.blank_placeholder,
       isLoadingUpdate: state.isLoadingUpdate,
       net_load_df: state.net_load_df,
+      enable_seasons_choice: state.enable_seasons_choice,
   }
 }
 const mapdispatchToprop = (dispatch) => {

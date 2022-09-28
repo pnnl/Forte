@@ -58,7 +58,7 @@ return (
 
                   
 
-                  jsonCall.download(this.props.url + "/api/v@latest/processor", {start_date: converted_start_date, end_date: converted_end_date, solar_penetration:this.props.solar_penetration_temp, temperature_updated:((this.props.updated_temperature).length===0 || metric==="temperature")?0:1, updated_temperature:this.props.updated_temperature, humidity_updated:((this.props.updated_humidity).length===0 || metric==="humidity")?0:1, updated_humidity:this.props.updated_humidity, apparent_power_updated:((this.props.updated_apparent_power).length===0 || metric==="apparent_power")?0:1, updated_apparent_power:this.props.updated_apparent_power}).then(res =>{
+                  jsonCall.download(this.props.url + "/api/v@latest/processor", {start_date: converted_start_date, end_date: converted_end_date, solar_penetration:this.props.solar_penetration_temp, temperature_updated:((this.props.updated_metric["temperature"]).length===0 || metric==="temperature")?0:1, humidity_updated:((this.props.updated_metric["humidity"]).length===0 || metric==="humidity")?0:1, apparent_power_updated:((this.props.updated_metric["apparent_power"]).length===0 || metric==="apparent_power")?0:1, updated_metric:this.props.updated_metric}).then(res =>{
                     console.log(res);
                     this.props.set_net_load_df(res["net_load_df"]);
                     this.props.set_temperature_df(res["temperature_df"]);
@@ -67,9 +67,9 @@ return (
                     this.props.set_temperature_nans_percentage(res["temperature_nans_percentage"]);
                     this.props.set_humidity_nans_percentage(res["humidity_nans_percentage"]);
                     this.props.set_apparent_power_nans_percentage(res["apparent_power_nans_percentage"]);
-                    if(metric === "temperature"){this.props.set_updated_temperature([]);} // resetting the updated temperature thing
-                    else if(metric === "humidity"){this.props.set_updated_humidity([]);} // resetting the updated humidity thing
-                    else if(metric === "apparent_power"){this.props.set_updated_apparent_power([]);} // resetting the updated apparent power thing
+                    var updated_metric =this.props.updated_metric;
+                    updated_metric[metric] = []; // resetting the metric that is being reset
+                    this.props.set_updated_metric(updated_metric);
                     this.props.set_isLoadingUpdate(false);
                     
                     })
@@ -85,7 +85,7 @@ return (
                   converted_end_date = (converted_end_date.toISOString()).replace("T", " ").replace(".000Z", "")
                   
 
-                  jsonCall.download(this.props.url + "/api/v@latest/processor", {start_date: converted_start_date, end_date: converted_end_date, solar_penetration:this.props.solar_penetration_temp, temperature_updated:((this.props.updated_temperature).length>0)?1:0, updated_temperature:this.props.updated_temperature, humidity_updated:((this.props.updated_humidity).length>0)?1:0, updated_humidity:this.props.updated_humidity, apparent_power_updated:((this.props.updated_apparent_power).length>0)?1:0, updated_apparent_power:this.props.updated_apparent_power}).then(res =>{
+                  jsonCall.download(this.props.url + "/api/v@latest/processor", {start_date: converted_start_date, end_date: converted_end_date, solar_penetration:this.props.solar_penetration_temp, temperature_updated:((this.props.updated_metric["temperature"]).length>0)?1:0, humidity_updated:((this.props.updated_metric["humidity"]).length>0)?1:0, apparent_power_updated:((this.props.updated_metric["apparent_power"]).length>0)?1:0, updated_metric: this.props.updated_metric}).then(res =>{
                     console.log(res);
                     this.props.set_net_load_df(res["net_load_df"]);
                     this.props.set_temperature_df(res["temperature_df"]);
@@ -135,6 +135,7 @@ const maptstateToprop = (state) => {
       updated_temperature: state.updated_temperature,
       updated_humidity: state.updated_humidity,
       updated_apparent_power: state.updated_apparent_power,
+      updated_metric: state.updated_metric,
   }
 }
 const mapdispatchToprop = (dispatch) => {
@@ -154,6 +155,7 @@ const mapdispatchToprop = (dispatch) => {
       set_updated_temperature: (val) => dispatch({ type: "updated_temperature", value: val }),
       set_updated_humidity: (val) => dispatch({ type: "updated_humidity", value: val }),
       set_updated_apparent_power: (val) => dispatch({ type: "updated_apparent_power", value: val }),
+      set_updated_metric: (val) => dispatch({ type: "updated_metric", value: val }),
   }
 }
 

@@ -140,6 +140,9 @@ class MetricsChart extends Component {
         
         function dragended(event,d) {
             d3.select(this).classed('active', false);
+            var updated_metric =self.props.updated_metric;
+            updated_metric[the_metric] = formatted_array;
+            self.props.set_updated_metric(updated_metric);
             if(the_metric==="temperature"){self.props.set_updated_temperature(formatted_array);}
             else if(the_metric==="humidity"){self.props.set_updated_humidity(formatted_array);}
             else if(the_metric==="apparent_power"){self.props.set_updated_apparent_power(formatted_array);}
@@ -234,6 +237,7 @@ const maptstateToprop = (state) => {
         blank_placeholder:state.blank_placeholder,
         net_load_df: state.net_load_df,
         temp_check: state.temp_check,
+        updated_metric: state.updated_metric,
     }
 }
 const mapdispatchToprop = (dispatch) => {
@@ -243,6 +247,7 @@ const mapdispatchToprop = (dispatch) => {
         set_updated_temperature: (val) => dispatch({ type: "updated_temperature", value: val }),
         set_updated_humidity: (val) => dispatch({ type: "updated_humidity", value: val }),
         set_updated_apparent_power: (val) => dispatch({ type: "updated_apparent_power", value: val }),
+        set_updated_metric: (val) => dispatch({ type: "updated_metric", value: val }),
     }
 }
 export default connect(maptstateToprop, mapdispatchToprop)(MetricsChart);

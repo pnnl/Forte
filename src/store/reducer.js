@@ -25,6 +25,7 @@ let initialState = {
     updated_temperature:[],
     updated_humidity:[],
     updated_apparent_power:[],
+    updated_metric:{"temperature":[], "humidity":[], "apparent_power":[]}
 }
 
 const reducer = (state = initialState, action) => {
@@ -99,6 +100,9 @@ const reducer = (state = initialState, action) => {
     }
     if (action.type === "updated_apparent_power") {
         return { ...state, updated_apparent_power: action.value }
+    }
+    if (action.type === "updated_metric") {
+        return { ...state, updated_metric: action.value }
     }         
 
     return state;

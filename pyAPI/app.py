@@ -407,11 +407,11 @@ def processor(start_date="2020-05-01 00:00:00", end_date="2020-05-03 00:00:00", 
         end_date = req["end_date"]
         solar_penetration = req["solar_penetration"]
         if(req["temperature_updated"] ==1): 
-            updated_temperature = req["updated_temperature"]
+            updated_temperature = req["updated_metric"]["temperature"]
         if(req["humidity_updated"] ==1): 
-            updated_humidity = req["updated_humidity"]
+            updated_humidity = req["updated_metric"]["humidity"]
         if(req["apparent_power_updated"] ==1): 
-            updated_apparent_power = req["updated_apparent_power"]        
+            updated_apparent_power = req["updated_metric"]["apparent_power"]        
     print(start_date, solar_penetration)
     sequence_input, y_ground, y_prev, temperature, temperature_original, temperature_nans, temperature_nans_percentage, humidity, humidity_original, humidity_nans, humidity_nans_percentage, apparent_power, apparent_power_original, apparent_power_nans, apparent_power_nans_percentage, elapsed_time_prepare_input, timeline, timeline_original = prepare_input(start_date, end_date, solar_penetration, updated_temperature, updated_humidity, updated_apparent_power)
     pred_train, elapsed_time_autoencoder = autoencoder_func(sequence_input, solar_penetration)

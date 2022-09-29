@@ -34,6 +34,7 @@ class NetLoad extends Component {
         var my_net_load_df = [];
         if(chart_type === "no_season"){my_net_load_df = this.props.net_load_df}
         else{
+            // https://codingnconcepts.com/javascript/how-to-divide-array-in-equal-parts-in-javascript/
             var my_net_load_df_temp = [...this.props.net_load_df];
             var fourPartIndex = Math.ceil(my_net_load_df_temp.length / 4);
             var fourthPart = my_net_load_df_temp.splice(-fourPartIndex);

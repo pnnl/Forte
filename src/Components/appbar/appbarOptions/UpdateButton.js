@@ -28,7 +28,6 @@ class UpdateButton extends Component {
             this.props.set_start_date(this.props.start_date_temp);
             this.props.set_end_date(this.props.end_date_temp);
             this.props.set_solar_penetration(this.props.solar_penetration_temp);
-            this.props.set_enable_seasons_choice(this.props.enable_seasons_choice_temp);
             var converted_start_date = new Date(this.props.start_date_temp)
             converted_start_date = (converted_start_date.toISOString()).replace("T", " ").replace(".000Z", "")
             var converted_end_date = new Date(this.props.end_date_temp)
@@ -48,6 +47,7 @@ class UpdateButton extends Component {
                 this.props.set_temperature_nans_percentage(res["temperature_nans_percentage"]);
                 this.props.set_humidity_nans_percentage(res["humidity_nans_percentage"]);
                 this.props.set_apparent_power_nans_percentage(res["apparent_power_nans_percentage"]);
+                this.props.set_enable_seasons_choice(this.props.enable_seasons_choice_temp);
                 this.props.set_isLoadingUpdate(false);
                 
                 })

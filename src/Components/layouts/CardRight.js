@@ -38,7 +38,7 @@ var mini_card_height = (100/metrics.length) + "%";
 
 
 return (
-    <div style={{height: "94vh"}}>
+    <div style={{height: "90vh"}}>
     {metrics.map((metric, metric_index) =>{
         return <Card key={metric_index} style={{height: mini_card_height}}>
         <Card.Header>

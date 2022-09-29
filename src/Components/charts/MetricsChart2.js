@@ -224,7 +224,7 @@ class MetricsChart extends Component {
             .style("opacity", 0);
 
         return <div>
-        <div id={"metricChartDiv_"+this.props.the_metric} style={{height:"25vh"}}>
+        <div id={"metricChartDiv_"+this.props.the_metric} style={{height:"22vh"}}>
         <svg className={"metricChart_"+this.props.the_metric}></svg>
         </div>
       </div>

@@ -15,10 +15,40 @@ class NetLoad extends Component {
     }
     componentDidMount() {
         //this.setState({ temp: 0 });
-        this.create_line_chart(this.props.net_load_df, this.props.my_type);
+        var chart_type = this.props.my_type;
+        var my_net_load_df = [];
+        if(chart_type === "no_season"){my_net_load_df = this.props.net_load_df}
+        else{
+            var my_net_load_df_temp = this.props.net_load_df;
+            const fourPartIndex = Math.ceil(my_net_load_df_temp.length / 4);
+            const fourthPart = my_net_load_df_temp.splice(-fourPartIndex);
+            const thirdPart = my_net_load_df_temp.splice(-fourPartIndex);
+            const secondPart = my_net_load_df_temp.splice(-fourPartIndex);
+            const firstPart = my_net_load_df_temp;
+            if(chart_type === "season1"){my_net_load_df = firstPart.concat(thirdPart)}
+            else{my_net_load_df = secondPart.concat(fourthPart)}
+
+            console.log(my_net_load_df)
+        }
+        this.create_line_chart(my_net_load_df, this.props.my_type);
     }
     componentDidUpdate(prevProps, prevState) {
-        this.create_line_chart(this.props.net_load_df, this.props.my_type);
+        var chart_type = this.props.my_type;
+        var my_net_load_df = [];
+        if(chart_type === "no_season"){my_net_load_df = this.props.net_load_df}
+        else{
+            var my_net_load_df_temp = this.props.net_load_df;
+            const fourPartIndex = Math.ceil(my_net_load_df_temp.length / 4);
+            const fourthPart = my_net_load_df_temp.splice(-fourPartIndex);
+            const thirdPart = my_net_load_df_temp.splice(-fourPartIndex);
+            const secondPart = my_net_load_df_temp.splice(-fourPartIndex);
+            const firstPart = my_net_load_df_temp;
+            if(chart_type === "season1"){my_net_load_df = firstPart.concat(thirdPart)}
+            else{my_net_load_df = secondPart.concat(fourthPart)}
+
+            console.log(my_net_load_df)
+        }
+        this.create_line_chart(my_net_load_df, this.props.my_type);
     }
 
     create_line_chart(net_load_df, my_type){

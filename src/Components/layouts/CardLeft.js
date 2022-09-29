@@ -32,7 +32,7 @@ render(){
 return (
     <div>
     {(!this.props.enable_seasons_choice)?
-      <Card style={{height: "94vh"}}>
+      <Card style={{height: "90vh"}}>
       <Card.Header>
         <Grid container direction="row" spacing={1}>
         <Grid item xs={11} sm={11}>Net Load (kW)</Grid>
@@ -41,12 +41,12 @@ return (
         </Grid>
       </Card.Header>
       <Card.Body style={{opacity:(this.props.isLoadingUpdate)?0.4:1}}>
-          {((this.props.net_load_df).length >0)?<NetLoad></NetLoad>:null}
+          {((this.props.net_load_df).length >0)?<NetLoad my_type={"no_season"}></NetLoad>:null}
       </Card.Body>
       </Card>
       :
       <div>
-      <Card style={{height: "47vh"}}>
+      <Card style={{height: "45vh"}}>
       <Card.Header>
         <Grid container direction="row" spacing={1}>
         <Grid item xs={11} sm={11}>Net Load(kW)</Grid>
@@ -55,11 +55,11 @@ return (
         </Grid>
       </Card.Header>
       <Card.Body style={{opacity:(this.props.isLoadingUpdate)?0.4:1}}>
-          {((this.props.net_load_df).length >0)?<NetLoad></NetLoad>:null}
+          {((this.props.net_load_df).length >0)?<NetLoad my_type={"season1"}></NetLoad>:null}
       </Card.Body>
       </Card>
 
-      <Card style={{height: "47vh"}}>
+      <Card style={{height: "45vh"}}>
       <Card.Header>
         <Grid container direction="row" spacing={1}>
         <Grid item xs={11} sm={11}>Net Load (kW)</Grid>
@@ -68,7 +68,7 @@ return (
         </Grid>
       </Card.Header>
       <Card.Body style={{opacity:(this.props.isLoadingUpdate)?0.4:1}}>
-          {((this.props.net_load_df).length >0)?<NetLoad></NetLoad>:null}
+          {((this.props.net_load_df).length >0)?<NetLoad my_type={"season2"}></NetLoad>:null}
       </Card.Body>
       </Card>
       </div>

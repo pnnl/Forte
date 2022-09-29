@@ -15,15 +15,15 @@ class NetLoad extends Component {
     }
     componentDidMount() {
         //this.setState({ temp: 0 });
-        this.create_line_chart(this.props.net_load_df);
+        this.create_line_chart(this.props.net_load_df, this.props.my_type);
     }
     componentDidUpdate(prevProps, prevState) {
-        this.create_line_chart(this.props.net_load_df);
+        this.create_line_chart(this.props.net_load_df, this.props.my_type);
     }
 
-    create_line_chart(net_load_df){
+    create_line_chart(net_load_df, my_type){
         var animation_duration = 2500;//2000;
-        var the_id = "#netLoadChartDiv";   
+        var the_id = "#netLoadChartDiv_"+my_type;   
         const margin = {top: 10, right: 30, bottom: 30, left: 60},
         width = $(the_id).width() - margin.left - margin.right,
         height = $(the_id).height() - margin.top - margin.bottom;
@@ -31,11 +31,11 @@ class NetLoad extends Component {
 
         /** svg1 just sets the width and height of the svg */
         //$(".netLoadChart").empty();
-        const svg1 = d3.select(".netLoadChart")
+        const svg1 = d3.select(".netLoadChart_"+my_type)
         .attr("width", width + margin.left + margin.right)
         .attr("height", height + margin.top + margin.bottom)
         /** This adds a g to control the margin of the svg */
-        var svg = d3.select(".netLoadChart").selectAll(".initial_g").data([0]).join("g")
+        var svg = d3.select(".netLoadChart_"+my_type).selectAll(".initial_g").data([0]).join("g")
         .attr("class", "initial_g")    
         .attr("transform",`translate(${margin.left},${margin.top})`);
 
@@ -133,8 +133,9 @@ class NetLoad extends Component {
         // css design is in App.css
 
         return <div>
-        <div id="netLoadChartDiv" style={{height:"85vh"}}>
-        <svg className={"netLoadChart"}></svg>
+        <div id={"netLoadChartDiv_"+this.props.my_type} style={{height:(this.props.my_type === "no_season")?"81vh":"36vh"}}> 
+        {/* Card Left height -9 */}
+        <svg className={"netLoadChart_"+this.props.my_type}></svg>
         </div>
       </div>
        

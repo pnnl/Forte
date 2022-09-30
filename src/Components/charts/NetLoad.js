@@ -19,13 +19,12 @@ class NetLoad extends Component {
         if(chart_type === "no_season"){my_net_load_df = this.props.net_load_df}
         else{
             var my_net_load_df_temp = [...this.props.net_load_df];
-            var fourPartIndex = Math.ceil(my_net_load_df_temp.length / 4);
-            var fourthPart = my_net_load_df_temp.splice(-fourPartIndex);
-            var thirdPart = my_net_load_df_temp.splice(-fourPartIndex);
-            var secondPart = my_net_load_df_temp.splice(-fourPartIndex);
-            var firstPart = my_net_load_df_temp;
-            if(chart_type === "season1"){my_net_load_df = firstPart.concat(thirdPart)}
-            else{my_net_load_df = secondPart.concat(fourthPart)}
+            if(chart_type === "season1"){
+                my_net_load_df = my_net_load_df_temp.filter(el =>{var month = parseInt((el.timeline).substring(5,7)); return (month>=4  && month<=9)})
+            }
+            else{
+                my_net_load_df = my_net_load_df_temp.filter(el =>{var month = parseInt((el.timeline).substring(5,7)); return (month<4  || month>9)})
+            }
         }
         this.create_line_chart(my_net_load_df, this.props.my_type);
     }
@@ -34,15 +33,13 @@ class NetLoad extends Component {
         var my_net_load_df = [];
         if(chart_type === "no_season"){my_net_load_df = this.props.net_load_df}
         else{
-            // https://codingnconcepts.com/javascript/how-to-divide-array-in-equal-parts-in-javascript/
             var my_net_load_df_temp = [...this.props.net_load_df];
-            var fourPartIndex = Math.ceil(my_net_load_df_temp.length / 4);
-            var fourthPart = my_net_load_df_temp.splice(-fourPartIndex);
-            var thirdPart = my_net_load_df_temp.splice(-fourPartIndex);
-            var secondPart = my_net_load_df_temp.splice(-fourPartIndex);
-            var firstPart = my_net_load_df_temp;
-            if(chart_type === "season1"){my_net_load_df = firstPart.concat(thirdPart)}
-            else{my_net_load_df = secondPart.concat(fourthPart)}
+            if(chart_type === "season1"){
+                my_net_load_df = my_net_load_df_temp.filter(el =>{var month = parseInt((el.timeline).substring(5,7)); return (month>=4  && month<=9)})
+            }
+            else{
+                my_net_load_df = my_net_load_df_temp.filter(el =>{var month = parseInt((el.timeline).substring(5,7)); return (month<4  || month>9)})
+            }
         }
         this.create_line_chart(my_net_load_df, this.props.my_type);
     }

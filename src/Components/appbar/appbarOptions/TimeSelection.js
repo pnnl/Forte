@@ -28,9 +28,11 @@ class TimeSelection extends Component {
     }
 
     enable_seasons(){
-        var time_difference = this.props.end_date_temp - this.props.start_date_temp;
-        //if(time_difference>=10520000000){this.props.set_enable_seasons_flag(1);}
-        if(time_difference>=1052){this.props.set_enable_seasons_flag(1);}
+        var start_month = (new Date(this.props.start_date_temp)).getMonth() + 1;
+        var start_season = (start_month>=4 && start_month<=9)?"summer":"winter";
+        var end_month = (new Date(this.props.end_date_temp)).getMonth() + 1;
+        var end_season = (end_month>=4 && end_month<=9)?"summer":"winter";
+        if(start_season !== end_season){this.props.set_enable_seasons_flag(1);}
         else{this.props.set_enable_seasons_flag(0);}
     }
     render() {
@@ -56,7 +58,7 @@ class TimeSelection extends Component {
                 value={new Date(this.props.end_date_temp)}
                 onChange={(newValue) => {
                     this.props.set_end_date_temp(newValue.valueOf());
-                    console.log("Seasons: ",this.enable_seasons())
+                    this.enable_seasons();
                   }}
             />
         </LocalizationProvider>

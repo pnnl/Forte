@@ -28,10 +28,11 @@ class TimeSelection extends Component {
     }
 
     enable_seasons(){
-        var start_month = (new Date(this.props.start_date_temp)).getMonth() + 1;
+        var start_month = parseInt(((new Date(this.props.start_date_temp)).toISOString()).substring(5,7));
         var start_season = (start_month>=4 && start_month<=9)?"summer":"winter";
-        var end_month = (new Date(this.props.end_date_temp)).getMonth() + 1;
+        var end_month = parseInt(((new Date(this.props.end_date_temp)).toISOString()).substring(5,7));
         var end_season = (end_month>=4 && end_month<=9)?"summer":"winter";
+        console.log(start_month, start_season, end_month, end_season)
         if(start_season !== end_season){this.props.set_enable_seasons_flag(1);}
         else{this.props.set_enable_seasons_flag(0);}
     }
@@ -48,6 +49,7 @@ class TimeSelection extends Component {
                 value={new Date(this.props.start_date_temp)}
                 onChange={(newValue) => {
                     this.props.set_start_date_temp(newValue.valueOf());
+                    this.enable_seasons();
                   }}
             />&nbsp;
              <DateTimePicker

@@ -98,10 +98,10 @@ class NetLoad extends Component {
         .call(d3.axisLeft(y));
 
         /** Color palette */ 
-        var keys = ["actual", "predicted"]
+        var keys = ["actual", "predicted", "lower", "higher"]
         const color = d3.scaleOrdinal()
         //.range(['#e41a1c','#377eb8','#4daf4a','#984ea3','#ff7f00','#ffff33','#a65628','#f781bf','#999999'])
-        .range(["#377eb8", "#F39C12", "#999999"])
+        .range(["#377eb8", "#F39C12", "#FF0000", "#00FF00"])
 
         /** Adding one dot in the legend for each name */
         svg.selectAll(".legendDots")

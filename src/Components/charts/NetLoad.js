@@ -119,10 +119,10 @@ class NetLoad extends Component {
         .call(d3.axisLeft(y));
 
         /** Color palette */ 
-        var keys = ["actual", "predicted", "lower", "higher"]
+        var keys = ["actual", "predicted", "95% confidence"]
         const color = d3.scaleOrdinal()
         //.range(['#e41a1c','#377eb8','#4daf4a','#984ea3','#ff7f00','#ffff33','#a65628','#f781bf','#999999'])
-        .range(["#377eb8", "#F39C12", "rgb(190,190,190)", "rgb(190,190,190)"])// "#FF0000", "#00FF00"])
+        .range(["#377eb8", "#F39C12", "rgb(240, 240, 240)"])// "#FF0000", "#00FF00"])
 
         /** Adding one dot in the legend for each name */
         svg.selectAll(".legendDots")
@@ -147,7 +147,7 @@ class NetLoad extends Component {
         .duration(animation_duration)
         .attr("x", 0.89*width)
         .attr("y", function(d,i){ return 0 + i*25}) // 100 is where the first dot appears. 25 is the distance between dots
-        .style("fill", function(d){ return color(d)})
+        .style("fill", function(d){ if(d === "95% confidence"){return "rgb(190,190,190)"} else{return color(d)}})
         .text(function(d){ return d})
         .attr("font-size", "0.9em")
         .attr("text-anchor", "left")
@@ -156,7 +156,7 @@ class NetLoad extends Component {
         var conf_95_df_formatted = this.convert_to_Array_of_Arrays(conf_95_df);
         console.log(conf_95_df_formatted);
         var area = d3.area()
-        //.curve(d3.curveStep)
+        .curve(d3.curveStep)
         .x(function(d) { return x(new Date(d[0])); })
         .y0(function(d) { return y(d[1]); })
         .y1(function(d) { return y(d[2]); });
@@ -165,8 +165,8 @@ class NetLoad extends Component {
         .data([conf_95_df_formatted])
         .join("path")
             .attr("class", "area_chart_confidence")
-            .attr("fill", "gray")
-            .attr("stroke", "gray")
+            .attr("fill", "rgb(240, 240, 240)")
+            .attr("stroke", null)
             .attr("stroke-width", 1.5)
             .transition()
             .duration(animation_duration)

@@ -13,6 +13,7 @@ let initialState = {
     humidity: [],
     temperature: [],
     net_load_df: [],
+    conf_95_df: [],
     temperature_df: [],
     humidity_df: [],
     apparent_power_df: [],
@@ -115,6 +116,9 @@ const reducer = (state = initialState, action) => {
     } 
     if (action.type === "enable_seasons_choice") {
         return { ...state, enable_seasons_choice: action.value }
+    } 
+    if (action.type === "conf_95_df") {
+        return { ...state, conf_95_df: action.value }
     }         
 
     return state;

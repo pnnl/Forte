@@ -5,6 +5,7 @@ import { connect } from "react-redux";
 import * as $ from "jquery";
 import * as d3 from "d3";
 import _ from 'lodash';
+//import { area } from 'd3';
 
 
 
@@ -16,35 +17,50 @@ class NetLoad extends Component {
     componentDidMount() {
         var chart_type = this.props.my_type;
         var my_net_load_df = [];
-        if(chart_type === "no_season"){my_net_load_df = this.props.net_load_df}
+        var my_conf_95_df = [];
+        if(chart_type === "no_season"){my_net_load_df = this.props.net_load_df; my_conf_95_df = this.props.conf_95_df;}
         else{
             var my_net_load_df_temp = [...this.props.net_load_df];
+            var my_conf_95_df_temp = [...this.props.conf_95_df];
             if(chart_type === "season1"){
-                my_net_load_df = my_net_load_df_temp.filter(el =>{var month = parseInt((el.timeline).substring(5,7)); return (month>=4  && month<=9)})
+                my_net_load_df = my_net_load_df_temp.filter(el =>{var month = parseInt((el.timeline).substring(5,7)); return (month>=4  && month<=9)});
+                my_conf_95_df = my_conf_95_df_temp.filter(el =>{var month = parseInt((el.timeline).substring(5,7)); return (month>=4  && month<=9)})
             }
             else{
-                my_net_load_df = my_net_load_df_temp.filter(el =>{var month = parseInt((el.timeline).substring(5,7)); return (month<4  || month>9)})
+                my_net_load_df = my_net_load_df_temp.filter(el =>{var month = parseInt((el.timeline).substring(5,7)); return (month<4  || month>9)});
+                my_conf_95_df = my_conf_95_df_temp.filter(el =>{var month = parseInt((el.timeline).substring(5,7)); return (month<4  || month>9)})
             }
         }
-        this.create_line_chart(my_net_load_df, this.props.my_type);
+        this.create_line_chart(my_net_load_df, my_conf_95_df, this.props.my_type);
     }
     componentDidUpdate(prevProps, prevState) {
         var chart_type = this.props.my_type;
         var my_net_load_df = [];
-        if(chart_type === "no_season"){my_net_load_df = this.props.net_load_df}
+        var my_conf_95_df = [];
+        if(chart_type === "no_season"){my_net_load_df = this.props.net_load_df; my_conf_95_df = this.props.conf_95_df;}
         else{
             var my_net_load_df_temp = [...this.props.net_load_df];
+            var my_conf_95_df_temp = [...this.props.conf_95_df];
             if(chart_type === "season1"){
-                my_net_load_df = my_net_load_df_temp.filter(el =>{var month = parseInt((el.timeline).substring(5,7)); return (month>=4  && month<=9)})
+                my_net_load_df = my_net_load_df_temp.filter(el =>{var month = parseInt((el.timeline).substring(5,7)); return (month>=4  && month<=9)});
+                my_conf_95_df = my_conf_95_df_temp.filter(el =>{var month = parseInt((el.timeline).substring(5,7)); return (month>=4  && month<=9)})
             }
             else{
-                my_net_load_df = my_net_load_df_temp.filter(el =>{var month = parseInt((el.timeline).substring(5,7)); return (month<4  || month>9)})
+                my_net_load_df = my_net_load_df_temp.filter(el =>{var month = parseInt((el.timeline).substring(5,7)); return (month<4  || month>9)});
+                my_conf_95_df = my_conf_95_df_temp.filter(el =>{var month = parseInt((el.timeline).substring(5,7)); return (month<4  || month>9)})
             }
         }
-        this.create_line_chart(my_net_load_df, this.props.my_type);
+        this.create_line_chart(my_net_load_df, my_conf_95_df, this.props.my_type);
     }
 
-    create_line_chart(net_load_df, my_type){
+    convert_to_Array_of_Arrays(input){
+        var output = input.map(function(obj) {
+            return [obj.timeline, obj.lower_limit, obj.higher_limit]
+          }); 
+        return output;  
+    } 
+
+    create_line_chart(net_load_df, conf_95_df, my_type){
         var animation_duration = 2500;//2000;
         var the_id = "#netLoadChartDiv_"+my_type;   
         const margin = {top: 10, right: 30, bottom: 30, left: 60},
@@ -64,7 +80,12 @@ class NetLoad extends Component {
 
 
         /** Grouping the data: in order to draw one line per group */
-        const sumstat2 = d3.group(net_load_df, d => d.net_load_type) // group function allows to group the calculation per level of a factor
+        var test = net_load_df.filter(el => ["actual", "predicted"].includes(el.net_load_type))
+        var test2 = net_load_df.filter(el => !["actual", "predicted"].includes(el.net_load_type))
+        var test3 = d3.group(test2, d => d.years)
+        //test = net_load_df
+        console.log(test3)
+        const sumstat2 = d3.group(test, d => d.net_load_type) // group function allows to group the calculation per level of a factor
 
         /** Adding and calling X axis --> it is a date format */
         var starting_date = net_load_df[0]["timeline"]
@@ -101,7 +122,7 @@ class NetLoad extends Component {
         var keys = ["actual", "predicted", "lower", "higher"]
         const color = d3.scaleOrdinal()
         //.range(['#e41a1c','#377eb8','#4daf4a','#984ea3','#ff7f00','#ffff33','#a65628','#f781bf','#999999'])
-        .range(["#377eb8", "#F39C12", "#FF0000", "#00FF00"])
+        .range(["#377eb8", "#F39C12", "rgb(190,190,190)", "rgb(190,190,190)"])// "#FF0000", "#00FF00"])
 
         /** Adding one dot in the legend for each name */
         svg.selectAll(".legendDots")
@@ -131,6 +152,34 @@ class NetLoad extends Component {
         .attr("font-size", "0.9em")
         .attr("text-anchor", "left")
         .style("alignment-baseline", "middle")
+
+        var conf_95_df_formatted = this.convert_to_Array_of_Arrays(conf_95_df);
+        console.log(conf_95_df_formatted);
+        var area = d3.area()
+        //.curve(d3.curveStep)
+        .x(function(d) { return x(new Date(d[0])); })
+        .y0(function(d) { return y(d[1]); })
+        .y1(function(d) { return y(d[2]); });
+        /** Drawing the confidence interval */ 
+        svg.selectAll(".area_chart_confidence")
+        .data([conf_95_df_formatted])
+        .join("path")
+            .attr("class", "area_chart_confidence")
+            .attr("fill", "gray")
+            .attr("stroke", "gray")
+            .attr("stroke-width", 1.5)
+            .transition()
+            .duration(animation_duration)
+            .attr("d", (el) => {return area(el)}) 
+            // function(d){
+            // return d3.area()
+            //     //.curve(d3.curveStep)
+            //     .x(function(d) { return x(new Date(d[0])); })
+            //     .y0(function(d) { return y(d[1]); })
+            //     .y1(function(d) { return y(d[2]); })
+            //     (d[1])
+            // })
+
 
         /** Drawing the lines */ 
         svg.selectAll(".lineCharts")
@@ -169,6 +218,7 @@ const maptstateToprop = (state) => {
     return {
         blank_placeholder:state.blank_placeholder,
         net_load_df: state.net_load_df,
+        conf_95_df: state.conf_95_df,
     }
 }
 const mapdispatchToprop = (dispatch) => {

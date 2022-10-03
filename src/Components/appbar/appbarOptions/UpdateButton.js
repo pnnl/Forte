@@ -41,6 +41,7 @@ class UpdateButton extends Component {
             jsonCall.download(this.props.url + "/api/v@latest/processor", {start_date: converted_start_date, end_date: converted_end_date, solar_penetration:this.props.solar_penetration_temp, temperature_updated:0, humidity_updated:0, apparent_power_updated:0, metrics_updated:metrics_updated, updated_metric:this.props.updated_metric}).then(res =>{
                 console.log(res);
                 this.props.set_net_load_df(res["net_load_df"]);
+                this.props.set_conf_95_df(res["conf_95_df"]);
                 this.props.set_temperature_df(res["temperature_df"]);
                 this.props.set_humidity_df(res["humidity_df"]);
                 this.props.set_apparent_power_df(res["apparent_power_df"]);
@@ -100,6 +101,7 @@ const mapdispatchToprop = (dispatch) => {
         set_start_date: (val) => dispatch({ type: "start_date", value: val }),
         set_end_date: (val) => dispatch({ type: "end_date", value: val }),
         set_net_load_df: (val) => dispatch({ type: "net_load_df", value: val}),
+        set_conf_95_df: (val) => dispatch({ type: "conf_95_df", value: val}),
         set_temperature_df: (val) => dispatch({ type: "temperature_df", value: val}),
         set_humidity_df: (val) => dispatch({ type: "humidity_df", value: val}),
         set_apparent_power_df: (val) => dispatch({ type: "apparent_power_df", value: val}),

@@ -30,6 +30,8 @@ let initialState = {
     enable_seasons_flag:0,
     enable_seasons_choice_temp:0,
     enable_seasons_choice:0,
+    noise_temperature_temp: 5,
+    noise_temperature:5
 }
 
 const reducer = (state = initialState, action) => {
@@ -119,6 +121,12 @@ const reducer = (state = initialState, action) => {
     } 
     if (action.type === "conf_95_df") {
         return { ...state, conf_95_df: action.value }
+    }
+    if (action.type === "noise_temperature_temp") {
+        return { ...state, noise_temperature_temp: action.value }
+    }
+    if (action.type === "noise_temperature") {
+        return { ...state, noise_temperature: action.value }
     }         
 
     return state;

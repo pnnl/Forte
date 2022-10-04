@@ -90,7 +90,7 @@ class MetricsChart extends Component {
         .attr("class", "g_Y_metric_"+the_metric)
         .transition()
         .duration(animation_duration)
-        .call(d3.axisLeft(yScale));
+        .call(d3.axisLeft(yScale).tickSize(-width).tickSizeOuter(0));
 
         /** Color palette */ 
         const color = d3.scaleOrdinal()

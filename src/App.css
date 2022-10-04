@@ -49,3 +49,14 @@
   border-radius: 5px;
   z-index:100;
 }
+
+.tick line {
+  stroke: lightgrey;
+  stroke-opacity: 0.35;
+  shape-rendering: crispEdges;
+}
+
+/* .domain{
+  stroke-width: 0;
+  stroke-opacity: 0.35;
+} */

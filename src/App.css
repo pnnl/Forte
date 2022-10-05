@@ -52,7 +52,7 @@
 
 .tick line {
   stroke: lightgrey;
-  stroke-opacity: 0.35;
+  stroke-opacity: 0.2;
   shape-rendering: crispEdges;
 }
 

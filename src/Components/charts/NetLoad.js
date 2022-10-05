@@ -100,7 +100,7 @@ class NetLoad extends Component {
         .attr("transform", `translate(0, ${height})`)
         .transition()
         .duration(animation_duration)
-        .call(d3.axisBottom(x)); //removed the ticks
+        .call(d3.axisBottom(x).tickSize(-height).tickSizeOuter(0)); //removed the ticks
 
         /** Adding and calling Y axis */ 
         //var limit = 1.1*(Math.max(Math.abs(d3.min(net_load_df, function(d) { return d.net_load; })), Math.abs(d3.max(net_load_df, function(d) { return d.net_load; }))))
@@ -116,7 +116,7 @@ class NetLoad extends Component {
         .attr("class", "g_Y")
         .transition()
         .duration(animation_duration)
-        .call(d3.axisLeft(y));
+        .call(d3.axisLeft(y).tickSize(-width).tickSizeOuter(0));
 
         /** Color palette */ 
         var keys = ["actual", "predicted", "95% confidence"]

@@ -30,8 +30,8 @@ let initialState = {
     enable_seasons_flag:0,
     enable_seasons_choice_temp:0,
     enable_seasons_choice:0,
-    noise_temperature_temp: 5,
-    noise_temperature:5
+    noise_temperature_temp: -1,
+    noise_temperature:-1,
 }
 
 const reducer = (state = initialState, action) => {

@@ -60,8 +60,19 @@ class NoiseAdditionOption extends Component {
     }
 
     handleChange(event){
+        console.log(this.calculate_uniform_noise([1,3,5]));
         this.props.set_noise_temperature_temp(event.target.value);
     }
+
+    getRandomArbitrary(min, max) {
+        return Math.random() * (max - min) + min;
+      }
+
+    calculate_uniform_noise(arr){
+        var noisy_arr = arr.map((el)=>this.getRandomArbitrary(0.95*el, 1.05*el));
+        return noisy_arr;
+    }
+
     render() {
         // css design is in App.css
         // Tutorial: https://mui.com/material-ui/react-select/

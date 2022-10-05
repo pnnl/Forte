@@ -77,7 +77,7 @@ class MetricsChart extends Component {
         .attr("transform", `translate(0, ${height})`)
         .transition()
         .duration(animation_duration)
-        .call(d3.axisBottom(xScale)); //removed the ticks
+        .call(d3.axisBottom(xScale).tickSize(-height).tickSizeOuter(0)); //removed the ticks
 
         /** Adding and calling Y axis */ 
         //var limit = 1.1*(Math.max(Math.abs(d3.min(the_data, function(d) { return temperature; })), Math.abs(d3.max(net_load_df, function(d) { return d.net_load; }))))

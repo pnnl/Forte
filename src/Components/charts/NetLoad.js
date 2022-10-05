@@ -59,11 +59,12 @@ class NetLoad extends Component {
           }); 
         return output;  
     } 
-
+    /** This function increases the opacity of the gridlines when hovered */
     handleMouseEnter(event){
         var my_svg = d3.select(event.target)
         my_svg.selectAll(".tick line").style("stroke-opacity", 0.35)
     }
+    /** This function decreases the opacity of the gridlines when not hovered */
     handleMouseExit(event){
         var my_svg = d3.select(event.target)
         my_svg.selectAll(".tick line").style("stroke-opacity", 0.2)

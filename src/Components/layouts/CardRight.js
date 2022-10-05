@@ -30,6 +30,8 @@ shouldComponentUpdate(nextProps, nextState){
 
 
 
+
+
 render(){ 
 var metrics = ["temperature", "humidity", "apparent_power"];
 var metrics_unit = [" (°F)", " (%)", " (kVA)"];
@@ -110,8 +112,8 @@ return (
             </Grid>  
           </Grid>
         </Card.Header>
-        <Card.Body style={{opacity:(this.props.isLoadingUpdate)?0.4:1}}>
-            {(["temperature", "humidity", "apparent_power"].includes(metric) & (this.props.net_load_df).length >0 & ([...this.props.temperature_df]).length >0)?<MetricsChart the_metric={metric} the_data={metrics_data[metric_index]} the_nans_percentage={metrics_nan_percentage[metric_index]}></MetricsChart>:null}
+        <Card.Body style={{opacity:(this.props.isLoadingUpdate)?0.4:1}} >
+            {(["temperature", "humidity", "apparent_power"].includes(metric) & (this.props.net_load_df).length >0 & ([...this.props.temperature_df]).length >0)?<MetricsChart the_metric={metric} the_data={metrics_data[metric_index]} the_nans_percentage={metrics_nan_percentage[metric_index]} ></MetricsChart>:null}
         </Card.Body>
         </Card>
     })}    

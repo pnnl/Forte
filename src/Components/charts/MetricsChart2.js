@@ -37,6 +37,15 @@ class MetricsChart extends Component {
         return output;  
     }  
 
+    handleMouseEnter(event){
+        var my_svg = d3.select(event.target)
+        my_svg.selectAll(".tick line").style("stroke-opacity", 0.35)
+    }
+    handleMouseExit(event){
+        var my_svg = d3.select(event.target)
+        my_svg.selectAll(".tick line").style("stroke-opacity", 0.2)
+    }
+
     create_line_chart(the_data, the_metric){
         var self = this;
         var animation_duration = 2000;
@@ -223,9 +232,9 @@ class MetricsChart extends Component {
             .attr("class", "tooltip_matches")
             .style("opacity", 0);
 
-        return <div>
+        return <div >
         <div id={"metricChartDiv_"+this.props.the_metric} style={{height:"22vh"}}>
-        <svg className={"metricChart_"+this.props.the_metric}></svg>
+        <svg className={"metricChart_"+this.props.the_metric} onMouseEnter={this.handleMouseEnter} onMouseLeave={this.handleMouseExit} ></svg>
         </div>
       </div>
        

@@ -60,6 +60,15 @@ class NetLoad extends Component {
         return output;  
     } 
 
+    handleMouseEnter(event){
+        var my_svg = d3.select(event.target)
+        my_svg.selectAll(".tick line").style("stroke-opacity", 0.35)
+    }
+    handleMouseExit(event){
+        var my_svg = d3.select(event.target)
+        my_svg.selectAll(".tick line").style("stroke-opacity", 0.2)
+    }
+
     create_line_chart(net_load_df, conf_95_df, my_type){
         var animation_duration = 2500;//2000;
         var the_id = "#netLoadChartDiv_"+my_type;   
@@ -207,7 +216,7 @@ class NetLoad extends Component {
         return <div>
         <div id={"netLoadChartDiv_"+this.props.my_type} style={{height:(this.props.my_type === "no_season")?"81vh":"36vh"}}> 
         {/* Card Left height -9 */}
-        <svg className={"netLoadChart_"+this.props.my_type}></svg>
+        <svg className={"netLoadChart_"+this.props.my_type} onMouseEnter={this.handleMouseEnter} onMouseLeave={this.handleMouseExit}></svg>
         </div>
       </div>
        

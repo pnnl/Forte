@@ -62,6 +62,18 @@ class NoiseAdditionOption extends Component {
     handleChange(event){
         console.log(this.calculate_uniform_noise([1,3,5]));
         this.props.set_noise_temperature_temp(event.target.value);
+
+        var updated_metric =this.props.updated_metric;
+        var formatted_array = updated_metric[this.props.the_metric];
+        console.log("Initial",formatted_array);
+        var formatted_array_edited = this.calculate_uniform_noise(formatted_array.map(em => em[3]));
+        formatted_array = formatted_array.map((em,i) => [em[0], em[1], em[2],formatted_array_edited[i]])
+        updated_metric[this.props.the_metric] = formatted_array;
+        this.props.set_updated_metric(updated_metric);
+        if(this.props.the_metric==="temperature"){this.props.set_updated_temperature(formatted_array);}
+        else if(this.props.the_metric==="humidity"){this.props.set_updated_humidity(formatted_array);}
+        else if(this.props.the_metric==="apparent_power"){this.props.set_updated_apparent_power(formatted_array);}
+        console.log("Final", formatted_array);
     }
 
     getRandomArbitrary(min, max) {
@@ -107,12 +119,17 @@ const maptstateToprop = (state) => {
         blank_placeholder:state.blank_placeholder,
         isLoadingUpdate: state.isLoadingUpdate,
         noise_temperature_temp: state.noise_temperature_temp,
+        updated_metric: state.updated_metric,
     }
 }
 const mapdispatchToprop = (dispatch) => {
     return {
         set_blank_placeholder: (val) => dispatch({ type: "blank_placeholder", value: val }),
         set_noise_temperature_temp: (val) => dispatch({ type: "noise_temperature_temp", value: val }),
+        set_updated_temperature: (val) => dispatch({ type: "updated_temperature", value: val }),
+        set_updated_humidity: (val) => dispatch({ type: "updated_humidity", value: val }),
+        set_updated_apparent_power: (val) => dispatch({ type: "updated_apparent_power", value: val }),
+        set_updated_metric: (val) => dispatch({ type: "updated_metric", value: val }),
     }
 }
 export default connect(maptstateToprop, mapdispatchToprop)(NoiseAdditionOption);

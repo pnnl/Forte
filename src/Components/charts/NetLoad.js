@@ -164,7 +164,7 @@ class NetLoad extends Component {
         .style("alignment-baseline", "middle")
 
         var conf_95_df_formatted = this.convert_to_Array_of_Arrays(conf_95_df);
-        console.log(conf_95_df_formatted);
+        //console.log(conf_95_df_formatted);
         var area = d3.area()
         .curve(d3.curveStep)
         .x(function(d) { return x(new Date(d[0])); })

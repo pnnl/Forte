@@ -76,6 +76,7 @@ return (
                     var updated_metric =this.props.updated_metric;
                     updated_metric[metric] = []; // resetting the metric that is being reset
                     this.props.set_updated_metric(updated_metric);
+                    this.props.set_noise_temperature_temp(-1);
                     this.props.set_isLoadingUpdate(false);
                     
                     })
@@ -164,6 +165,7 @@ const mapdispatchToprop = (dispatch) => {
       set_apparent_power_nans_percentage: (val) => dispatch({ type: "apparent_power_nans_percentage", value: val}),
       set_solar_penetration: (val) => dispatch({ type: "solar_penetration", value: val}),
       set_updated_metric: (val) => dispatch({ type: "updated_metric", value: val }),
+      set_noise_temperature_temp: (val) => dispatch({ type: "noise_temperature_temp", value: val }),
   }
 }
 

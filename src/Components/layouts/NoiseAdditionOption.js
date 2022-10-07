@@ -111,10 +111,10 @@ class NoiseAdditionOption extends Component {
         <MenuItem disabled value={-1}>
             Add Noise
           </MenuItem>
-          <MenuItem value={0}>
+          {/* <MenuItem value={0}>
             <em>None</em>
-          </MenuItem>
-          <MenuItem value={5}>5%</MenuItem>
+          </MenuItem> */}
+          <MenuItem value={5}>Uniform 5%</MenuItem>
         </Select>
       </FormControl>
        

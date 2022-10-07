@@ -50,7 +50,7 @@ return (
             {/* <Grid item xs={1} sm={1}></Grid> */}
             <Grid item xs={4} sm={4}>
               <Grid container direction="row" spacing={3}>
-                <Grid item xs={4} sm={4}>{(["temperature"].includes(metric))?<NoiseAdditionOption the_metric={metric}></NoiseAdditionOption>:null}</Grid>
+                <Grid item xs={4} sm={4}>{(["temperature"].includes(metric))?<NoiseAdditionOption the_metric={metric} the_data={metrics_data[metric_index]}></NoiseAdditionOption>:null}</Grid>
                 <Grid item xs={4} sm={4}>{(["temperature", "humidity", "apparent_power"].includes(metric))?<Tooltip title={(this.props.isLoadingUpdate)?"Loading":(((this.props.updated_metric[metric]).length === 0)?"Drag this chart to make changes":"Click the button to reset the changes")} placement="top" arrow><span><Button size="small"  color="secondary"  disabled={this.props.isLoadingUpdate || ((this.props.updated_metric[metric]).length === 0)}  style={{ backgroundColor: "#efefef", opacity: 1, borderRadius: 0, color: (this.props.isLoadingUpdate || ((this.props.updated_metric[metric]).length === 0))?null:"black",  marginTop: -2, textTransform: 'none' }}
                 onClick={()=>{
                   this.props.set_isLoadingUpdate(true);

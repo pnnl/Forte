@@ -56,7 +56,10 @@ class MetricsChart extends Component {
         width = $(the_id).width() - margin.left - margin.right,
         height = $(the_id).height() - margin.top - margin.bottom;
 
-        var formatted_array = this.convert_to_Array_of_Arrays(the_data, the_metric);
+        var updated_metric1 =self.props.updated_metric;
+        var formatted_array;
+        formatted_array = ((updated_metric1[the_metric]).length === 0)?this.convert_to_Array_of_Arrays(the_data, the_metric):updated_metric1[the_metric];
+        //formatted_array = this.convert_to_Array_of_Arrays(the_data, the_metric);
         //console.log(formatted_array);
 
         //the_data = the_data.filter((d) => d.temperature !== 99999); // removing NaN

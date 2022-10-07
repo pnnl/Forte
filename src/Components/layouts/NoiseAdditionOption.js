@@ -67,29 +67,31 @@ class NoiseAdditionOption extends Component {
     }
 
     handleChange(event){
-        console.log(this.calculate_uniform_noise([1,3,5]));
+        console.log(this.calculate_uniform_noise([1,3,5], event.target.value));
         this.props.set_noise_temperature_temp(event.target.value);
 
         var updated_metric =this.props.updated_metric;
         //var formatted_array = updated_metric[this.props.the_metric];
         var formatted_array = ((updated_metric[this.props.the_metric]).length === 0)?this.convert_to_Array_of_Arrays(this.props.the_data, this.props.the_metric):updated_metric[this.props.the_metric];
-        console.log("Initial",formatted_array);
-        var formatted_array_edited = this.calculate_uniform_noise(formatted_array.map(em => em[3]));
+        //console.log("Initial",formatted_array);
+        var formatted_array_edited = this.calculate_uniform_noise(formatted_array.map(em => em[3]),event.target.value);
         formatted_array = formatted_array.map((em,i) => [em[0], em[1], em[2],formatted_array_edited[i]])
         updated_metric[this.props.the_metric] = formatted_array;
         this.props.set_updated_metric(updated_metric);
         if(this.props.the_metric==="temperature"){this.props.set_updated_temperature(formatted_array);}
         else if(this.props.the_metric==="humidity"){this.props.set_updated_humidity(formatted_array);}
         else if(this.props.the_metric==="apparent_power"){this.props.set_updated_apparent_power(formatted_array);}
-        console.log("Final", formatted_array);
+        //console.log("Final", formatted_array);
     }
 
     getRandomArbitrary(min, max) {
         return Math.random() * (max - min) + min;
       }
 
-    calculate_uniform_noise(arr){
-        var noisy_arr = arr.map((el)=>this.getRandomArbitrary(0.95*el, 1.05*el));
+    calculate_uniform_noise(arr,noise){
+        var lower_number = 1-(noise/100);//0.95;
+        var upper_number = 1+(noise/100);//1.05
+        var noisy_arr = arr.map((el)=>this.getRandomArbitrary(lower_number*el, upper_number*el));
         return noisy_arr;
     }
 
@@ -115,6 +117,7 @@ class NoiseAdditionOption extends Component {
             <em>None</em>
           </MenuItem> */}
           <MenuItem value={5}>Uniform 5%</MenuItem>
+          {/* <MenuItem value={10}>Uniform 10%</MenuItem> */}
         </Select>
       </FormControl>
        

@@ -49,6 +49,8 @@ class UpdateButton extends Component {
                 this.props.set_humidity_nans_percentage(res["humidity_nans_percentage"]);
                 this.props.set_apparent_power_nans_percentage(res["apparent_power_nans_percentage"]);
                 this.props.set_enable_seasons_choice(this.props.enable_seasons_choice_temp);
+                this.props.set_mae(res["7. MAE"]);
+                this.props.set_mape(res["8. MAPE"]);
                 this.props.set_isLoadingUpdate(false);
                 
                 })
@@ -110,6 +112,8 @@ const mapdispatchToprop = (dispatch) => {
         set_apparent_power_nans_percentage: (val) => dispatch({ type: "apparent_power_nans_percentage", value: val}),
         set_solar_penetration: (val) => dispatch({ type: "solar_penetration", value: val}),
         set_enable_seasons_choice: (val) => dispatch({ type: "enable_seasons_choice", value: val}),
+        set_mae: (val) => dispatch({ type: "mae", value: val}),
+        set_mape: (val) => dispatch({ type: "mape", value: val}),
     }
 }
 export default connect(maptstateToprop, mapdispatchToprop)(UpdateButton);

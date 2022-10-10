@@ -39,6 +39,8 @@ class App extends Component{
       this.props.set_temperature_nans_percentage(res["temperature_nans_percentage"]);
       this.props.set_humidity_nans_percentage(res["humidity_nans_percentage"]);
       this.props.set_apparent_power_nans_percentage(res["apparent_power_nans_percentage"]);
+      this.props.set_mae(res["7. MAE"]);
+      this.props.set_mape(res["8. MAPE"]);
       this.props.set_isLoadingUpdate(false);
       
       })
@@ -101,6 +103,8 @@ const mapDispatchToProp = (dispatch) => {
     set_temperature_nans_percentage: (val) => dispatch({ type: "temperature_nans_percentage", value: val}),
     set_humidity_nans_percentage: (val) => dispatch({ type: "humidity_nans_percentage", value: val}),
     set_apparent_power_nans_percentage: (val) => dispatch({ type: "apparent_power_nans_percentage", value: val}),
+    set_mae: (val) => dispatch({ type: "mae", value: val}),
+    set_mape: (val) => dispatch({ type: "mape", value: val}),
   }
 }
 export default connect(mapStateToProp,mapDispatchToProp)(App);

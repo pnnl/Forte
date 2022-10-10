@@ -7,6 +7,7 @@ import * as d3 from "d3";
 import _ from 'lodash';
 //import { area } from 'd3';
 
+var tooltip;
 
 
 class NetLoad extends Component {
@@ -71,6 +72,7 @@ class NetLoad extends Component {
     }
 
     create_line_chart(net_load_df, conf_95_df, my_type){
+        var self = this;
         var animation_duration = 2500;//2000;
         var the_id = "#netLoadChartDiv_"+my_type;   
         const margin = {top: 10, right: 30, bottom: 30, left: 60},
@@ -209,10 +211,29 @@ class NetLoad extends Component {
                 (d[1])
             })
 
+            // info icon about performance metrics
+            d3.selectAll(".netload_performance_icon").on("mouseover", function (event) {
+                tooltip.transition()
+                  .duration(200)
+                  .style("opacity", .9);
+                tooltip.html("MAE: "+String(self.props.mae)+" kW <br> MAPE: "+String(self.props.mape)+"%")
+                  .style("left", (event.pageX + 5) + "px")
+                  .style("top", (event.pageY - 10) + "px");
+              })
+                .on("mouseout", function (d) {
+                  tooltip.transition()
+                    .duration(500)
+                    .style("opacity", 0);
+                })
+
 
     }
     render() {
         // css design is in App.css
+
+        tooltip = d3.select("body").selectAll(".tooltip_performance_metrics").data([0]).join('div')
+            .attr("class", "tooltip_performance_metrics")
+            .style("opacity", 0);
 
         return <div>
         <div id={"netLoadChartDiv_"+this.props.my_type} style={{height:(this.props.my_type === "no_season")?"81vh":"36vh"}}> 
@@ -229,6 +250,8 @@ const maptstateToprop = (state) => {
         blank_placeholder:state.blank_placeholder,
         net_load_df: state.net_load_df,
         conf_95_df: state.conf_95_df,
+        mae: state.mae,
+        mape: state.mape,
     }
 }
 const mapdispatchToprop = (dispatch) => {

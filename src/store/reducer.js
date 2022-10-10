@@ -32,6 +32,8 @@ let initialState = {
     enable_seasons_choice:0,
     noise_temperature_temp: -1,
     noise_temperature:-1,
+    mae:0,
+    mape:0,
 }
 
 const reducer = (state = initialState, action) => {
@@ -127,6 +129,12 @@ const reducer = (state = initialState, action) => {
     }
     if (action.type === "noise_temperature") {
         return { ...state, noise_temperature: action.value }
+    }
+    if (action.type === "mae") {
+        return { ...state, mae: action.value }
+    }
+    if (action.type === "mape") {
+        return { ...state, mape: action.value }
     }         
 
     return state;

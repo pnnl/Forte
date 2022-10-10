@@ -77,6 +77,8 @@ return (
                     updated_metric[metric] = []; // resetting the metric that is being reset
                     this.props.set_updated_metric(updated_metric);
                     this.props.set_noise_temperature_temp(-1);
+                    this.props.set_mae(res["7. MAE"]);
+                    this.props.set_mape(res["8. MAPE"]);
                     this.props.set_isLoadingUpdate(false);
                     
                     })
@@ -105,6 +107,8 @@ return (
                     this.props.set_temperature_nans_percentage(res["temperature_nans_percentage"]);
                     this.props.set_humidity_nans_percentage(res["humidity_nans_percentage"]);
                     this.props.set_apparent_power_nans_percentage(res["apparent_power_nans_percentage"]);
+                    this.props.set_mae(res["7. MAE"]);
+                    this.props.set_mape(res["8. MAPE"]);
                     this.props.set_isLoadingUpdate(false);
                     
                     })
@@ -166,6 +170,8 @@ const mapdispatchToprop = (dispatch) => {
       set_solar_penetration: (val) => dispatch({ type: "solar_penetration", value: val}),
       set_updated_metric: (val) => dispatch({ type: "updated_metric", value: val }),
       set_noise_temperature_temp: (val) => dispatch({ type: "noise_temperature_temp", value: val }),
+      set_mae: (val) => dispatch({ type: "mae", value: val}),
+      set_mape: (val) => dispatch({ type: "mape", value: val}),
   }
 }
 

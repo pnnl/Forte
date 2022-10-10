@@ -50,6 +50,17 @@
   z-index:100;
 }
 
+.tooltip_performance_metrics {
+  position: absolute;
+  /* width: 375px; */
+  padding: 5px;
+  pointer-events: none;
+  background-color: rgb(50, 50, 50);
+  color: white;
+  border-radius: 5px;
+  z-index:100;
+}
+
 .tick line {
   stroke: lightgrey;
   stroke-opacity: 0.2;

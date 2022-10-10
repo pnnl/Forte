@@ -35,7 +35,7 @@ return (
       <Card style={{height: "90vh"}}>
       <Card.Header>
         <Grid container direction="row" spacing={1}>
-        <Grid item xs={11} sm={11}>Net Load (kW)</Grid>
+        <Grid item xs={11} sm={11}>Net Load (kW) <i className={"fa fa-info-circle netload_performance_icon"} aria-hidden="true"></i></Grid>
         <Grid item xs={1} sm={1}>{(true)?<span style={{opacity:0}}><Button size="small"  color="secondary"  disabled={true}  style={{ backgroundColor: "#efefef", opacity: 1, borderRadius: 0, color: "black",  marginTop: -2, textTransform: 'none' }}
          >Update</Button></span>:null}</Grid>
         </Grid>

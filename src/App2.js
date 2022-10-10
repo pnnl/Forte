@@ -62,6 +62,48 @@ class App extends Component{
     
   }
 
+  // componentDidMount(){}
+  componentDidUpdate(){}
+  // componentDidUpdate(){
+  //   this.props.set_isLoadingUpdate(true); 
+  //   var converted_start_date = new Date(this.props.start_date)
+  //   converted_start_date = (converted_start_date.toISOString()).replace("T", " ").replace(".000Z", "")
+  //   var converted_end_date = new Date(this.props.end_date)
+  //   converted_end_date = (converted_end_date.toISOString()).replace("T", " ").replace(".000Z", "")
+  //   var metrics_updated ={}
+  //   var metrics = ["temperature", "humidity", "apparent_power"]
+  //   metrics.map(em => {metrics_updated[em] = (em === "temperature")?1:0}) // none of the metrics should be updated
+  //   var values_array = _.range(0.1,3,0.1);
+  //   values_array = values_array.map(em => parseFloat(em).toFixed(1))
+  //   var mae_values = [];
+  //   var mape_values = []
+  //   values_array.map(el =>{
+  //     console.log("Started for noise: "+el)
+  //     this.handle_change_constant_bias(el);
+  //     jsonCall.download(this.props.url + "/api/v@latest/processor", {start_date: converted_start_date, end_date: converted_end_date, solar_penetration:this.props.solar_penetration, temperature_updated:1,humidity_updated:0, apparent_power_updated:0, metrics_updated:metrics_updated, updated_metric:this.props.updated_metric}).then(res =>{
+  //       this.props.set_net_load_df(res["net_load_df"]);
+  //       this.props.set_conf_95_df(res["conf_95_df"]);
+  //       this.props.set_temperature_df(res["temperature_df"]);
+  //       this.props.set_humidity_df(res["humidity_df"]);
+  //       this.props.set_apparent_power_df(res["apparent_power_df"]);
+  //       this.props.set_temperature_nans_percentage(res["temperature_nans_percentage"]);
+  //       this.props.set_humidity_nans_percentage(res["humidity_nans_percentage"]);
+  //       this.props.set_apparent_power_nans_percentage(res["apparent_power_nans_percentage"]);
+  //       this.props.set_mae(res["7. MAE"]);
+  //       this.props.set_mape(res["8. MAPE"]);
+  //       this.props.set_isLoadingUpdate(false);
+  //       mae_values.push([el, res["7. MAE"]])
+  //       mape_values.push([el, res["8. MAPE"]])
+  //       console.log("Completed for noise: "+el)
+  //       this.props.set_mae_values(mae_values);
+  //       this.props.set_mape_values(mape_values);
+        
+  //       })
+  //   })
+  //  console.log(mae_values);
+    
+  // }
+
   convert_to_Array_of_Arrays(input, the_metric){
     var output = input.map(function(obj) {
         return [obj.dummy, obj.timeline, obj.wasNan, obj[the_metric]]
@@ -121,9 +163,7 @@ class App extends Component{
     return noisy_arr;
 }
 
-  componentDidUpdate(){
 
-  }
 
   render(){
 

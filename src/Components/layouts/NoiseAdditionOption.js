@@ -68,7 +68,10 @@ class NoiseAdditionOption extends Component {
 
     handleChange(event){
         console.log(this.calculate_uniform_noise([1,3,5], event.target.value));
+        var noise_control = this.props.noise_control;
+        noise_control[this.props.the_metric] = event.target.value
         this.props.set_noise_temperature_temp(event.target.value);
+        //this.props.set_noise_control(noise_control);
 
         var updated_metric =this.props.updated_metric;
         //var formatted_array = updated_metric[this.props.the_metric];
@@ -105,8 +108,8 @@ class NoiseAdditionOption extends Component {
            labelId="demo-select-small"
            id="demo-select-small"
           disabled={this.props.isLoadingUpdate}
-          value={this.props.noise_temperature_temp}
-          
+          // value={this.props.noise_temperature_temp}
+          value={this.props.noise_control[this.props.the_metric]}
           onChange={this.handleChange}
           input={<BootstrapInput />}
         >
@@ -117,7 +120,7 @@ class NoiseAdditionOption extends Component {
             <em>None</em>
           </MenuItem> */}
           <MenuItem value={5}>Uniform 5%</MenuItem>
-          {/* <MenuItem value={10}>Uniform 10%</MenuItem> */}
+          <MenuItem value={10}>Uniform 10%</MenuItem>
         </Select>
       </FormControl>
        
@@ -131,12 +134,14 @@ const maptstateToprop = (state) => {
         isLoadingUpdate: state.isLoadingUpdate,
         noise_temperature_temp: state.noise_temperature_temp,
         updated_metric: state.updated_metric,
+        noise_control: state.noise_control,
     }
 }
 const mapdispatchToprop = (dispatch) => {
     return {
         set_blank_placeholder: (val) => dispatch({ type: "blank_placeholder", value: val }),
         set_noise_temperature_temp: (val) => dispatch({ type: "noise_temperature_temp", value: val }),
+        set_noise_control: (val) => dispatch({ type: "noise_control", value: val }),
         set_updated_temperature: (val) => dispatch({ type: "updated_temperature", value: val }),
         set_updated_humidity: (val) => dispatch({ type: "updated_humidity", value: val }),
         set_updated_apparent_power: (val) => dispatch({ type: "updated_apparent_power", value: val }),

@@ -35,6 +35,8 @@ let initialState = {
     noise_control:{"temperature":-1, "humidity":-1, "apparent_power":-1},
     mae:0,
     mape:0,
+    mae_values:[],
+    mape_values:[]
 }
 
 const reducer = (state = initialState, action) => {
@@ -139,6 +141,12 @@ const reducer = (state = initialState, action) => {
     }
     if (action.type === "mape") {
         return { ...state, mape: action.value }
+    }  
+    if (action.type === "mae_values") {
+        return { ...state, mae_values: action.value }
+    }
+    if (action.type === "mape_values") {
+        return { ...state, mape_values: action.value }
     }         
 
     return state;

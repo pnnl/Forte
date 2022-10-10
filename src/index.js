@@ -1,7 +1,9 @@
 import React from 'react';
 import { createRoot } from 'react-dom/client';
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 import './index.css';
 import App from './App';
+import App2 from './App2';
 import reportWebVitals from './reportWebVitals';
 import { configureStore} from '@reduxjs/toolkit';
 import myreducer from './store/reducer';
@@ -22,7 +24,13 @@ const root = createRoot(document.getElementById('root'));
 root.render(
   <Provider store={store}>
     <ThemeProvider theme={outerTheme}>
-    <App />
+      <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<App />}></Route>
+        <Route path="/test" element={<App2 />}></Route>
+      </Routes>
+      </BrowserRouter>
+     {/* <App /> */}
     </ThemeProvider>
   </Provider>
 );

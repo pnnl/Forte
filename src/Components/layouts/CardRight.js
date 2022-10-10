@@ -49,8 +49,8 @@ return (
             <Grid item xs={8} sm={8}>{metric.replaceAll("_", " ")+metrics_unit[metric_index]}   {(metrics_nan_percentage[metric_index] > 0)?<i className={"fa fa-info-circle metrics_nans_info_icon_"+metric} aria-hidden="true"></i>:null}</Grid>
             {/* <Grid item xs={1} sm={1}></Grid> */}
             <Grid item xs={4} sm={4}>
-              <Grid container direction="row" spacing={3}>
-                <Grid item xs={4} sm={4}>{(["temperature"].includes(metric))?<NoiseAdditionOption the_metric={metric} the_data={metrics_data[metric_index]}></NoiseAdditionOption>:null}</Grid>
+              <Grid container direction="row" spacing={5}>
+                <Grid item xs={4} sm={4}>{(["temperature", "humidity"].includes(metric))?<NoiseAdditionOption the_metric={metric} the_data={metrics_data[metric_index]}></NoiseAdditionOption>:null}</Grid>
                 <Grid item xs={4} sm={4}>{(["temperature", "humidity", "apparent_power"].includes(metric))?<Tooltip title={(this.props.isLoadingUpdate)?"Loading":(((this.props.updated_metric[metric]).length === 0)?"Drag this chart to make changes":"Click the button to reset the changes")} placement="top" arrow><span><Button size="small"  color="secondary"  disabled={this.props.isLoadingUpdate || ((this.props.updated_metric[metric]).length === 0)}  style={{ backgroundColor: "#efefef", opacity: 1, borderRadius: 0, color: (this.props.isLoadingUpdate || ((this.props.updated_metric[metric]).length === 0))?null:"black",  marginTop: -2, textTransform: 'none' }}
                 onClick={()=>{
                   this.props.set_isLoadingUpdate(true);

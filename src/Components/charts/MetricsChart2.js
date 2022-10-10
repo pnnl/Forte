@@ -1,5 +1,6 @@
 /* eslint-disable no-unused-vars */
 /* eslint-disable array-callback-return */
+/* eslint-disable no-redeclare */
 import React, { Component } from 'react';
 import { connect } from "react-redux";
 import * as $ from "jquery";

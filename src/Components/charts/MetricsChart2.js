@@ -137,12 +137,25 @@ class MetricsChart extends Component {
                 .attr('y', yScale(d_1))
             //need to update net_load_df and then sumstat2   
             var edited_timeline = toLocaleUTCDateString(d_0);
-            var obj = the_data.find(f=>f.timeline===edited_timeline);
-            if(obj){obj[the_metric]=d_1;}
-            var old_formatted_array = formatted_array;
-            formatted_array = self.convert_to_Array_of_Arrays(the_data, the_metric)
+            //formatted_array = ((updated_metric1[the_metric]).length === 0)?this.convert_to_Array_of_Arrays(the_data, the_metric):updated_metric1[the_metric];
+            if((updated_metric1[the_metric]).length === 0){
+                var obj = the_data.find(f=>f.timeline===edited_timeline);
+                if(obj){obj[the_metric]=d_1;}
+                var old_formatted_array = formatted_array;
+                formatted_array = self.convert_to_Array_of_Arrays(the_data, the_metric)
+            }
+            else{
+                var old_formatted_array = formatted_array;
+                var obj = formatted_array.find(f=>f[1]===edited_timeline);
+                if(obj){obj[3]=d_1;}
+                //formatted_array = self.convert_to_Array_of_Arrays(the_data, the_metric)
+            }
+            // var obj = the_data.find(f=>f.timeline===edited_timeline);
+            // if(obj){obj[the_metric]=d_1;}
+            // var old_formatted_array = formatted_array;
+            // formatted_array = self.convert_to_Array_of_Arrays(the_data, the_metric)
             //console.log(obj, old_formatted_array, formatted_array)
-            console.log(old_formatted_array === formatted_array)
+            //console.log(old_formatted_array === formatted_array)
             //sumstat2 =  d3.group(the_data, d => d.dummy);
             //console.log(edited_timeline, sumstat2);
             svg.selectAll(".lineCharts_metric_"+the_metric).data([formatted_array])

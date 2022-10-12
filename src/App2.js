@@ -200,8 +200,6 @@ const mapDispatchToProp = (dispatch) => {
     set_humidity: (val) => dispatch({ type: "humidity", value: val}),
     set_temperature: (val) => dispatch({ type: "temperature", value: val}),
     set_net_load_df: (val) => dispatch({ type: "net_load_df", value: val}),
-    // set_mae: (val) => dispatch({ type: "mae", value: val}),
-    // set_mape: (val) => dispatch({ type: "mape", value: val}),
     set_noise_temperature_temp: (val) => dispatch({ type: "noise_temperature_temp", value: val }),
     set_noise_control: (val) => dispatch({ type: "noise_control", value: val }),
     set_updated_temperature: (val) => dispatch({ type: "updated_temperature", value: val }),

@@ -40,14 +40,7 @@ class App extends Component{
       this.handle_change_constant_bias(el);
       jsonCall.download(this.props.url + "/api/v@latest/processor", {start_date: converted_start_date, end_date: converted_end_date, solar_penetration:this.props.solar_penetration, temperature_updated:1,humidity_updated:0, apparent_power_updated:0, metrics_updated:metrics_updated, updated_metric:this.props.updated_metric}).then(res =>{
         this.props.set_net_load_df(res["net_load_df"]);
-        this.props.set_conf_95_df(res["conf_95_df"]);
-        this.props.set_temperature_df(res["temperature_df"]);
-        this.props.set_humidity_df(res["humidity_df"]);
-        this.props.set_apparent_power_df(res["apparent_power_df"]);
-        // this.props.set_temperature_nans_percentage(res["temperature_nans_percentage"]);
-        // this.props.set_humidity_nans_percentage(res["humidity_nans_percentage"]);
-        // this.props.set_apparent_power_nans_percentage(res["apparent_power_nans_percentage"]);
-          this.props.set_isLoadingUpdate(false);
+        this.props.set_isLoadingUpdate(false);
         mae_values.push([el, res["7. MAE"]])
         mape_values.push([el, res["8. MAPE"]])
         console.log("Completed for noise: "+el)
@@ -207,15 +200,8 @@ const mapDispatchToProp = (dispatch) => {
     set_humidity: (val) => dispatch({ type: "humidity", value: val}),
     set_temperature: (val) => dispatch({ type: "temperature", value: val}),
     set_net_load_df: (val) => dispatch({ type: "net_load_df", value: val}),
-    set_conf_95_df: (val) => dispatch({ type: "conf_95_df", value: val}),
-    set_temperature_df: (val) => dispatch({ type: "temperature_df", value: val}),
-    set_humidity_df: (val) => dispatch({ type: "humidity_df", value: val}),
-    set_apparent_power_df: (val) => dispatch({ type: "apparent_power_df", value: val}),
-    // set_temperature_nans_percentage: (val) => dispatch({ type: "temperature_nans_percentage", value: val}),
-    // set_humidity_nans_percentage: (val) => dispatch({ type: "humidity_nans_percentage", value: val}),
-    // set_apparent_power_nans_percentage: (val) => dispatch({ type: "apparent_power_nans_percentage", value: val}),
-    set_mae: (val) => dispatch({ type: "mae", value: val}),
-    set_mape: (val) => dispatch({ type: "mape", value: val}),
+    // set_mae: (val) => dispatch({ type: "mae", value: val}),
+    // set_mape: (val) => dispatch({ type: "mape", value: val}),
     set_noise_temperature_temp: (val) => dispatch({ type: "noise_temperature_temp", value: val }),
     set_noise_control: (val) => dispatch({ type: "noise_control", value: val }),
     set_updated_temperature: (val) => dispatch({ type: "updated_temperature", value: val }),

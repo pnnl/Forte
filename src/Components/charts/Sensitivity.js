@@ -104,6 +104,15 @@ class Sensitivity extends Component {
         .duration(animation_duration)
         .call(d3.axisLeft(y).tickSize(-width).tickSizeOuter(0));
 
+        svg.selectAll(".Y_title").data([0]).join("text")
+        .attr("class", "Y_title")
+        .attr("transform", "rotate(-90)")
+        .attr("y", 0 - margin.left)
+        .attr("x",0 - (height / 2))
+        .attr("dy", "1em")
+        .style("text-anchor", "middle")
+        .text((type === "MAE")?"MAE (kW)":"MAPE (%)");
+
         /** Color palette */ 
         var keys = ["actual", "predicted", "95% confidence"]
         const color = d3.scaleOrdinal()

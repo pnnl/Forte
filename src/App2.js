@@ -47,9 +47,7 @@ class App extends Component{
         this.props.set_temperature_nans_percentage(res["temperature_nans_percentage"]);
         this.props.set_humidity_nans_percentage(res["humidity_nans_percentage"]);
         this.props.set_apparent_power_nans_percentage(res["apparent_power_nans_percentage"]);
-        this.props.set_mae(res["7. MAE"]);
-        this.props.set_mape(res["8. MAPE"]);
-        this.props.set_isLoadingUpdate(false);
+          this.props.set_isLoadingUpdate(false);
         mae_values.push([el, res["7. MAE"]])
         mape_values.push([el, res["8. MAPE"]])
         console.log("Completed for noise: "+el)
@@ -157,9 +155,7 @@ class App extends Component{
       return noisy_arr;
   }
   calculate_constant_bias(arr,noise){
-    var lower_number = 1-(noise/100);//0.95;
-    var upper_number = 1+(noise/100);//1.05
-    var noisy_arr = arr.map((el)=>el+noise);
+    var noisy_arr = arr.map((el)=>{return (+el + +noise)});
     return noisy_arr;
 }
 

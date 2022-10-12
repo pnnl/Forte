@@ -20,7 +20,7 @@ class Sensitivity extends Component {
         var mape_values = this.props.mape_values;
         mae_values = mae_values.sort(function(a, b) { return a[0] - b[0]; });
         mape_values = mape_values.sort(function(a, b) { return a[0] - b[0]; });
-        console.log(mae_values);
+        //console.log(mae_values);
         var chart_type = this.props.my_type;
         var my_net_load_df = [];
         var my_conf_95_df = [];
@@ -32,7 +32,7 @@ class Sensitivity extends Component {
         var mape_values = this.props.mape_values;
         mae_values = mae_values.sort(function(a, b) { return a[0] - b[0]; });
         mape_values = mape_values.sort(function(a, b) { return a[0] - b[0]; });
-        console.log(mae_values);
+        //console.log(mae_values);
         var chart_type = this.props.my_type;
         var my_net_load_df = [];
         var my_conf_95_df = [];

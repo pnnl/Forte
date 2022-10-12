@@ -33,7 +33,7 @@ return (
     <div>
     {(!this.props.enable_seasons_choice)?
       <Card style={{height: "90vh"}}>
-      <Card.Header>
+      <Card.Header style={{opacity:(this.props.isLoadingUpdate)?0.4:1}}>
         <Grid container direction="row" spacing={1}>
         <Grid item xs={11} sm={11}>{"Sensitivity analysis by adding constant bias in temperature("+this.props.type+")"}</Grid>
         <Grid item xs={1} sm={1}>{(true)?<span style={{opacity:0}}><Button size="small"  color="secondary"  disabled={true}  style={{ backgroundColor: "#efefef", opacity: 1, borderRadius: 0, color: "black",  marginTop: -2, textTransform: 'none' }}
@@ -41,37 +41,11 @@ return (
         </Grid>
       </Card.Header>
       <Card.Body style={{opacity:(this.props.isLoadingUpdate)?0.4:1}}>
-          {((this.props.net_load_df).length >0)?<Sensitivity my_type={"no_season"} type={this.props.type}></Sensitivity>:null}
+          {((this.props.mae_values).length >0)?<Sensitivity my_type={"no_season"} type={this.props.type}></Sensitivity>:null}
       </Card.Body>
       </Card>
       :
-      <div>
-      <Card style={{height: "45vh"}}>
-      <Card.Header>
-        <Grid container direction="row" spacing={1}>
-        <Grid item xs={11} sm={11}>Net Load for Summer (kW)</Grid>
-        <Grid item xs={1} sm={1}>{(true)?<span style={{opacity:0}}><Button size="small"  color="secondary"  disabled={true}  style={{ backgroundColor: "#efefef", opacity: 1, borderRadius: 0, color: "black",  marginTop: -2, textTransform: 'none' }}
-         >Update</Button></span>:null}</Grid>
-        </Grid>
-      </Card.Header>
-      <Card.Body style={{opacity:(this.props.isLoadingUpdate)?0.4:1}}>
-          {((this.props.net_load_df).length >0)?<Sensitivity my_type={"season1"}></Sensitivity>:null}
-      </Card.Body>
-      </Card>
-
-      <Card style={{height: "45vh"}}>
-      <Card.Header>
-        <Grid container direction="row" spacing={1}>
-        <Grid item xs={11} sm={11}>Net Load for Winter (kW)</Grid>
-        <Grid item xs={1} sm={1}>{(true)?<span style={{opacity:0}}><Button size="small"  color="secondary"  disabled={true}  style={{ backgroundColor: "#efefef", opacity: 1, borderRadius: 0, color: "black",  marginTop: -2, textTransform: 'none' }}
-         >Update</Button></span>:null}</Grid>
-        </Grid>
-      </Card.Header>
-      <Card.Body style={{opacity:(this.props.isLoadingUpdate)?0.4:1}}>
-          {((this.props.net_load_df).length >0)?<Sensitivity my_type={"season2"}></Sensitivity>:null}
-      </Card.Body>
-      </Card>
-      </div>
+      null
       
     }  
     </div>
@@ -86,6 +60,7 @@ const maptstateToprop = (state) => {
       isLoadingUpdate: state.isLoadingUpdate,
       net_load_df: state.net_load_df,
       enable_seasons_choice: state.enable_seasons_choice,
+      mae_values: state.mae_values,
   }
 }
 const mapdispatchToprop = (dispatch) => {

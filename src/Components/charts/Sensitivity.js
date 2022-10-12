@@ -51,7 +51,7 @@ class Sensitivity extends Component {
         var self = this;
         var animation_duration = 2500;//2000;
         var the_id = "#netLoadChartDiv_"+my_type+"_"+type;   
-        const margin = {top: 10, right: 30, bottom: 30, left: 60},
+        const margin = {top: 10, right: 30, bottom: 40, left: 60},
         width = $(the_id).width() - margin.left - margin.right,
         height = $(the_id).height() - margin.top - margin.bottom;
         //console.log(width, height); 
@@ -82,6 +82,12 @@ class Sensitivity extends Component {
         .transition()
         .duration(animation_duration)
         .call(d3.axisBottom(x).tickSize(-height).tickSizeOuter(0)); //removed the ticks
+
+        svg.selectAll(".X_title").data([0]).join("text")
+        .attr("class", "X_title")
+        .attr("transform", "translate(" + (width / 2.2) + " ," + (height + (margin.bottom)*0.9) + ")")
+        .style("text-anchor", "middle")
+        .text("Temperature bias (°F)");
 
         /** Adding and calling Y axis */ 
         var upper_limit = d3.max(my_values, (d) => { return d[1]; });

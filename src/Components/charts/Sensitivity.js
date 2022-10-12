@@ -74,7 +74,6 @@ class Sensitivity extends Component {
         /** Adding and calling X axis --> it is a date format */
         //console.log(starting_date, ending_date)
         const x = d3.scaleLinear()
-        //.domain(d3.extent(net_load_df, function(d) { return d.years; }))
         .domain([0.1,3])
         .range([ 0, width ]); // can add .nice() to force the last tick
         svg.selectAll(".g_X").data([0]).join("g")
@@ -85,7 +84,6 @@ class Sensitivity extends Component {
         .call(d3.axisBottom(x).tickSize(-height).tickSizeOuter(0)); //removed the ticks
 
         /** Adding and calling Y axis */ 
-        //var limit = 1.1*(Math.max(Math.abs(d3.min(net_load_df, function(d) { return d.net_load; })), Math.abs(d3.max(net_load_df, function(d) { return d.net_load; }))))
         var upper_limit = d3.max(my_values, (d) => { return d[1]; });
         upper_limit = (upper_limit>0)?(upper_limit*1.2):(upper_limit*0.8); // increasing upper limit
         var lower_limit = d3.min(my_values, (d) => { return d[1]; });

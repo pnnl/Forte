@@ -120,21 +120,21 @@ class App extends Component{
       console.log("Final", formatted_array);
   }
   handle_change_constant_bias(noise){
-    console.log(this.calculate_constant_bias([1,3,5], noise));
+    console.log(this.calculate_constant_bias_absolute([1,3,5], noise));
     this.props.set_noise_temperature_temp(noise);
     var the_metric = "temperature"
 
     var updated_metric =this.props.updated_metric;
     var formatted_array = ((updated_metric[the_metric]).length === 0)?this.convert_to_Array_of_Arrays(this.props.temperature_df, the_metric):updated_metric[the_metric];
-    console.log("Initial",formatted_array);
-    var formatted_array_edited = this.calculate_constant_bias(formatted_array.map(em => em[3]),noise);
+    //console.log("Initial",formatted_array);
+    var formatted_array_edited = this.calculate_constant_bias_absolute(formatted_array.map(em => em[3]),noise);
     formatted_array = formatted_array.map((em,i) => [em[0], em[1], em[2],formatted_array_edited[i]])
     updated_metric[the_metric] = formatted_array;
     this.props.set_updated_metric(updated_metric);
     if(the_metric==="temperature"){this.props.set_updated_temperature(formatted_array);}
     else if(the_metric==="humidity"){this.props.set_updated_humidity(formatted_array);}
     else if(the_metric==="apparent_power"){this.props.set_updated_apparent_power(formatted_array);}
-    console.log("Final", formatted_array);
+    //console.log("Final", formatted_array);
 }
 
   getRandomArbitrary(min, max) {
@@ -147,7 +147,7 @@ class App extends Component{
       var noisy_arr = arr.map((el)=>this.getRandomArbitrary(lower_number*el, upper_number*el));
       return noisy_arr;
   }
-  calculate_constant_bias(arr,noise){
+  calculate_constant_bias_absolute(arr,noise){
     var noisy_arr = arr.map((el)=>{return (+el + +noise)});
     return noisy_arr;
 }

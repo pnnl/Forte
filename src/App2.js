@@ -31,7 +31,7 @@ class App extends Component{
     var metrics_updated ={}
     var metrics = ["temperature", "humidity", "apparent_power"]
     metrics.map(em => {metrics_updated[em] = (em === "temperature")?1:0}) // none of the metrics should be updated
-    var values_array = _.range(0.1,3,0.1);
+    var values_array =  _.range(0.0,30,1);// _.range(0.1,3,0.1);
     values_array = values_array.map(em => parseFloat(em).toFixed(1))
     var mae_values = [];
     var mape_values = []
@@ -53,7 +53,9 @@ class App extends Component{
     
   }
   componentDidUpdate(){
-    if((this.props.mae_values).length === 30){
+    console.log(" MAE Length", (this.props.mae_values).length)
+    //if((this.props.mae_values).length === 29){
+    if(false){  
       this.props.set_isLoadingUpdate(true); 
       var converted_start_date = new Date(this.props.start_date)
       converted_start_date = (converted_start_date.toISOString()).replace("T", " ").replace(".000Z", "")
@@ -62,7 +64,7 @@ class App extends Component{
       var metrics_updated ={}
       var metrics = ["temperature", "humidity", "apparent_power"]
       metrics.map(em => {metrics_updated[em] = (em === "temperature")?1:0}) // none of the metrics should be updated
-      var values_array = _.range(0.1,3,0.1);
+      var values_array = _.range(0.0,10,0.5);// _.range(0.1,3,0.1);
       values_array = values_array.map(em => parseFloat(em).toFixed(1))
       var mae_values = [];
       var mape_values = []

@@ -207,6 +207,21 @@ class MetricsChart extends Component {
             .attr("stroke", function(d){return "url(#line-gradient_"+the_metric+")" })
             .attr("stroke-width", 1.5)
             .style('cursor', 'pointer')
+            .on("mouseover", function (event) {
+                var d_0 = self.roundToNearest15(xScale.invert(event.x));
+                var d_1 = yScale.invert(event.y);
+                tooltip.transition()
+                  .duration(200)
+                  .style("opacity", .9);
+                tooltip.html(d_0)
+                  .style("left", (event.pageX + 5) + "px")
+                  .style("top", (event.pageY - 10) + "px");
+              })
+            .on("mouseout", function (d) {
+                tooltip.transition()
+                  .duration(500)
+                  .style("opacity", 0);
+              })  
             //.on("mousemove", (event)=>{console.log(this.roundToNearest15(x.invert(d3.pointer(event)[0])))})
             .transition()
             .duration(animation_duration)

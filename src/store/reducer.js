@@ -1,10 +1,10 @@
 let initialState = {
     blank_placeholder: null,
     url: "http://localhost:5000",
-    start_date: 1588291200000, // https://www.epochconverter.com/ (Use the timestamp in milliseconds)
-    end_date: 1588464000000,
-    start_date_temp: 1588291200000,
-    end_date_temp: 1588464000000,
+    start_date: 1578009600000, // 1588291200000, // https://www.epochconverter.com/ (Use the timestamp in milliseconds)
+    end_date: 1578182400000,//1588464000000,
+    start_date_temp: 1578009600000,//1588291200000,
+    end_date_temp: 1578182400000,//1588464000000,
     isLoadingUpdate: false,
     color_buttons: {"general": "rgb(224,224,224)", "focused": "rgb(108, 117, 125)"},
     actual_net_load: [],

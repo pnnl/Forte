@@ -163,6 +163,7 @@ def prepare_input(start_date, end_date, solar_penetration, updated_metric):
     temperature_column =[]
     if(len(updated_metric["temperature"])>0):
         for item in updated_metric["temperature"]: temperature_column.append(item[3])
+        # print("Temperature was increased ", temperature_column[0])
         my_data['temp'] = temperature_column
     # Injecting updated humidity
     humidity_column =[]
@@ -429,6 +430,7 @@ def processor(start_date="2020-05-01 00:00:00", end_date="2020-05-03 00:00:00", 
         for metric in metrics:
             if(req["metrics_updated"][metric] == 1): updated_metric[metric] = req["updated_metric"][metric]        
     print(start_date, solar_penetration)
+    # if(len(updated_metric["temperature"])>0): print((updated_metric["temperature"])[0])
     sequence_input, y_ground, y_prev, temperature, temperature_original, temperature_nans, temperature_nans_percentage, humidity, humidity_original, humidity_nans, humidity_nans_percentage, apparent_power, apparent_power_original, apparent_power_nans, apparent_power_nans_percentage, elapsed_time_prepare_input, timeline, timeline_original = prepare_input(start_date, end_date, solar_penetration, updated_metric)
     pred_train, elapsed_time_autoencoder = autoencoder_func(sequence_input, solar_penetration)
     latent_gen, elapsed_time_kpf = kPF_func(pred_train, solar_penetration)
@@ -437,6 +439,7 @@ def processor(start_date="2020-05-01 00:00:00", end_date="2020-05-03 00:00:00", 
     net_load_df_safe, temperature_df_safe, humidity_df_safe, apparent_power_df_safe, conf_95_df_safe = prepare_output_df(y_pred, Y_test, lower_y_pred, higher_y_pred, timeline, timeline_original, temperature_original, temperature_nans,  humidity, humidity_original, humidity_nans, apparent_power, apparent_power_original, apparent_power_nans)
     #generate_comparison_image(y_pred, Y_test, solar_penetration, "processor", start_date, end_date)
     elapsed_time_total = time.process_time() - t
+    print("MAE: ", mae)
     #final_result ={"1. message":"Program executed", "2. time taken (prepare input)": elapsed_time_prepare_input, "3. time taken (autoencoder)":elapsed_time_autoencoder, "4. time taken (kPF)": elapsed_time_kpf, "5. time taken (LSTM)": elapsed_time_lstm, "6. total time taken":elapsed_time_total, "7. MAE": mae, "8. MAPE": mape, "9. CRPS": crps, "10. PBB": pbb, "11. MSE": mse}
     final_result ={"1. message":"Program executed", "2. time taken (prepare input)": elapsed_time_prepare_input, "3. time taken (autoencoder)":elapsed_time_autoencoder, "4. time taken (kPF)": elapsed_time_kpf, "5. time taken (LSTM)": elapsed_time_lstm, "6. total time taken":elapsed_time_total, "7. MAE": mae, "8. MAPE": mape, "predicted_net_load":y_pred.flatten().tolist(), "actual_net_load": Y_test.tolist(), "predicted_net_load_conf_95_higher":higher_y_pred.flatten().tolist(), "predicted_net_load_conf_95_lower":lower_y_pred.flatten().tolist(), "temperature":temperature, "humidity":humidity, "apparent_power":apparent_power, "net_load_df": net_load_df_safe, "conf_95_df":conf_95_df_safe, "temperature_df": temperature_df_safe, "temperature_nans_percentage":temperature_nans_percentage, "humidity_df": humidity_df_safe, "humidity_nans_percentage": humidity_nans_percentage, "apparent_power_df": apparent_power_df_safe, "apparent_power_nans_percentage": apparent_power_nans_percentage}
     response=make_response(jsonify(final_result), 200) #removed processing

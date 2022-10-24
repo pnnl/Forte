@@ -74,7 +74,7 @@ class Sensitivity extends Component {
         /** Adding and calling X axis --> it is a date format */
         //console.log(starting_date, ending_date)
         const x = d3.scaleLinear()
-        .domain([0.1,3])
+        .domain([0,30])
         .range([ 0, width ]); // can add .nice() to force the last tick
         svg.selectAll(".g_X").data([0]).join("g")
         .attr("class", "g_X")  

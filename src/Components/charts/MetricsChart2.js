@@ -133,7 +133,8 @@ class MetricsChart extends Component {
             //console.log(event.x, event.y, d, xScale.invert(event.x));
             var d_0 = self.roundToNearest15(xScale.invert(event.x));
             var d_1 = yScale.invert(event.y);
-            d3.select(this)
+            //console.log(this, event.y, yScale.invert(event.y));
+            d3.select(this) // useless
                 .attr('x', xScale(d_0))
                 .attr('y', yScale(d_1))
             //need to update net_load_df and then sumstat2   
@@ -206,22 +207,7 @@ class MetricsChart extends Component {
             .attr("fill", "none")
             .attr("stroke", function(d){return "url(#line-gradient_"+the_metric+")" })
             .attr("stroke-width", 1.5)
-            .style('cursor', 'pointer')
-            .on("mouseover", function (event) {
-                var d_0 = self.roundToNearest15(xScale.invert(event.x));
-                var d_1 = yScale.invert(event.y);
-                tooltip.transition()
-                  .duration(200)
-                  .style("opacity", .9);
-                tooltip.html(d_0)
-                  .style("left", (event.pageX + 5) + "px")
-                  .style("top", (event.pageY - 10) + "px");
-              })
-            .on("mouseout", function (d) {
-                tooltip.transition()
-                  .duration(500)
-                  .style("opacity", 0);
-              })  
+            .style('cursor', 'pointer')  
             //.on("mousemove", (event)=>{console.log(this.roundToNearest15(x.invert(d3.pointer(event)[0])))})
             .transition()
             .duration(animation_duration)
@@ -242,7 +228,25 @@ class MetricsChart extends Component {
             // svg.selectAll('.my_circles_'+the_metric)
             //             .call(drag);
             svg.selectAll(".lineCharts_metric_"+the_metric)
-                        .call(drag);            
+                        .call(drag);  
+                        
+            svg.selectAll(".lineCharts_metric_"+the_metric)
+                .on("mouseover", function (event,d) {
+                    var d_0 = self.roundToNearest15(xScale.invert(event.x));
+                    var d_1 = yScale.invert(event.y);
+                    console.log(event, yScale.domain(), yScale.range(), event.y, yScale.invert(event.y));
+                    // tooltip.transition()
+                    // .duration(200)
+                    // .style("opacity", .9);
+                    // tooltip.html(toLocaleUTCDateString(d_0))
+                    // .style("left", (event.pageX + 5) + "px")
+                    // .style("top", (event.pageY - 10) + "px");
+                })
+                .on("mouseout", function (d) {
+                    tooltip.transition()
+                    .duration(500)
+                    .style("opacity", 0);
+                })            
 
             // info icon about missing data
             d3.selectAll(".metrics_nans_info_icon_"+the_metric).on("mouseover", function (event) {

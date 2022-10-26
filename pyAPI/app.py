@@ -269,8 +269,12 @@ def lstm_func(latent_gen, sequence_input, pred_train, y_ground, y_prev, solar_pe
     mean = lambda x: x.mean()#.flatten()
     sd = lambda x: x.std()#.flatten() 
     conf_int_95 = np.array([mean(y_pred) - 2*sd(y_pred), mean(y_pred) + 2*sd(y_pred)]) #https://datascience.stackexchange.com/questions/109048/get-the-confidence-interval-for-prediction-results-with-lstm
-    lower_y_pred = y_pred + conf_int_95[0]
-    higher_y_pred = y_pred + conf_int_95[1]
+    two_sd = 2*sd(y_pred)
+    # lower_y_pred = y_pred + conf_int_95[0]
+    # higher_y_pred = y_pred + conf_int_95[1]
+    lower_y_pred = y_pred - two_sd
+    higher_y_pred = y_pred + two_sd
+    print("Conf", conf_int_95)
     #np.savetxt(path_parent+"/data/outputs/pen_"+str(solar_penetration)+"/y_pred.csv", y_pred, delimiter=",")
     #np.savetxt(path_parent+"/data/outputs/pen_"+str(solar_penetration)+"/Y_test.csv", Y_test, delimiter=",")
     #np.savetxt(path_parent+"/data/outputs/pen_"+str(solar_penetration)+"/lower_y_pred.csv", lower_y_pred, delimiter=",")

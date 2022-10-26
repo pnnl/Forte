@@ -1,10 +1,10 @@
 let initialState = {
     blank_placeholder: null,
     url: "http://localhost:5000",
-    start_date: 1588291200000, // https://www.epochconverter.com/ (Use the timestamp in milliseconds)
-    end_date: 1588464000000,
-    start_date_temp: 1588291200000,
-    end_date_temp: 1588464000000,
+    start_date: 1578009600000, // 1588291200000, // https://www.epochconverter.com/ (Use the timestamp in milliseconds)
+    end_date: 1578182400000,//1588464000000,
+    start_date_temp: 1578009600000,//1588291200000,
+    end_date_temp: 1578182400000,//1588464000000,
     isLoadingUpdate: false,
     color_buttons: {"general": "rgb(224,224,224)", "focused": "rgb(108, 117, 125)"},
     actual_net_load: [],
@@ -13,6 +13,7 @@ let initialState = {
     humidity: [],
     temperature: [],
     net_load_df: [],
+    conf_95_df: [],
     temperature_df: [],
     humidity_df: [],
     apparent_power_df: [],
@@ -25,7 +26,17 @@ let initialState = {
     updated_temperature:[],
     updated_humidity:[],
     updated_apparent_power:[], // need to keep this to trigger an update
-    updated_metric:{"temperature":[], "humidity":[], "apparent_power":[]}
+    updated_metric:{"temperature":[], "humidity":[], "apparent_power":[]},
+    enable_seasons_flag:0,
+    enable_seasons_choice_temp:0,
+    enable_seasons_choice:0,
+    noise_temperature_temp: -1,
+    noise_temperature:-1,
+    noise_control:{"temperature":-1, "humidity":-1, "apparent_power":-1},
+    mae:0,
+    mape:0,
+    mae_values:[],
+    mape_values:[]
 }
 
 const reducer = (state = initialState, action) => {
@@ -103,6 +114,39 @@ const reducer = (state = initialState, action) => {
     }
     if (action.type === "updated_metric") {
         return { ...state, updated_metric: action.value }
+    }
+    if (action.type === "enable_seasons_flag") {
+        return { ...state, enable_seasons_flag: action.value }
+    } 
+    if (action.type === "enable_seasons_choice_temp") {
+        return { ...state, enable_seasons_choice_temp: action.value }
+    } 
+    if (action.type === "enable_seasons_choice") {
+        return { ...state, enable_seasons_choice: action.value }
+    } 
+    if (action.type === "conf_95_df") {
+        return { ...state, conf_95_df: action.value }
+    }
+    if (action.type === "noise_temperature_temp") {
+        return { ...state, noise_temperature_temp: action.value }
+    }
+    if (action.type === "noise_temperature") {
+        return { ...state, noise_temperature: action.value }
+    }
+    if (action.type === "noise_control") {
+        return { ...state, noise_control: action.value }
+    }
+    if (action.type === "mae") {
+        return { ...state, mae: action.value }
+    }
+    if (action.type === "mape") {
+        return { ...state, mape: action.value }
+    }  
+    if (action.type === "mae_values") {
+        return { ...state, mae_values: action.value }
+    }
+    if (action.type === "mape_values") {
+        return { ...state, mape_values: action.value }
     }         
 
     return state;

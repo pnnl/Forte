@@ -12,7 +12,8 @@ import Tooltip from '@mui/material/Tooltip';
 //import LoadingButton from '@mui/lab/LoadingButton';
 //import Button from 'react-bootstrap/Button';
 //import 'bootstrap/dist/css/bootstrap.min.css';
-import * as jsonCall from "../../Algorithms/JSONCall"
+import * as jsonCall from "../../Algorithms/JSONCall";
+import NoiseAdditionOption from './NoiseAdditionOption';
 
 export class  CardRight extends Component {
   
@@ -29,6 +30,8 @@ shouldComponentUpdate(nextProps, nextState){
 
 
 
+
+
 render(){ 
 var metrics = ["temperature", "humidity", "apparent_power"];
 var metrics_unit = [" (°F)", " (%)", " (kVA)"];
@@ -38,16 +41,17 @@ var mini_card_height = (100/metrics.length) + "%";
 
 
 return (
-    <div style={{height: "94vh"}}>
+    <div style={{height: "90vh"}}>
     {metrics.map((metric, metric_index) =>{
         return <Card key={metric_index} style={{height: mini_card_height}}>
         <Card.Header>
           <Grid container direction="row" spacing={1}>
-            <Grid item xs={9} sm={9}>{metric.replaceAll("_", " ")+metrics_unit[metric_index]}   {(metrics_nan_percentage[metric_index] > 0)?<i className={"fa fa-info-circle metrics_nans_info_icon_"+metric} aria-hidden="true"></i>:null}</Grid>
+            <Grid item xs={8} sm={8}>{metric.replaceAll("_", " ")+metrics_unit[metric_index]}   {(metrics_nan_percentage[metric_index] > 0)?<i className={"fa fa-info-circle metrics_nans_info_icon_"+metric} aria-hidden="true"></i>:null}</Grid>
             {/* <Grid item xs={1} sm={1}></Grid> */}
-            <Grid item xs={3} sm={3}>
-              <Grid container direction="row" spacing={3}>
-                <Grid item xs={5} sm={5}>{(["temperature", "humidity", "apparent_power"].includes(metric))?<Tooltip title={(this.props.isLoadingUpdate)?"Loading":(((this.props.updated_metric[metric]).length === 0)?"Drag this chart to make changes":"Click the button to reset the changes")} placement="top" arrow><span><Button size="small"  color="secondary"  disabled={this.props.isLoadingUpdate || ((this.props.updated_metric[metric]).length === 0)}  style={{ backgroundColor: "#efefef", opacity: 1, borderRadius: 0, color: (this.props.isLoadingUpdate || ((this.props.updated_metric[metric]).length === 0))?null:"black",  marginTop: -2, textTransform: 'none' }}
+            <Grid item xs={4} sm={4}>
+              <Grid container direction="row" spacing={5}>
+                <Grid item xs={4} sm={4}>{(["temperature"].includes(metric))?<NoiseAdditionOption the_metric={metric} the_data={metrics_data[metric_index]}></NoiseAdditionOption>:null}</Grid>
+                <Grid item xs={4} sm={4}>{(["temperature", "humidity", "apparent_power"].includes(metric))?<Tooltip title={(this.props.isLoadingUpdate)?"Loading":(((this.props.updated_metric[metric]).length === 0)?"Drag this chart to make changes":"Click the button to reset the changes")} placement="top" arrow><span><Button size="small"  color="secondary"  disabled={this.props.isLoadingUpdate || ((this.props.updated_metric[metric]).length === 0)}  style={{ backgroundColor: "#efefef", opacity: 1, borderRadius: 0, color: (this.props.isLoadingUpdate || ((this.props.updated_metric[metric]).length === 0))?null:"black",  marginTop: -2, textTransform: 'none' }}
                 onClick={()=>{
                   this.props.set_isLoadingUpdate(true);
                   var converted_start_date = new Date(this.props.start_date_temp)
@@ -62,6 +66,7 @@ return (
                   jsonCall.download(this.props.url + "/api/v@latest/processor", {start_date: converted_start_date, end_date: converted_end_date, solar_penetration:this.props.solar_penetration_temp, metrics_updated:metrics_updated, updated_metric:this.props.updated_metric}).then(res =>{
                     console.log(res);
                     this.props.set_net_load_df(res["net_load_df"]);
+                    this.props.set_conf_95_df(res["conf_95_df"]);
                     this.props.set_temperature_df(res["temperature_df"]);
                     this.props.set_humidity_df(res["humidity_df"]);
                     this.props.set_apparent_power_df(res["apparent_power_df"]);
@@ -71,13 +76,16 @@ return (
                     var updated_metric =this.props.updated_metric;
                     updated_metric[metric] = []; // resetting the metric that is being reset
                     this.props.set_updated_metric(updated_metric);
+                    this.props.set_noise_temperature_temp(-1);
+                    this.props.set_mae(res["7. MAE"]);
+                    this.props.set_mape(res["8. MAPE"]);
                     this.props.set_isLoadingUpdate(false);
                     
                     })
                 }}>{this.props.isLoadingUpdate ? 'Loading...' : 'Reset'}</Button></span></Tooltip>:null}</Grid>
 
 
-                <Grid item xs={5} sm={5}>{(["temperature", "humidity", "apparent_power"].includes(metric))?<Tooltip title={(this.props.isLoadingUpdate)?"Loading":(((this.props.updated_metric[metric]).length === 0)?"Drag this chart to make changes":"Click the button to see the changes")} placement="top" arrow><span><Button size="small"  color="secondary"  disabled={this.props.isLoadingUpdate || ((this.props.updated_metric[metric]).length === 0)}  style={{ backgroundColor: "#efefef", opacity: 1, borderRadius: 0, color: (this.props.isLoadingUpdate || ((this.props.updated_metric[metric]).length === 0))?null:"black",  marginTop: -2, textTransform: 'none' }}
+                <Grid item xs={4} sm={4}>{(["temperature", "humidity", "apparent_power"].includes(metric))?<Tooltip title={(this.props.isLoadingUpdate)?"Loading":(((this.props.updated_metric[metric]).length === 0)?"Drag this chart to make changes":"Click the button to see the changes")} placement="top" arrow><span><Button size="small"  color="secondary"  disabled={this.props.isLoadingUpdate || ((this.props.updated_metric[metric]).length === 0)}  style={{ backgroundColor: "#efefef", opacity: 1, borderRadius: 0, color: (this.props.isLoadingUpdate || ((this.props.updated_metric[metric]).length === 0))?null:"black",  marginTop: -2, textTransform: 'none' }}
                 onClick={()=>{
                   this.props.set_isLoadingUpdate(true);
                   var converted_start_date = new Date(this.props.start_date_temp)
@@ -92,12 +100,15 @@ return (
                   jsonCall.download(this.props.url + "/api/v@latest/processor", {start_date: converted_start_date, end_date: converted_end_date, solar_penetration:this.props.solar_penetration_temp, metrics_updated:metrics_updated, updated_metric: this.props.updated_metric}).then(res =>{
                     console.log(res);
                     this.props.set_net_load_df(res["net_load_df"]);
+                    this.props.set_conf_95_df(res["conf_95_df"]);
                     this.props.set_temperature_df(res["temperature_df"]);
                     this.props.set_humidity_df(res["humidity_df"]);
                     this.props.set_apparent_power_df(res["apparent_power_df"]);
                     this.props.set_temperature_nans_percentage(res["temperature_nans_percentage"]);
                     this.props.set_humidity_nans_percentage(res["humidity_nans_percentage"]);
                     this.props.set_apparent_power_nans_percentage(res["apparent_power_nans_percentage"]);
+                    this.props.set_mae(res["7. MAE"]);
+                    this.props.set_mape(res["8. MAPE"]);
                     this.props.set_isLoadingUpdate(false);
                     
                     })
@@ -106,8 +117,8 @@ return (
             </Grid>  
           </Grid>
         </Card.Header>
-        <Card.Body style={{opacity:(this.props.isLoadingUpdate)?0.4:1}}>
-            {(["temperature", "humidity", "apparent_power"].includes(metric) & (this.props.net_load_df).length >0 & ([...this.props.temperature_df]).length >0)?<MetricsChart the_metric={metric} the_data={metrics_data[metric_index]} the_nans_percentage={metrics_nan_percentage[metric_index]}></MetricsChart>:null}
+        <Card.Body style={{opacity:(this.props.isLoadingUpdate)?0.4:1}} >
+            {(["temperature", "humidity", "apparent_power"].includes(metric) & (this.props.net_load_df).length >0 & ([...this.props.temperature_df]).length >0)?<MetricsChart the_metric={metric} the_data={metrics_data[metric_index]} the_nans_percentage={metrics_nan_percentage[metric_index]} ></MetricsChart>:null}
         </Card.Body>
         </Card>
     })}    
@@ -149,6 +160,7 @@ const mapdispatchToprop = (dispatch) => {
       set_start_date: (val) => dispatch({ type: "start_date", value: val }),
       set_end_date: (val) => dispatch({ type: "end_date", value: val }),
       set_net_load_df: (val) => dispatch({ type: "net_load_df", value: val}),
+      set_conf_95_df: (val) => dispatch({ type: "conf_95_df", value: val}),
       set_temperature_df: (val) => dispatch({ type: "temperature_df", value: val}),
       set_humidity_df: (val) => dispatch({ type: "humidity_df", value: val}),
       set_apparent_power_df: (val) => dispatch({ type: "apparent_power_df", value: val}),
@@ -157,6 +169,9 @@ const mapdispatchToprop = (dispatch) => {
       set_apparent_power_nans_percentage: (val) => dispatch({ type: "apparent_power_nans_percentage", value: val}),
       set_solar_penetration: (val) => dispatch({ type: "solar_penetration", value: val}),
       set_updated_metric: (val) => dispatch({ type: "updated_metric", value: val }),
+      set_noise_temperature_temp: (val) => dispatch({ type: "noise_temperature_temp", value: val }),
+      set_mae: (val) => dispatch({ type: "mae", value: val}),
+      set_mape: (val) => dispatch({ type: "mape", value: val}),
   }
 }
 

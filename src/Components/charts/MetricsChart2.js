@@ -1,5 +1,6 @@
 /* eslint-disable no-unused-vars */
 /* eslint-disable array-callback-return */
+/* eslint-disable no-redeclare */
 import React, { Component } from 'react';
 import { connect } from "react-redux";
 import * as $ from "jquery";
@@ -37,6 +38,17 @@ class MetricsChart extends Component {
         return output;  
     }  
 
+    /** This function increases the opacity of the gridlines when hovered */
+    handleMouseEnter(event){
+        var my_svg = d3.select(event.target)
+        my_svg.selectAll(".tick line").style("stroke-opacity", 0.35)
+    }
+    /** This function decreases the opacity of the gridlines when not hovered */
+    handleMouseExit(event){
+        var my_svg = d3.select(event.target)
+        my_svg.selectAll(".tick line").style("stroke-opacity", 0.2)
+    }
+
     create_line_chart(the_data, the_metric){
         var self = this;
         var animation_duration = 2000;
@@ -45,7 +57,10 @@ class MetricsChart extends Component {
         width = $(the_id).width() - margin.left - margin.right,
         height = $(the_id).height() - margin.top - margin.bottom;
 
-        var formatted_array = this.convert_to_Array_of_Arrays(the_data, the_metric);
+        var updated_metric1 =self.props.updated_metric;
+        var formatted_array;
+        formatted_array = ((updated_metric1[the_metric]).length === 0)?this.convert_to_Array_of_Arrays(the_data, the_metric):updated_metric1[the_metric];
+        //formatted_array = this.convert_to_Array_of_Arrays(the_data, the_metric);
         //console.log(formatted_array);
 
         //the_data = the_data.filter((d) => d.temperature !== 99999); // removing NaN
@@ -77,7 +92,7 @@ class MetricsChart extends Component {
         .attr("transform", `translate(0, ${height})`)
         .transition()
         .duration(animation_duration)
-        .call(d3.axisBottom(xScale)); //removed the ticks
+        .call(d3.axisBottom(xScale).tickSize(-height).tickSizeOuter(0)); //removed the ticks
 
         /** Adding and calling Y axis */ 
         //var limit = 1.1*(Math.max(Math.abs(d3.min(the_data, function(d) { return temperature; })), Math.abs(d3.max(net_load_df, function(d) { return d.net_load; }))))
@@ -90,7 +105,7 @@ class MetricsChart extends Component {
         .attr("class", "g_Y_metric_"+the_metric)
         .transition()
         .duration(animation_duration)
-        .call(d3.axisLeft(yScale));
+        .call(d3.axisLeft(yScale).tickSize(-width).tickSizeOuter(0));
 
         /** Color palette */ 
         const color = d3.scaleOrdinal()
@@ -118,17 +133,31 @@ class MetricsChart extends Component {
             //console.log(event.x, event.y, d, xScale.invert(event.x));
             var d_0 = self.roundToNearest15(xScale.invert(event.x));
             var d_1 = yScale.invert(event.y);
-            d3.select(this)
+            //console.log(this, event.y, yScale.invert(event.y));
+            d3.select(this) // useless
                 .attr('x', xScale(d_0))
                 .attr('y', yScale(d_1))
             //need to update net_load_df and then sumstat2   
             var edited_timeline = toLocaleUTCDateString(d_0);
-            var obj = the_data.find(f=>f.timeline===edited_timeline);
-            if(obj){obj[the_metric]=d_1;}
-            var old_formatted_array = formatted_array;
-            formatted_array = self.convert_to_Array_of_Arrays(the_data, the_metric)
+            //formatted_array = ((updated_metric1[the_metric]).length === 0)?this.convert_to_Array_of_Arrays(the_data, the_metric):updated_metric1[the_metric];
+            if((updated_metric1[the_metric]).length === 0){
+                var obj = the_data.find(f=>f.timeline===edited_timeline);
+                if(obj){obj[the_metric]=d_1;}
+                var old_formatted_array = formatted_array;
+                formatted_array = self.convert_to_Array_of_Arrays(the_data, the_metric)
+            }
+            else{
+                var old_formatted_array = formatted_array;
+                var obj = formatted_array.find(f=>f[1]===edited_timeline);
+                if(obj){obj[3]=d_1;}
+                //formatted_array = self.convert_to_Array_of_Arrays(the_data, the_metric)
+            }
+            // var obj = the_data.find(f=>f.timeline===edited_timeline);
+            // if(obj){obj[the_metric]=d_1;}
+            // var old_formatted_array = formatted_array;
+            // formatted_array = self.convert_to_Array_of_Arrays(the_data, the_metric)
             //console.log(obj, old_formatted_array, formatted_array)
-            console.log(old_formatted_array === formatted_array)
+            //console.log(old_formatted_array === formatted_array)
             //sumstat2 =  d3.group(the_data, d => d.dummy);
             //console.log(edited_timeline, sumstat2);
             svg.selectAll(".lineCharts_metric_"+the_metric).data([formatted_array])
@@ -178,7 +207,7 @@ class MetricsChart extends Component {
             .attr("fill", "none")
             .attr("stroke", function(d){return "url(#line-gradient_"+the_metric+")" })
             .attr("stroke-width", 1.5)
-            .style('cursor', 'pointer')
+            .style('cursor', 'pointer')  
             //.on("mousemove", (event)=>{console.log(this.roundToNearest15(x.invert(d3.pointer(event)[0])))})
             .transition()
             .duration(animation_duration)
@@ -199,7 +228,25 @@ class MetricsChart extends Component {
             // svg.selectAll('.my_circles_'+the_metric)
             //             .call(drag);
             svg.selectAll(".lineCharts_metric_"+the_metric)
-                        .call(drag);            
+                        .call(drag);  
+                        
+            svg.selectAll(".lineCharts_metric_"+the_metric)
+                .on("mouseover", function (event,d) {
+                    var d_0 = self.roundToNearest15(xScale.invert(event.x));
+                    var d_1 = yScale.invert(event.y);
+                    console.log(event, yScale.domain(), yScale.range(), event.y, yScale.invert(event.y));
+                    // tooltip.transition()
+                    // .duration(200)
+                    // .style("opacity", .9);
+                    // tooltip.html(toLocaleUTCDateString(d_0))
+                    // .style("left", (event.pageX + 5) + "px")
+                    // .style("top", (event.pageY - 10) + "px");
+                })
+                .on("mouseout", function (d) {
+                    tooltip.transition()
+                    .duration(500)
+                    .style("opacity", 0);
+                })            
 
             // info icon about missing data
             d3.selectAll(".metrics_nans_info_icon_"+the_metric).on("mouseover", function (event) {
@@ -223,9 +270,9 @@ class MetricsChart extends Component {
             .attr("class", "tooltip_matches")
             .style("opacity", 0);
 
-        return <div>
-        <div id={"metricChartDiv_"+this.props.the_metric} style={{height:"25vh"}}>
-        <svg className={"metricChart_"+this.props.the_metric}></svg>
+        return <div >
+        <div id={"metricChartDiv_"+this.props.the_metric} style={{height:"22vh"}}>
+        <svg className={"metricChart_"+this.props.the_metric} onMouseEnter={this.handleMouseEnter} onMouseLeave={this.handleMouseExit} ></svg>
         </div>
       </div>
        

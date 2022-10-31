@@ -59,7 +59,6 @@ class MetricsChart extends Component {
 
         var updated_metric1 =this.props.updated_metric;
         var formatted_array;
-        console.log("Checking for update ", (updated_metric1), this.props.the_metric)
         formatted_array = ((updated_metric1[the_metric]).length === 0)?this.convert_to_Array_of_Arrays(the_data, the_metric):updated_metric1[the_metric];
         //formatted_array = this.convert_to_Array_of_Arrays(the_data, the_metric);
         //console.log(formatted_array);

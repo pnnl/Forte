@@ -35,7 +35,7 @@ shouldComponentUpdate(nextProps, nextState){
 render(){ 
 var metrics = ["temperature", "humidity", "apparent_power"];
 var metrics_unit = [" (°F)", " (%)", " (kVA)"];
-var metrics_data = [[...this.props.temperature_df], [...this.props.humidity_df], this.props.apparent_power_df];
+var metrics_data = [[...this.props.temperature_df], [...this.props.humidity_df], [...this.props.apparent_power_df]];
 var metrics_nan_percentage = [Math.round(this.props.temperature_nans_percentage), Math.round(this.props.humidity_nans_percentage), Math.round(this.props.apparent_power_nans_percentage)];
 var mini_card_height = (100/metrics.length) + "%";
 

@@ -35,7 +35,7 @@ shouldComponentUpdate(nextProps, nextState){
 render(){ 
 var metrics = ["temperature", "humidity", "apparent_power"];
 var metrics_unit = [" (°F)", " (%)", " (kVA)"];
-var metrics_data = [[...this.props.temperature_df], this.props.humidity_df, this.props.apparent_power_df];
+var metrics_data = [[...this.props.temperature_df], [...this.props.humidity_df], this.props.apparent_power_df];
 var metrics_nan_percentage = [Math.round(this.props.temperature_nans_percentage), Math.round(this.props.humidity_nans_percentage), Math.round(this.props.apparent_power_nans_percentage)];
 var mini_card_height = (100/metrics.length) + "%";
 
@@ -50,7 +50,7 @@ return (
             {/* <Grid item xs={1} sm={1}></Grid> */}
             <Grid item xs={4} sm={4}>
               <Grid container direction="row" spacing={5}>
-                <Grid item xs={4} sm={4}>{(["temperature"].includes(metric))?<NoiseAdditionOption the_metric={metric} the_data={metrics_data[metric_index]}></NoiseAdditionOption>:null}</Grid>
+                <Grid item xs={4} sm={4}>{(["temperature", "humidity", "apparent_power"].includes(metric))?<NoiseAdditionOption the_metric={metric} the_data={metrics_data[metric_index]}></NoiseAdditionOption>:null}</Grid>
                 <Grid item xs={4} sm={4}>{(["temperature", "humidity", "apparent_power"].includes(metric))?<Tooltip title={(this.props.isLoadingUpdate)?"Loading":(((this.props.updated_metric[metric]).length === 0)?"Drag this chart to make changes":"Click the button to reset the changes")} placement="top" arrow><span><Button size="small"  color="secondary"  disabled={this.props.isLoadingUpdate || ((this.props.updated_metric[metric]).length === 0)}  style={{ backgroundColor: "#efefef", opacity: 1, borderRadius: 0, color: (this.props.isLoadingUpdate || ((this.props.updated_metric[metric]).length === 0))?null:"black",  marginTop: -2, textTransform: 'none' }}
                 onClick={()=>{
                   this.props.set_isLoadingUpdate(true);
@@ -118,7 +118,7 @@ return (
           </Grid>
         </Card.Header>
         <Card.Body style={{opacity:(this.props.isLoadingUpdate)?0.4:1}} >
-            {(["temperature", "humidity", "apparent_power"].includes(metric) & (this.props.net_load_df).length >0 & ([...this.props.temperature_df]).length >0)?<MetricsChart the_metric={metric} the_data={metrics_data[metric_index]} the_nans_percentage={metrics_nan_percentage[metric_index]} ></MetricsChart>:null}
+            {(["temperature", "humidity", "apparent_power"].includes(metric) & (this.props.net_load_df).length >0 & ([...this.props.temperature_df]).length >0)?<MetricsChart the_metric={metric} the_data={metrics_data[metric_index]} the_nans_percentage={metrics_nan_percentage[metric_index]} the_noise_control={this.props.noise_control} ></MetricsChart>:null}
         </Card.Body>
         </Card>
     })}    
@@ -151,6 +151,7 @@ const maptstateToprop = (state) => {
       updated_humidity: state.updated_humidity,
       updated_apparent_power: state.updated_apparent_power, // need to keep this to trigger an update
       updated_metric: state.updated_metric,
+      noise_control: state.noise_control,
   }
 }
 const mapdispatchToprop = (dispatch) => {

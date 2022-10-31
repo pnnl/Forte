@@ -47,14 +47,14 @@ return (
     {(!this.props.enable_seasons_choice)?
       <Card style={{height: "90vh"}}>
       <Card.Header>
-        <Grid container direction="row" spacing={1}>
+        <Grid container direction="row" spacing={0}>
         <Grid item xs={9} sm={9}>Net Load (kW) <i className={"fa fa-info-circle netload_performance_icon"} aria-hidden="true"></i></Grid>
         <Grid item xs={1} sm={1}>{(true)?<span style={{opacity:0}}><Button size="small"  color="secondary"  disabled={true}  style={{ backgroundColor: "#efefef", opacity: 1, borderRadius: 0, color: "black",  marginTop: -2, textTransform: 'none' }}
          >Update</Button></span>:null}</Grid>
         <Grid item xs={2} sm={2}>
-          <FormGroup>
+          {/* <FormGroup> */}
             <FormControlLabel control={<Checkbox size="small" onChange={this.handleFreezeAxis} />} label="Freeze Y-axis" />
-        </FormGroup>
+        {/* </FormGroup> */}
         </Grid>
         </Grid>
       </Card.Header>

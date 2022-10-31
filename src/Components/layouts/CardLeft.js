@@ -49,11 +49,11 @@ return (
       <Card.Header>
         <Grid container direction="row" spacing={0}>
         <Grid item xs={9} sm={9}>Net Load (kW) <i className={"fa fa-info-circle netload_performance_icon"} aria-hidden="true"></i></Grid>
-        <Grid item xs={1} sm={1}>{(true)?<span style={{opacity:0}}><Button size="small"  color="secondary"  disabled={true}  style={{ backgroundColor: "#efefef", opacity: 1, borderRadius: 0, color: "black",  marginTop: -2, textTransform: 'none' }}
-         >Update</Button></span>:null}</Grid>
-        <Grid item xs={2} sm={2}>
+        {/* <Grid item xs={0} sm={0}>{(true)?<span style={{opacity:0}}><Button size="small"  color="secondary"  disabled={true}  style={{ backgroundColor: "#efefef", opacity: 1, borderRadius: 0, color: "black",  marginTop: -2, textTransform: 'none' }}
+         >Update</Button></span>:null}</Grid> */}
+        <Grid item xs={3} sm={3}>
           {/* <FormGroup> */}
-            <FormControlLabel control={<Checkbox size="small" onChange={this.handleFreezeAxis} />} label="Freeze Y-axis" />
+            <FormControlLabel style={{marginTop:-6 }} control={<Checkbox size="small" onChange={this.handleFreezeAxis} />} label="Freeze Y-axis" />
         {/* </FormGroup> */}
         </Grid>
         </Grid>

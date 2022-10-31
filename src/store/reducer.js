@@ -36,7 +36,9 @@ let initialState = {
     mae:0,
     mape:0,
     mae_values:[],
-    mape_values:[]
+    mape_values:[],
+    freezed_axis:[],
+    current_net_load_y_axis: [],
 }
 
 const reducer = (state = initialState, action) => {
@@ -147,6 +149,12 @@ const reducer = (state = initialState, action) => {
     }
     if (action.type === "mape_values") {
         return { ...state, mape_values: action.value }
+    }
+    if (action.type === "freezed_axis") {
+        return { ...state, freezed_axis: action.value }
+    } 
+    if (action.type === "current_net_load_y_axis") {
+        return { ...state, current_net_load_y_axis: action.value }
     }         
 
     return state;

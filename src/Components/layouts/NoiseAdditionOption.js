@@ -76,7 +76,7 @@ class NoiseAdditionOption extends Component {
         var updated_metric =this.props.updated_metric;
         //var formatted_array = updated_metric[this.props.the_metric];
         var formatted_array = ((updated_metric[this.props.the_metric]).length === 0)?this.convert_to_Array_of_Arrays(this.props.the_data, this.props.the_metric):updated_metric[this.props.the_metric];
-        console.log("Initial",formatted_array);
+        //console.log("Initial",formatted_array);
         var formatted_array_edited = this.calculate_uniform_noise(formatted_array.map(em => em[3]),event.target.value);
         formatted_array = formatted_array.map((em,i) => [em[0], em[1], em[2],formatted_array_edited[i]])
         updated_metric[this.props.the_metric] = formatted_array;
@@ -84,7 +84,7 @@ class NoiseAdditionOption extends Component {
         if(this.props.the_metric==="temperature"){this.props.set_updated_temperature(formatted_array);}
         else if(this.props.the_metric==="humidity"){this.props.set_updated_humidity(formatted_array);}
         else if(this.props.the_metric==="apparent_power"){this.props.set_updated_apparent_power(formatted_array);}
-        console.log("Final", formatted_array);
+        //console.log("Final", formatted_array);
     }
 
     getRandomArbitrary(min, max) {
@@ -107,6 +107,7 @@ class NoiseAdditionOption extends Component {
         <Select
            labelId={"demo-select-small_"+this.props.the_metric}
            id={"demo-select-small_"+this.props.the_metric}
+
           disabled={this.props.isLoadingUpdate}
           // value={this.props.noise_temperature_temp}
           value={this.props.noise_control[this.props.the_metric]}

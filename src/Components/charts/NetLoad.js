@@ -120,9 +120,11 @@ class NetLoad extends Component {
         upper_limit = (upper_limit>0)?(upper_limit*1.1):(upper_limit*0.9); // increasing upper limit
         var lower_limit = d3.min(net_load_df, (d) => { return d.net_load; });
         lower_limit = (lower_limit>0)?(lower_limit*0.9):(lower_limit*1.1); // decreasing lower limit
+        this.props.set_current_net_load_y_axis([lower_limit,upper_limit]); // updating the current y axis every time
+        var y_domain = ((this.props.freezed_axis).length === 0)?[lower_limit,upper_limit]:this.props.freezed_axis;
         const y = d3.scaleLinear()
         //.domain([-limit,limit])
-        .domain([lower_limit,upper_limit])
+        .domain(y_domain)
         .range([ height, 0 ]);
         svg.selectAll(".g_Y").data([0]).join("g")
         .attr("class", "g_Y")
@@ -134,7 +136,7 @@ class NetLoad extends Component {
         var keys = ["actual", "predicted", "95% confidence"]
         const color = d3.scaleOrdinal()
         //.range(['#e41a1c','#377eb8','#4daf4a','#984ea3','#ff7f00','#ffff33','#a65628','#f781bf','#999999'])
-        .range(["#377eb8", "#F39C12", "rgb(240, 240, 240)"])// "#FF0000", "#00FF00"])
+        .range(["#377eb8", "#F39C12", "rgb(240, 240, 240)", "rgb(243, 156, 18, 0.3)"])// "#FF0000", "#00FF00", , "#9897A9"])
 
         /** Adding one dot in the legend for each name */
         svg.selectAll(".legendDots")
@@ -159,7 +161,7 @@ class NetLoad extends Component {
         .duration(animation_duration)
         .attr("x", 0.89*width)
         .attr("y", function(d,i){ return 0 + i*25}) // 100 is where the first dot appears. 25 is the distance between dots
-        .style("fill", function(d){ if(d === "95% confidence"){return "rgb(190,190,190)"} else{return color(d)}})
+        .style("fill", function(d){ if(d === "95% confidence"){return "rgb(190,190,190)"} else if(d === "prediction_old"){return "rgb(253, 127, 111)"} else{return color(d)}})
         .text(function(d){ return d})
         .attr("font-size", "0.9em")
         .attr("text-anchor", "left")
@@ -252,11 +254,13 @@ const maptstateToprop = (state) => {
         conf_95_df: state.conf_95_df,
         mae: state.mae,
         mape: state.mape,
+        freezed_axis: state.freezed_axis,
     }
 }
 const mapdispatchToprop = (dispatch) => {
     return {
         set_blank_placeholder: (val) => dispatch({ type: "blank_placeholder", value: val }),
+        set_current_net_load_y_axis: (val) => dispatch({ type: "current_net_load_y_axis", value: val }),
     }
 }
 export default connect(maptstateToprop, mapdispatchToprop)(NetLoad);

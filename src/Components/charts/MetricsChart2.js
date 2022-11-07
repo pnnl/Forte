@@ -57,7 +57,7 @@ class MetricsChart extends Component {
         width = $(the_id).width() - margin.left - margin.right,
         height = $(the_id).height() - margin.top - margin.bottom;
 
-        var updated_metric1 =self.props.updated_metric;
+        var updated_metric1 =this.props.updated_metric;
         var formatted_array;
         formatted_array = ((updated_metric1[the_metric]).length === 0)?this.convert_to_Array_of_Arrays(the_data, the_metric):updated_metric1[the_metric];
         //formatted_array = this.convert_to_Array_of_Arrays(the_data, the_metric);
@@ -235,12 +235,12 @@ class MetricsChart extends Component {
                     var d_0 = self.roundToNearest15(xScale.invert(event.x));
                     var d_1 = yScale.invert(event.y);
                     console.log(event, yScale.domain(), yScale.range(), event.y, yScale.invert(event.y));
-                    // tooltip.transition()
-                    // .duration(200)
-                    // .style("opacity", .9);
-                    // tooltip.html(toLocaleUTCDateString(d_0))
-                    // .style("left", (event.pageX + 5) + "px")
-                    // .style("top", (event.pageY - 10) + "px");
+                    tooltip.transition()
+                    .duration(200)
+                    .style("opacity", .9);
+                    tooltip.html(toLocaleUTCDateString(d_0))
+                    .style("left", (event.pageX + 5) + "px")
+                    .style("top", (event.pageY - 10) + "px");
                 })
                 .on("mouseout", function (d) {
                     tooltip.transition()

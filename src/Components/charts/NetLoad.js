@@ -92,7 +92,7 @@ class NetLoad extends Component {
 
 
         /** Grouping the data: in order to draw one line per group */
-        var test = net_load_df.filter(el => ["actual", "predicted", "predicted_old"].includes(el.net_load_type))
+        var test = net_load_df.filter(el => ["actual", "predicted"].includes(el.net_load_type))
         var test2 = net_load_df.filter(el => !["actual", "predicted"].includes(el.net_load_type))
         var test3 = d3.group(test2, d => d.years)
         //test = net_load_df
@@ -133,7 +133,7 @@ class NetLoad extends Component {
         .call(d3.axisLeft(y).tickSize(-width).tickSizeOuter(0));
 
         /** Color palette */ 
-        var keys = ["actual", "predicted", "95% confidence", "predicted_old"]
+        var keys = ["actual", "predicted", "95% confidence"]
         const color = d3.scaleOrdinal()
         //.range(['#e41a1c','#377eb8','#4daf4a','#984ea3','#ff7f00','#ffff33','#a65628','#f781bf','#999999'])
         .range(["#377eb8", "#F39C12", "rgb(240, 240, 240)", "rgb(243, 156, 18, 0.3)"])// "#FF0000", "#00FF00", , "#9897A9"])

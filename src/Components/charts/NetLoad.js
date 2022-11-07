@@ -92,7 +92,7 @@ class NetLoad extends Component {
 
 
         /** Grouping the data: in order to draw one line per group */
-        var test = net_load_df.filter(el => ["actual", "predicted"].includes(el.net_load_type))
+        var test = net_load_df.filter(el => ["actual", "predicted", "predicted_old"].includes(el.net_load_type))
         var test2 = net_load_df.filter(el => !["actual", "predicted"].includes(el.net_load_type))
         var test3 = d3.group(test2, d => d.years)
         //test = net_load_df
@@ -133,10 +133,10 @@ class NetLoad extends Component {
         .call(d3.axisLeft(y).tickSize(-width).tickSizeOuter(0));
 
         /** Color palette */ 
-        var keys = ["actual", "predicted", "95% confidence"]
+        var keys = ["actual", "predicted", "95% confidence", "predicted_old"]
         const color = d3.scaleOrdinal()
         //.range(['#e41a1c','#377eb8','#4daf4a','#984ea3','#ff7f00','#ffff33','#a65628','#f781bf','#999999'])
-        .range(["#377eb8", "#F39C12", "rgb(240, 240, 240)"])// "#FF0000", "#00FF00", , "#9897A9"])
+        .range(["#377eb8", "#F39C12", "rgb(240, 240, 240)", "rgb(243, 156, 18, 0.3)"])// "#FF0000", "#00FF00", , "#9897A9"])
 
         /** Adding one dot in the legend for each name */
         svg.selectAll(".legendDots")
@@ -161,7 +161,7 @@ class NetLoad extends Component {
         .duration(animation_duration)
         .attr("x", 0.89*width)
         .attr("y", function(d,i){ return 0 + i*25}) // 100 is where the first dot appears. 25 is the distance between dots
-        .style("fill", function(d){ if(d === "95% confidence"){return "rgb(190,190,190)"} else{return color(d)}})
+        .style("fill", function(d){ if(d === "95% confidence"){return "rgb(190,190,190)"} else if(d === "prediction_old"){return "rgb(253, 127, 111)"} else{return color(d)}})
         .text(function(d){ return d})
         .attr("font-size", "0.9em")
         .attr("text-anchor", "left")

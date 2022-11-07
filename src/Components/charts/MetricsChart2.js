@@ -235,12 +235,12 @@ class MetricsChart extends Component {
                     var d_0 = self.roundToNearest15(xScale.invert(event.x));
                     var d_1 = yScale.invert(event.y);
                     console.log(event, yScale.domain(), yScale.range(), event.y, yScale.invert(event.y));
-                    // tooltip.transition()
-                    // .duration(200)
-                    // .style("opacity", .9);
-                    // tooltip.html(toLocaleUTCDateString(d_0))
-                    // .style("left", (event.pageX + 5) + "px")
-                    // .style("top", (event.pageY - 10) + "px");
+                    tooltip.transition()
+                    .duration(200)
+                    .style("opacity", .9);
+                    tooltip.html(toLocaleUTCDateString(d_0))
+                    .style("left", (event.pageX + 5) + "px")
+                    .style("top", (event.pageY - 10) + "px");
                 })
                 .on("mouseout", function (d) {
                     tooltip.transition()

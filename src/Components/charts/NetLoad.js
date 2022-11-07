@@ -136,7 +136,7 @@ class NetLoad extends Component {
         var keys = ["actual", "predicted", "95% confidence"]
         const color = d3.scaleOrdinal()
         //.range(['#e41a1c','#377eb8','#4daf4a','#984ea3','#ff7f00','#ffff33','#a65628','#f781bf','#999999'])
-        .range(["#377eb8", "#F39C12", "rgb(240, 240, 240)"])// "#FF0000", "#00FF00"])
+        .range(["#377eb8", "#F39C12", "rgb(240, 240, 240)"])// "#FF0000", "#00FF00", , "#9897A9"])
 
         /** Adding one dot in the legend for each name */
         svg.selectAll(".legendDots")

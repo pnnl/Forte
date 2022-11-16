@@ -5,6 +5,7 @@ import { connect } from "react-redux";
 import { Card, CardGroup} from 'react-bootstrap';
 import Grid from '@mui/material/Grid';
 import * as $ from "jquery";
+import * as d3 from "d3";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import NetLoad from '../charts/NetLoad';
 import Button from '@mui/material/Button';
@@ -44,6 +45,12 @@ handleReplay(){
   var conf_95_df_old = [...this.props.conf_95_df_old];
   var net_load_df = [...this.props.net_load_df];
   var conf_95_df = [...this.props.conf_95_df];
+
+  var upper_limit = d3.max(net_load_df, (d) => { return d.net_load; });
+  var lower_limit = d3.min(net_load_df, (d) => { return d.net_load; });
+  // Creating fake entries based on the higher and lower limit of net_load_df
+  var fake_higher = {"net_load": upper_limit, "net_load_type": "predicted", "timeline": "2020-01-03 00:00:00", "years": 5000001, "mark":"fake data"}
+  var fake_lower = {"net_load": lower_limit, "net_load_type": "predicted", "timeline": "2020-01-03 00:00:00", "years": 5000001, "mark":"fake data"}
   // var net_load_df_old = [...this.props.net_load_df];
   // var conf_95_df_old = [...this.props.conf_95_df];
   // var updated_net_load_df = net_load_df.map(el =>{el["net_load"] = 1.5*el["net_load"]; return el;})
@@ -52,13 +59,20 @@ handleReplay(){
   var filtered_conf_95_df_old = [];
   var filtered_net_load_df = net_load_df.filter(el => el["net_load_type"] === "predicted")
   var filtered_conf_95_df = [];
+
+  //Inserting fake entries
+  filtered_net_load_df_old.splice(2,0, fake_higher);
+  filtered_net_load_df_old.splice(3,0, fake_lower);
+  filtered_net_load_df.splice(2,0, fake_higher);
+  filtered_net_load_df.splice(3,0, fake_lower);
+
   this.props.set_net_load_df(filtered_net_load_df_old); //Disable this line for update with all details
   this.props.set_conf_95_df(filtered_conf_95_df_old); //Disable this line for update with all details
 
   // this.props.set_net_load_df(net_load_df_old); //Enable this line for update with all details
   // this.props.set_conf_95_df(conf_95_df_old); //Enable this line for update with all details
   
-  this.sleep(5000).then(()=>{
+  this.sleep(3000).then(()=>{
     this.props.set_animation_duration(7000)
     this.props.set_net_load_df(filtered_net_load_df); //Disable this line for update with all details
     this.props.set_conf_95_df(filtered_conf_95_df); //Disable this line for update with all details

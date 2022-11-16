@@ -92,7 +92,7 @@ class NetLoad extends Component {
 
 
         /** Grouping the data: in order to draw one line per group */
-        var test = net_load_df.filter(el => ["actual", "predicted"].includes(el.net_load_type))
+        var test = net_load_df.filter(el => ["actual", "predicted"].includes(el.net_load_type) && el["years"]<5000001)
         var test2 = net_load_df.filter(el => !["actual", "predicted"].includes(el.net_load_type))
         var test3 = d3.group(test2, d => d.years)
         //test = net_load_df

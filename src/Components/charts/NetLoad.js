@@ -32,7 +32,7 @@ class NetLoad extends Component {
                 my_conf_95_df = my_conf_95_df_temp.filter(el =>{var month = parseInt((el.timeline).substring(5,7)); return (month<4  || month>9)})
             }
         }
-        this.create_line_chart(my_net_load_df, my_conf_95_df, this.props.my_type);
+        this.create_line_chart(my_net_load_df, my_conf_95_df, this.props.my_type, this.props.animation_duration);
     }
     componentDidUpdate(prevProps, prevState) {
         var chart_type = this.props.my_type;
@@ -51,7 +51,7 @@ class NetLoad extends Component {
                 my_conf_95_df = my_conf_95_df_temp.filter(el =>{var month = parseInt((el.timeline).substring(5,7)); return (month<4  || month>9)})
             }
         }
-        this.create_line_chart(my_net_load_df, my_conf_95_df, this.props.my_type);
+        this.create_line_chart(my_net_load_df, my_conf_95_df, this.props.my_type, this.props.animation_duration);
     }
 
     convert_to_Array_of_Arrays(input){
@@ -71,9 +71,9 @@ class NetLoad extends Component {
         my_svg.selectAll(".tick line").style("stroke-opacity", 0.2)
     }
 
-    create_line_chart(net_load_df, conf_95_df, my_type){
+    create_line_chart(net_load_df, conf_95_df, my_type, animation_duration=2500){
         var self = this;
-        var animation_duration = 2500;//2000;
+        //var animation_duration = 2500;//2000;
         var the_id = "#netLoadChartDiv_"+my_type;   
         const margin = {top: 10, right: 30, bottom: 30, left: 60},
         width = $(the_id).width() - margin.left - margin.right,
@@ -255,12 +255,14 @@ const maptstateToprop = (state) => {
         mae: state.mae,
         mape: state.mape,
         freezed_axis: state.freezed_axis,
+        animation_duration: state.animation_duration,
     }
 }
 const mapdispatchToprop = (dispatch) => {
     return {
         set_blank_placeholder: (val) => dispatch({ type: "blank_placeholder", value: val }),
         set_current_net_load_y_axis: (val) => dispatch({ type: "current_net_load_y_axis", value: val }),
+        
     }
 }
 export default connect(maptstateToprop, mapdispatchToprop)(NetLoad);

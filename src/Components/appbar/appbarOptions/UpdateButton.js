@@ -40,6 +40,8 @@ class UpdateButton extends Component {
 
             jsonCall.download(this.props.url + "/api/v@latest/processor", {start_date: converted_start_date, end_date: converted_end_date, solar_penetration:this.props.solar_penetration_temp, temperature_updated:0, humidity_updated:0, apparent_power_updated:0, metrics_updated:metrics_updated, updated_metric:this.props.updated_metric}).then(res =>{
                 console.log(res);
+                this.props.set_net_load_df_old(this.props.net_load_df);
+                this.props.set_conf_95_df_old(this.props.conf_95_df); //Saving the older values
                 this.props.set_net_load_df(res["net_load_df"]);
                 this.props.set_conf_95_df(res["conf_95_df"]);
                 this.props.set_temperature_df(res["temperature_df"]);
@@ -105,6 +107,8 @@ const maptstateToprop = (state) => {
         updated_metric: state.updated_metric,
         enable_seasons_choice_temp: state.enable_seasons_choice_temp,
         noise_control: state.noise_control,
+        net_load_df: state.net_load_df,
+        conf_95_df: state.conf_95_df,
     }
 }
 const mapdispatchToprop = (dispatch) => {
@@ -115,6 +119,8 @@ const mapdispatchToprop = (dispatch) => {
         set_end_date: (val) => dispatch({ type: "end_date", value: val }),
         set_net_load_df: (val) => dispatch({ type: "net_load_df", value: val}),
         set_conf_95_df: (val) => dispatch({ type: "conf_95_df", value: val}),
+        set_net_load_df_old: (val) => dispatch({ type: "net_load_df_old", value: val}),
+        set_conf_95_df_old: (val) => dispatch({ type: "conf_95_df_old", value: val}),
         set_temperature_df: (val) => dispatch({ type: "temperature_df", value: val}),
         set_humidity_df: (val) => dispatch({ type: "humidity_df", value: val}),
         set_apparent_power_df: (val) => dispatch({ type: "apparent_power_df", value: val}),

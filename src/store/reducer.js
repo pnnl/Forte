@@ -14,6 +14,8 @@ let initialState = {
     temperature: [],
     net_load_df: [],
     conf_95_df: [],
+    net_load_df_old: [],
+    conf_95_df_old: [],
     temperature_df: [],
     humidity_df: [],
     apparent_power_df: [],
@@ -39,6 +41,7 @@ let initialState = {
     mape_values:[],
     freezed_axis:[],
     current_net_load_y_axis: [],
+    animation_duration: 2500,
 }
 
 const reducer = (state = initialState, action) => {
@@ -77,6 +80,9 @@ const reducer = (state = initialState, action) => {
      }
     if (action.type === "net_load_df") {
         return { ...state, net_load_df: action.value }
+     }
+     if (action.type === "net_load_df_old") {
+        return { ...state, net_load_df_old: action.value }
      }
     if (action.type === "temperature_df") {
         return { ...state, temperature_df: action.value }
@@ -129,6 +135,9 @@ const reducer = (state = initialState, action) => {
     if (action.type === "conf_95_df") {
         return { ...state, conf_95_df: action.value }
     }
+    if (action.type === "conf_95_df_old") {
+        return { ...state, conf_95_df_old: action.value }
+    }
     if (action.type === "noise_temperature_temp") {
         return { ...state, noise_temperature_temp: action.value }
     }
@@ -155,6 +164,9 @@ const reducer = (state = initialState, action) => {
     } 
     if (action.type === "current_net_load_y_axis") {
         return { ...state, current_net_load_y_axis: action.value }
+    } 
+    if (action.type === "animation_duration") {
+        return { ...state, animation_duration: action.value }
     }         
 
     return state;

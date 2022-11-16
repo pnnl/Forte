@@ -80,9 +80,13 @@ handleReplay(){
     // this.props.set_conf_95_df(conf_95_df); //Enable this line for update with all details
     console.log("Replay complete");
     this.sleep(8000).then(()=>{
-      this.props.set_animation_duration(2500);
+      this.props.set_animation_duration(50);
       this.props.set_net_load_df(net_load_df); //Disable this line for update with all details
       this.props.set_conf_95_df(conf_95_df); //Disable this line for update with all details
+
+      this.sleep(5000).then(()=>{
+        this.props.set_animation_duration(2500);
+      })
     })
   })
   console.log(net_load_df, conf_95_df);

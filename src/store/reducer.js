@@ -167,7 +167,7 @@ const reducer = (state = initialState, action) => {
     } 
     if (action.type === "animation_duration") {
         return { ...state, animation_duration: action.value }
-    }         
+    }        
 
     return state;
 }

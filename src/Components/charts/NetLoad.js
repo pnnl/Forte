@@ -59,6 +59,12 @@ class NetLoad extends Component {
             return [obj.timeline, obj.lower_limit, obj.higher_limit]
           }); 
         return output;  
+    }
+    convert_to_Array_of_Arrays2(input){
+        var output = input.map(function(obj) {
+            return [obj.net_load, obj.net_load_type, obj.timeline, obj.years]
+          }); 
+        return output;  
     } 
     /** This function increases the opacity of the gridlines when hovered */
     handleMouseEnter(event){
@@ -197,12 +203,17 @@ class NetLoad extends Component {
         var line = d3.line()
             .curve(d3.curveStep)
             .x(function(d) { return x(new Date(d.timeline)); })
-            .y(function(d) { return y(d.net_load); });   
-        console.log(sumstat2.get("actual"));   
+            .y(function(d) { return y(d.net_load); }); 
+        var line2 = d3.line()
+            .curve(d3.curveStep)
+            .x(function(d) { return x(new Date(d[2])); })
+            .y(function(d) { return y(d[0]); });       
+        //var converted_predicted = this.convert_to_Array_of_Arrays2(sumstat2.get("predicted"))
+        console.log(converted_predicted);   
 
         /** Drawing the lines */ 
         svg.selectAll(".lineCharts_actual")
-        .data([sumstat2.get("actual")])
+        .data((sumstat2.get("actual"))?[sumstat2.get("actual")]:[])
         .join("path")
             .attr("class", "lineCharts_actual")
             .attr("fill", "none")
@@ -221,6 +232,8 @@ class NetLoad extends Component {
                 .attr("stroke-width", 1.5)
                 .transition()
                 .duration(animation_duration)
+                .delay((d,i) =>{console.log(i);return 1000*i})
+                .ease(d3.easeLinear)
                 .attr("d", (el) => {return line(el)} )    
         // svg.selectAll(".lineCharts")
         // .data(sumstat2)

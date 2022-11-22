@@ -194,24 +194,50 @@ class NetLoad extends Component {
             //     (d[1])
             // })
 
+        var line = d3.line()
+            .curve(d3.curveStep)
+            .x(function(d) { return x(new Date(d.timeline)); })
+            .y(function(d) { return y(d.net_load); });   
+        console.log(sumstat2.get("actual"));   
 
         /** Drawing the lines */ 
-        svg.selectAll(".lineCharts")
-        .data(sumstat2)
+        svg.selectAll(".lineCharts_actual")
+        .data([sumstat2.get("actual")])
         .join("path")
-            .attr("class", "lineCharts")
+            .attr("class", "lineCharts_actual")
             .attr("fill", "none")
-            .attr("stroke", function(d){ return color(d[0]) })
+            .attr("stroke", function(d){ return color("actual") })
             .attr("stroke-width", 1.5)
             .transition()
             .duration(animation_duration)
-            .attr("d", function(d){
-            return d3.line()
-                .curve(d3.curveStep)
-                .x(function(d) { return x(new Date(d.timeline)); })
-                .y(function(d) { return y(d.net_load); })
-                (d[1])
-            })
+            .attr("d", (el) => {return line(el)} )
+
+        svg.selectAll(".lineCharts_predicted")
+            .data([sumstat2.get("predicted")])
+            .join("path")
+                .attr("class", "lineCharts_predicted")
+                .attr("fill", "none")
+                .attr("stroke", function(d){ return color("predicted") })
+                .attr("stroke-width", 1.5)
+                .transition()
+                .duration(animation_duration)
+                .attr("d", (el) => {return line(el)} )    
+        // svg.selectAll(".lineCharts")
+        // .data(sumstat2)
+        // .join("path")
+        //     .attr("class", "lineCharts")
+        //     .attr("fill", "none")
+        //     .attr("stroke", function(d){ return color(d[0]) })
+        //     .attr("stroke-width", 1.5)
+        //     .transition()
+        //     .duration(animation_duration)
+        //     .attr("d", function(d){
+        //     return d3.line()
+        //         .curve(d3.curveStep)
+        //         .x(function(d) { return x(new Date(d.timeline)); })
+        //         .y(function(d) { return y(d.net_load); })
+        //         (d[1])
+        //     })
 
             // info icon about performance metrics
             d3.selectAll(".netload_performance_icon").on("mouseover", function (event) {

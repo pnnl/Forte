@@ -209,7 +209,7 @@ class NetLoad extends Component {
             .x(function(d) { return x(new Date(d[2])); })
             .y(function(d) { return y(d[0]); });       
         //var converted_predicted = this.convert_to_Array_of_Arrays2(sumstat2.get("predicted"))
-        console.log(converted_predicted);   
+        //console.log(converted_predicted);   
 
         /** Drawing the lines */ 
         svg.selectAll(".lineCharts_actual")

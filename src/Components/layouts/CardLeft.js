@@ -66,6 +66,7 @@ handleReplay(){
   filtered_net_load_df.splice(2,0, fake_higher);
   filtered_net_load_df.splice(3,0, fake_lower);
 
+  this.props.set_animation_duration(50)
   this.props.set_net_load_df(filtered_net_load_df_old); //Disable this line for update with all details
   this.props.set_conf_95_df(filtered_conf_95_df_old); //Disable this line for update with all details
 

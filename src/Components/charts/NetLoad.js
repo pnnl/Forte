@@ -61,11 +61,11 @@ class NetLoad extends Component {
         return output;  
     }
     convert_to_Array_of_Arrays2(input){
-        var output = input.map(function(obj) {
-            return [obj.net_load, obj.net_load_type, obj.timeline, obj.years]
+        var output = input.map(function(obj, i) {
+            if(i<input.length){return [[obj.net_load, obj.net_load_type, obj.timeline, obj.years],[(obj.net_load)*1.1, obj.net_load_type, obj.timeline, obj.years]]}
           }); 
         return output;  
-    } 
+    }
     /** This function increases the opacity of the gridlines when hovered */
     handleMouseEnter(event){
         var my_svg = d3.select(event.target)
@@ -206,10 +206,11 @@ class NetLoad extends Component {
             .y(function(d) { return y(d.net_load); }); 
         var line2 = d3.line()
             .curve(d3.curveStep)
-            .x(function(d) { return x(new Date(d[2])); })
-            .y(function(d) { return y(d[0]); });       
-        //var converted_predicted = this.convert_to_Array_of_Arrays2(sumstat2.get("predicted"))
-        //console.log(converted_predicted);   
+            .x(function(d) { return x(new Date(d[0][2])); })
+            .y(function(d) { return y(d[0][0]); })
+                 
+        // var converted_predicted = this.convert_to_Array_of_Arrays2(sumstat2.get("predicted"))
+        // console.log(converted_predicted);   
 
         /** Drawing the lines */ 
         svg.selectAll(".lineCharts_actual")
@@ -225,6 +226,7 @@ class NetLoad extends Component {
 
         svg.selectAll(".lineCharts_predicted")
             .data([sumstat2.get("predicted")])
+            //.data(converted_predicted)
             .join("path")
                 .attr("class", "lineCharts_predicted")
                 .attr("fill", "none")

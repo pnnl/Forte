@@ -241,7 +241,7 @@ def kPF_func(pred_train, solar_penetration):
     latent_gen = latent_gens[str(solar_penetration)]
     elapsed_time_kpf = time.process_time() - t
     return latent_gen, elapsed_time_kpf
-
+# deprecated
 def lstm_func(latent_gen, sequence_input, pred_train, y_ground, y_prev, solar_penetration):
     t = time.process_time()
     aa = (latent_gen)
@@ -289,6 +289,7 @@ def lstm_func(latent_gen, sequence_input, pred_train, y_ground, y_prev, solar_pe
     #return y_pred, Y_test, mae, mape, crps, pbb, mse, elapsed_time_lstm
     return y_pred, Y_test, lower_y_pred, higher_y_pred, mae, mape, elapsed_time_lstm
 
+# Used only for Sensitivity Analysis experiments
 def lstm_func_1_2x1(latent_gen, sequence_input, pred_train, y_ground, y_prev, solar_penetration,y_pred_ground_truth):
     t = time.process_time()
     aa = (latent_gen)
@@ -359,32 +360,32 @@ def lstm_func2(latent_gen, sequence_input, pred_train, y_ground, y_prev, solar_p
     y_pred = lstm_model.predict(X)
     y_pred=y_pred*(np.max(total_train_data[:,41])-np.min(total_train_data[:,41]))+np.min(total_train_data[:,41])
     Y_test=Y*(np.max(total_train_data[:,41])-np.min(total_train_data[:,41]))+np.min(total_train_data[:,41])
-    #print(lstm_model.layers[6].output)
 
+    # Extracting the output of the concatenation layer (source: https://stackoverflow.com/a/65288168/13125348)
     func = K.function([lstm_model.get_layer(index=0).input], lstm_model.get_layer(index=6).output)
     layerOutput = func(X)  # input_data is a numpy array
     print(layerOutput.shape)
     conf_array_higher_limit, conf_array_lower_limit = [], []
-    for concatenated_data in layerOutput:
+    for concatenated_data in layerOutput: # concatenated_data = [mean, sd]
         lower_limit = concatenated_data[0] - 2*concatenated_data[1]
         higher_limit = concatenated_data[0] + 2*concatenated_data[1]
+        conf_array_lower_limit.append(lower_limit) #reversing
         conf_array_higher_limit.append(higher_limit)
-        conf_array_lower_limit.append(lower_limit)
     #y_pred = y_pred.flatten()
     #print(y_pred, Y_test)
-    mean = lambda x: x.mean()#.flatten()
-    sd = lambda x: x.std()#.flatten() 
-    conf_int_95 = np.array([mean(y_pred) - 2*sd(y_pred), mean(y_pred) + 2*sd(y_pred)]) #https://datascience.stackexchange.com/questions/109048/get-the-confidence-interval-for-prediction-results-with-lstm
-    two_sd = 2*sd(y_pred)
+    # mean = lambda x: x.mean()#.flatten()
+    # sd = lambda x: x.std()#.flatten() 
+    # conf_int_95 = np.array([mean(y_pred) - 2*sd(y_pred), mean(y_pred) + 2*sd(y_pred)]) #https://datascience.stackexchange.com/questions/109048/get-the-confidence-interval-for-prediction-results-with-lstm
+    # two_sd = 2*sd(y_pred)
     # lower_y_pred = y_pred + conf_int_95[0]
     # higher_y_pred = y_pred + conf_int_95[1]
     lower_y_pred = np.array(conf_array_lower_limit) #y_pred - two_sd
     higher_y_pred = np.array(conf_array_higher_limit) #y_pred + two_sd
-    print("Conf", conf_int_95)
-    #np.savetxt(path_parent+"/data/outputs/pen_"+str(solar_penetration)+"/y_pred.csv", y_pred, delimiter=",")
-    #np.savetxt(path_parent+"/data/outputs/pen_"+str(solar_penetration)+"/Y_test.csv", Y_test, delimiter=",")
-    #np.savetxt(path_parent+"/data/outputs/pen_"+str(solar_penetration)+"/lower_y_pred.csv", lower_y_pred, delimiter=",")
-    #np.savetxt(path_parent+"/data/outputs/pen_"+str(solar_penetration)+"/higher_y_pred.csv", higher_y_pred, delimiter=",")
+    #print("Conf", conf_int_95)
+    # np.savetxt(path_parent+"/data/outputs/pen_"+str(solar_penetration)+"/y_pred.csv", y_pred, delimiter=",")
+    # np.savetxt(path_parent+"/data/outputs/pen_"+str(solar_penetration)+"/Y_test.csv", Y_test, delimiter=",")
+    # np.savetxt(path_parent+"/data/outputs/pen_"+str(solar_penetration)+"/lower_y_pred.csv", lower_y_pred, delimiter=",")
+    # np.savetxt(path_parent+"/data/outputs/pen_"+str(solar_penetration)+"/higher_y_pred.csv", higher_y_pred, delimiter=",")
     mae = mean_absolute_error(Y_test, y_pred)
     mape = mean_absolute_percentage_error(Y_test, y_pred)
     # crps = ps.crps_ensemble(y_pred.flatten(), Y_test).mean()
@@ -533,6 +534,7 @@ def processor_v1_1(start_date="2020-05-01 00:00:00", end_date="2020-05-03 00:00:
     response.headers.add('Access-Control-Allow-Origin', '*')
     return response;
 
+# deprecated
 @app.route('/api/v1.2/processor',methods = ['POST', 'GET'])
 #@app.route('/api/v@latest/processor',methods = ['POST', 'GET'])
 def processor(start_date="2020-05-01 00:00:00", end_date="2020-05-03 00:00:00", solar_penetration=50):

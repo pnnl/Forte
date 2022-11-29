@@ -123,9 +123,9 @@ class NetLoad extends Component {
         /** Adding and calling Y axis */ 
         //var limit = 1.1*(Math.max(Math.abs(d3.min(net_load_df, function(d) { return d.net_load; })), Math.abs(d3.max(net_load_df, function(d) { return d.net_load; }))))
         var upper_limit = d3.max(net_load_df, (d) => { return d.net_load; });
-        upper_limit = (upper_limit>0)?(upper_limit*1.1):(upper_limit*0.9); // increasing upper limit
+        upper_limit = (upper_limit>0)?(upper_limit*1.25):(upper_limit*0.75); // increasing upper limit ; [1.1, 0.9]
         var lower_limit = d3.min(net_load_df, (d) => { return d.net_load; });
-        lower_limit = (lower_limit>0)?(lower_limit*0.9):(lower_limit*1.1); // decreasing lower limit
+        lower_limit = (lower_limit>0)?(lower_limit*0.75):(lower_limit*1.25); // decreasing lower limit
         this.props.set_current_net_load_y_axis([lower_limit,upper_limit]); // updating the current y axis every time
         var y_domain = ((this.props.freezed_axis).length === 0)?[lower_limit,upper_limit]:this.props.freezed_axis;
         const y = d3.scaleLinear()

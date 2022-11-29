@@ -365,10 +365,11 @@ def lstm_func2(latent_gen, sequence_input, pred_train, y_ground, y_prev, solar_p
     func = K.function([lstm_model.get_layer(index=0).input], lstm_model.get_layer(index=6).output)
     layerOutput = func(X)  # input_data is a numpy array
     print(layerOutput.shape)
+    y_pred = y_pred.flatten()
     conf_array_higher_limit, conf_array_lower_limit = [], []
-    for concatenated_data in layerOutput: # concatenated_data = [mean, sd]
-        lower_limit = concatenated_data[0] - 2*concatenated_data[1]
-        higher_limit = concatenated_data[0] + 2*concatenated_data[1]
+    for index, concatenated_data in enumerate(layerOutput): # concatenated_data = [mean, sd]
+        lower_limit = y_pred[index] - 2*concatenated_data[1]
+        higher_limit = y_pred[index] + 2*concatenated_data[1]
         conf_array_lower_limit.append(lower_limit) #reversing
         conf_array_higher_limit.append(higher_limit)
     #y_pred = y_pred.flatten()

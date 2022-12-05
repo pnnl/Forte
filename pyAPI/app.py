@@ -368,8 +368,12 @@ def lstm_func2(latent_gen, sequence_input, pred_train, y_ground, y_prev, solar_p
     y_pred = y_pred.flatten()
     conf_array_higher_limit, conf_array_lower_limit = [], []
     for index, concatenated_data in enumerate(layerOutput): # concatenated_data = [mean, sd]
-        lower_limit = y_pred[index] - 2*concatenated_data[1]
-        higher_limit = y_pred[index] + 2*concatenated_data[1]
+        # sigma_sign = 1
+        # if(concatenated_data[1]<0): sigma_sign = -1
+        # sigma = sigma_sign * np.sqrt(abs(concatenated_data[1]))
+        sigma = concatenated_data[1]
+        lower_limit = y_pred[index] - 2*sigma
+        higher_limit = y_pred[index] + 2*sigma
         conf_array_lower_limit.append(lower_limit) #reversing
         conf_array_higher_limit.append(higher_limit)
     #y_pred = y_pred.flatten()
@@ -480,6 +484,17 @@ def prepare_output_df(y_pred, Y_test, lower_y_pred, higher_y_pred, timeline, tim
     apparent_power_df_safe = apparent_power_df.to_dict(orient="records")
     return net_load_df_safe, temperature_df_safe, humidity_df_safe, apparent_power_df_safe, conf_95_df_safe
 
+def get_time_intervals(start_date, end_date):
+    time_intervals = []
+    received_start_date = datetime.strptime(start_date, "%Y-%m-%d %H:%M:%S")
+    received_end_date = datetime.strptime(end_date, "%Y-%m-%d %H:%M:%S")
+    edited_start_date = received_start_date
+    edited_end_date = received_start_date + timedelta(hours = 0.25) # increasing time by 15
+    while(edited_end_date<=received_end_date):
+        time_intervals.append([datetime.strftime((edited_start_date - timedelta(hours = 12)), "%Y-%m-%d %H:%M:%S"), datetime.strftime(edited_start_date, "%Y-%m-%d %H:%M:%S")])
+        edited_start_date = edited_start_date + timedelta(hours = 0.25)
+        edited_end_date = edited_end_date + timedelta(hours = 0.25)
+    return time_intervals
 ### Callable functions ###
 # deprecated
 @app.route('/api/v1/processor',methods = ['POST', 'GET'])
@@ -575,21 +590,24 @@ def processor(start_date="2020-05-01 00:00:00", end_date="2020-05-03 00:00:00", 
 def processor3(start_date="2020-05-01 00:00:00", end_date="2020-05-03 00:00:00", solar_penetration=50):
     t = time.process_time()
     #start_date, end_date, solar_penetration = "2020-05-01 00:00:00", "2020-05-03 00:00:00", 50
-    start_date = validate_start_date(start_date)
+    #start_date = validate_start_date(start_date)
     updated_metric = {}
     metrics = ["temperature", "humidity", "apparent_power"]
     for i in metrics: updated_metric[i] = []
     if(request.is_json):
         req = request.get_json()
         print("Reading JSON")
-        start_date = validate_start_date(req["start_date"])
+        #start_date = validate_start_date(req["start_date"])
+        start_date = req["start_date"]
         end_date = req["end_date"]
         solar_penetration = req["solar_penetration"]
         for metric in metrics:
             if(req["metrics_updated"][metric] == 1): updated_metric[metric] = req["updated_metric"][metric]        
     print(start_date, solar_penetration)
     # if(len(updated_metric["temperature"])>0): print((updated_metric["temperature"])[0])
-    sequence_input, y_ground, y_prev, temperature, temperature_original, temperature_nans, temperature_nans_percentage, humidity, humidity_original, humidity_nans, humidity_nans_percentage, apparent_power, apparent_power_original, apparent_power_nans, apparent_power_nans_percentage, elapsed_time_prepare_input, timeline, timeline_original = prepare_input(start_date, end_date, solar_penetration, updated_metric)
+    time_intervals = get_time_intervals(start_date, end_date)
+    print("time intervals ", time_intervals)
+    sequence_input, y_ground, y_prev, temperature, temperature_original, temperature_nans, temperature_nans_percentage, humidity, humidity_original, humidity_nans, humidity_nans_percentage, apparent_power, apparent_power_original, apparent_power_nans, apparent_power_nans_percentage, elapsed_time_prepare_input, timeline, timeline_original = prepare_input(time_intervals[0][0], end_date, solar_penetration, updated_metric)
     pred_train, elapsed_time_autoencoder = autoencoder_func(sequence_input, solar_penetration)
     latent_gen, elapsed_time_kpf = kPF_func(pred_train, solar_penetration)
     #y_pred, Y_test, mae, mape, crps, pbb, mse, elapsed_time_lstm = lstm_func(latent_gen, sequence_input, pred_train, y_ground, y_prev)

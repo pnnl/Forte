@@ -167,16 +167,19 @@ def prepare_general_input(start_date, end_date, solar_penetration, updated_metri
         for item in updated_metric["temperature"]: temperature_column.append(item[3])
         # print("Temperature was increased ", temperature_column[0])
         my_data['temp'] = temperature_column
+    else: temperature_column = my_data['temp'].tolist()
     # Injecting updated humidity
     humidity_column =[]
     if(len(updated_metric["humidity"])>0):
         for item in updated_metric["humidity"]: humidity_column.append(item[3])
         my_data['humidity'] = humidity_column
+    else: humidity_column = my_data['humidity'].tolist()    
     # Injecting updated apparent_power
     apparent_power_column =[]
     if(len(updated_metric["apparent_power"])>0):
         for item in updated_metric["apparent_power"]: apparent_power_column.append(item[3])
-        my_data['apparent_power'] = apparent_power_column            
+        my_data['apparent_power'] = apparent_power_column 
+    else: apparent_power_column = my_data['apparent_power'].tolist()               
     my_data = my_data.interpolate(method="linear", axis=0, limit_direction='both') # linear interpolation column by column; both directions so that the first and last columns are not left alone
     #my_data = A
     print("my data ", my_data.shape)
@@ -189,6 +192,14 @@ def prepare_general_input(start_date, end_date, solar_penetration, updated_metri
     timeline = timeline[48:] # removing the first 48 entries(i.e., 12 hours)
     my_data=my_data.drop(['min_t'], axis=1) # Drop this axis
     #my_data=my_data.fillna(99999)
+
+    # Creating a df for updated_metric
+    df_updated_metric = pd.DataFrame({
+        "timeline_original": timeline_original,
+        "updated_temperature": temperature_column,
+        "updated_humidity": humidity_column,
+        "updated_apparent_power": apparent_power_column
+    })
 
     sequence_length = 24*2 # Length of historical datapoints to use for forecast
     sequence_input = []
@@ -225,13 +236,20 @@ def prepare_general_input(start_date, end_date, solar_penetration, updated_metri
     # print("y_prev", y_prev)
     # y_prev=y_prev.reshape((y_prev.shape[0],y_prev.shape[1]))
     elapsed_time_prepare_input = time.process_time() - t
-    return  temperature, temperature_original, temperature_nans, temperature_nans_percentage, humidity, humidity_original, humidity_nans, humidity_nans_percentage, apparent_power, apparent_power_original, apparent_power_nans, apparent_power_nans_percentage, elapsed_time_prepare_input, timeline, timeline_original
+    return  temperature, temperature_original, temperature_nans, temperature_nans_percentage, humidity, humidity_original, humidity_nans, humidity_nans_percentage, apparent_power, apparent_power_original, apparent_power_nans, apparent_power_nans_percentage, elapsed_time_prepare_input, timeline, timeline_original, df_updated_metric
 
-def prepare_input(start_date, end_date, solar_penetration, updated_metric):
+def prepare_input(start_date, end_date, solar_penetration, updated_metric, df_updated_metric):
     t = time.process_time()
     A=pd.read_csv(path_parent+"/data/inputs/df1_solar_"+str(solar_penetration)+"_pen.csv") # Reading file
     my_data = A.loc[(A['min_t'] >= start_date) & (A['min_t'] < end_date)]
     my_data.reset_index(inplace=True, drop=True)
+
+    my_df_updated_metric = df_updated_metric.loc[(df_updated_metric['timeline_original'] >= start_date) & (df_updated_metric['timeline_original'] < end_date)]
+    my_df_updated_metric.reset_index(inplace=True, drop=True)
+    print("my_df column type: ", my_df_updated_metric.timeline_original.dtype, " my_data column type: ", my_data.min_t.dtype)
+    print("my_df shape: ", my_df_updated_metric.shape, "my data shape: ", my_data.shape)
+    print(my_df_updated_metric)
+    print(my_data)
     # temperature_nans = (my_data['temp'].apply(np.isnan)).tolist() # getting a list with index positions of NaNs
     # humidity_nans = (my_data['humidity'].apply(np.isnan)).tolist()
     # apparent_power_nans = (my_data['apparent_power'].apply(np.isnan)).tolist()
@@ -242,11 +260,12 @@ def prepare_input(start_date, end_date, solar_penetration, updated_metric):
 
     ## Commenting out for now
     # Injecting updated temperature
-    # temperature_column =[]
-    # if(len(updated_metric["temperature"])>0):
-    #     for item in updated_metric["temperature"]: temperature_column.append(item[3])
-    #     # print("Temperature was increased ", temperature_column[0])
-    #     my_data['temp'] = temperature_column
+    temperature_column =[]
+    if(len(updated_metric["temperature"])>0): # Read from my_df_updated_metric only if there is an update; else there would be NaN values
+        temperature_column = my_df_updated_metric["updated_temperature"].to_list()
+        #for item in updated_metric["temperature"]: temperature_column.append(item[3])
+        # print("Temperature was increased ", temperature_column[0])
+        my_data['temp'] = temperature_column
     # # Injecting updated humidity
     # humidity_column =[]
     # if(len(updated_metric["humidity"])>0):
@@ -483,7 +502,7 @@ def lstm_func2(latent_gen, sequence_input, pred_train, y_ground, y_prev, solar_p
     #mse = mean_squared_error(Y_test, y_pred)
     elapsed_time_lstm = time.process_time() - t
     #return y_pred, Y_test, mae, mape, crps, pbb, mse, elapsed_time_lstm
-    return y_pred, Y_test, lower_y_pred, higher_y_pred, mae, mape, elapsed_time_lstm
+    return y_pred, Y_test, lower_y_pred, higher_y_pred, elapsed_time_lstm
 
 def generate_comparison_image(y_pred, Y_test, solar_penetration, purpose, start_date, end_date):
     """
@@ -542,6 +561,9 @@ def prepare_output_df(y_pred, Y_test, lower_y_pred, higher_y_pred, timeline, tim
     # net_load_type.extend(["higher"] * higher_y_pred.size)
     # net_load_type.extend(["predicted_old"] * y_pred_old.size)
 
+    mae = mean_absolute_error(Y_test, y_pred)
+    mape = mean_absolute_percentage_error(Y_test, y_pred)
+
     print(len(y_pred), len(Y_test), len(lower_y_pred), len(higher_y_pred), len(timeline), len(timeline_original))
 
     net_load = []
@@ -588,7 +610,7 @@ def prepare_output_df(y_pred, Y_test, lower_y_pred, higher_y_pred, timeline, tim
     temperature_df_safe = temperature_df.to_dict(orient="records")
     humidity_df_safe = humidity_df.to_dict(orient="records")
     apparent_power_df_safe = apparent_power_df.to_dict(orient="records")
-    return net_load_df_safe, temperature_df_safe, humidity_df_safe, apparent_power_df_safe, conf_95_df_safe
+    return net_load_df_safe, temperature_df_safe, humidity_df_safe, apparent_power_df_safe, conf_95_df_safe, mae, mape
 
 def get_time_intervals(start_date, end_date):
     time_intervals = []
@@ -713,21 +735,23 @@ def processor3(start_date="2020-05-01 00:00:00", end_date="2020-05-03 00:00:00",
     # if(len(updated_metric["temperature"])>0): print((updated_metric["temperature"])[0])
     time_intervals = get_time_intervals(validate_start_date(start_date), end_date)
     print("time intervals ", time_intervals)
-    temperature, temperature_original, temperature_nans, temperature_nans_percentage, humidity, humidity_original, humidity_nans, humidity_nans_percentage, apparent_power, apparent_power_original, apparent_power_nans, apparent_power_nans_percentage, elapsed_time_prepare_input, timeline, timeline_original = prepare_general_input(validate_start_date(start_date),end_date, solar_penetration, updated_metric)
+    temperature, temperature_original, temperature_nans, temperature_nans_percentage, humidity, humidity_original, humidity_nans, humidity_nans_percentage, apparent_power, apparent_power_original, apparent_power_nans, apparent_power_nans_percentage, elapsed_time_prepare_input, timeline, timeline_original, df_updated_metric = prepare_general_input(validate_start_date(start_date),end_date, solar_penetration, updated_metric)
+    print("df updated metric ", df_updated_metric)
     y_pred_mega, Y_test_mega, lower_y_pred_mega, higher_y_pred_mega = [], [], [], []
     for time_interval in time_intervals:
-        sequence_input, y_ground, y_prev = prepare_input(time_interval[0], time_interval[1], solar_penetration, updated_metric)
+        sequence_input, y_ground, y_prev = prepare_input(time_interval[0], time_interval[1], solar_penetration, updated_metric, df_updated_metric)
         pred_train, elapsed_time_autoencoder = autoencoder_func(sequence_input, solar_penetration)
         latent_gen, elapsed_time_kpf = kPF_func(pred_train, solar_penetration)
         #y_pred, Y_test, mae, mape, crps, pbb, mse, elapsed_time_lstm = lstm_func(latent_gen, sequence_input, pred_train, y_ground, y_prev)
-        y_pred, Y_test, lower_y_pred, higher_y_pred, mae, mape, elapsed_time_lstm = lstm_func2(latent_gen, sequence_input, pred_train, y_ground, y_prev, solar_penetration)
+        y_pred, Y_test, lower_y_pred, higher_y_pred, elapsed_time_lstm = lstm_func2(latent_gen, sequence_input, pred_train, y_ground, y_prev, solar_penetration)
         y_pred_mega.append(y_pred[0])
         Y_test_mega.append(Y_test[0])
         lower_y_pred_mega.append(lower_y_pred[0])
         higher_y_pred_mega.append(higher_y_pred[0])
     print(y_pred_mega)
     print("Time sent to prepare general input", validate_start_date(start_date),end_date)
-    net_load_df_safe, temperature_df_safe, humidity_df_safe, apparent_power_df_safe, conf_95_df_safe = prepare_output_df(y_pred_mega, Y_test_mega, lower_y_pred_mega, higher_y_pred_mega, timeline, timeline_original, temperature_original, temperature_nans,  humidity, humidity_original, humidity_nans, apparent_power, apparent_power_original, apparent_power_nans)
+    print("df updated metric ", df_updated_metric)
+    net_load_df_safe, temperature_df_safe, humidity_df_safe, apparent_power_df_safe, conf_95_df_safe, mae, mape = prepare_output_df(y_pred_mega, Y_test_mega, lower_y_pred_mega, higher_y_pred_mega, timeline, timeline_original, temperature_original, temperature_nans,  humidity, humidity_original, humidity_nans, apparent_power, apparent_power_original, apparent_power_nans)
     #generate_comparison_image(y_pred, Y_test, solar_penetration, "processor", start_date, end_date)
     elapsed_time_total = time.process_time() - t
     print("MAE: ", mae)

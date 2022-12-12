@@ -711,9 +711,9 @@ def processor3(start_date="2020-05-01 00:00:00", end_date="2020-05-03 00:00:00",
             if(req["metrics_updated"][metric] == 1): updated_metric[metric] = req["updated_metric"][metric]        
     print(start_date, solar_penetration)
     # if(len(updated_metric["temperature"])>0): print((updated_metric["temperature"])[0])
-    time_intervals = get_time_intervals(start_date, end_date)
+    time_intervals = get_time_intervals(validate_start_date(start_date), end_date)
     print("time intervals ", time_intervals)
-    temperature, temperature_original, temperature_nans, temperature_nans_percentage, humidity, humidity_original, humidity_nans, humidity_nans_percentage, apparent_power, apparent_power_original, apparent_power_nans, apparent_power_nans_percentage, elapsed_time_prepare_input, timeline, timeline_original = prepare_general_input(start_date,end_date, solar_penetration, updated_metric)
+    temperature, temperature_original, temperature_nans, temperature_nans_percentage, humidity, humidity_original, humidity_nans, humidity_nans_percentage, apparent_power, apparent_power_original, apparent_power_nans, apparent_power_nans_percentage, elapsed_time_prepare_input, timeline, timeline_original = prepare_general_input(validate_start_date(start_date),end_date, solar_penetration, updated_metric)
     y_pred_mega, Y_test_mega, lower_y_pred_mega, higher_y_pred_mega = [], [], [], []
     for time_interval in time_intervals:
         sequence_input, y_ground, y_prev = prepare_input(time_interval[0], time_interval[1], solar_penetration, updated_metric)
@@ -726,7 +726,7 @@ def processor3(start_date="2020-05-01 00:00:00", end_date="2020-05-03 00:00:00",
         lower_y_pred_mega.append(lower_y_pred[0])
         higher_y_pred_mega.append(higher_y_pred[0])
     print(y_pred_mega)
-    print("Time sent to prepare general input", start_date,end_date)
+    print("Time sent to prepare general input", validate_start_date(start_date),end_date)
     net_load_df_safe, temperature_df_safe, humidity_df_safe, apparent_power_df_safe, conf_95_df_safe = prepare_output_df(y_pred_mega, Y_test_mega, lower_y_pred_mega, higher_y_pred_mega, timeline, timeline_original, temperature_original, temperature_nans,  humidity, humidity_original, humidity_nans, apparent_power, apparent_power_original, apparent_power_nans)
     #generate_comparison_image(y_pred, Y_test, solar_penetration, "processor", start_date, end_date)
     elapsed_time_total = time.process_time() - t

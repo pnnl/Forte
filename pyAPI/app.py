@@ -250,6 +250,8 @@ def prepare_input(start_date, end_date, solar_penetration, updated_metric, df_up
     print("my_df shape: ", my_df_updated_metric.shape, "my data shape: ", my_data.shape)
     print(my_df_updated_metric)
     print(my_data)
+    my_data.set_index('min_t')
+    my_df_updated_metric.set_index('timeline_original')
     # temperature_nans = (my_data['temp'].apply(np.isnan)).tolist() # getting a list with index positions of NaNs
     # humidity_nans = (my_data['humidity'].apply(np.isnan)).tolist()
     # apparent_power_nans = (my_data['apparent_power'].apply(np.isnan)).tolist()
@@ -265,7 +267,9 @@ def prepare_input(start_date, end_date, solar_penetration, updated_metric, df_up
         temperature_column = my_df_updated_metric["updated_temperature"].to_list()
         #for item in updated_metric["temperature"]: temperature_column.append(item[3])
         # print("Temperature was increased ", temperature_column[0])
-        my_data['temp'] = temperature_column
+        my_data2 = my_data
+        my_data.loc[my_df_updated_metric.index, 'temp'] = my_df_updated_metric["updated_temperature"]
+        #my_data['temp'] = temperature_column
     # # Injecting updated humidity
     # humidity_column =[]
     # if(len(updated_metric["humidity"])>0):
@@ -620,6 +624,7 @@ def get_time_intervals(start_date, end_date):
     edited_end_date = received_start_date + timedelta(hours = 12) # increasing time by 15
     while(edited_end_date<received_end_date):
         time_intervals.append([datetime.strftime((edited_start_date - timedelta(hours = 12)), "%Y-%m-%d %H:%M:%S"), datetime.strftime(edited_end_date, "%Y-%m-%d %H:%M:%S")])
+        #time_intervals.append([datetime.strftime((edited_start_date), "%Y-%m-%d %H:%M:%S"), datetime.strftime(edited_end_date, "%Y-%m-%d %H:%M:%S")])
         edited_start_date = edited_start_date + timedelta(hours = 0.25)
         edited_end_date = edited_end_date + timedelta(hours = 0.25)
     return time_intervals

@@ -246,10 +246,10 @@ def prepare_input(start_date, end_date, solar_penetration, updated_metric, df_up
 
     my_df_updated_metric = df_updated_metric.loc[(df_updated_metric['timeline_original'] >= start_date) & (df_updated_metric['timeline_original'] < end_date)]
     my_df_updated_metric.reset_index(inplace=True, drop=True)
-    print("my_df column type: ", my_df_updated_metric.timeline_original.dtype, " my_data column type: ", my_data.min_t.dtype)
-    print("my_df shape: ", my_df_updated_metric.shape, "my data shape: ", my_data.shape)
-    print(my_df_updated_metric)
-    print(my_data)
+    # print("my_df column type: ", my_df_updated_metric.timeline_original.dtype, " my_data column type: ", my_data.min_t.dtype)
+    # print("my_df shape: ", my_df_updated_metric.shape, "my data shape: ", my_data.shape)
+    # print(my_df_updated_metric)
+    # print(my_data)
     my_data.set_index('min_t')
     my_df_updated_metric.set_index('timeline_original')
     # temperature_nans = (my_data['temp'].apply(np.isnan)).tolist() # getting a list with index positions of NaNs
@@ -270,16 +270,18 @@ def prepare_input(start_date, end_date, solar_penetration, updated_metric, df_up
         my_data2 = my_data
         my_data.loc[my_df_updated_metric.index, 'temp'] = my_df_updated_metric["updated_temperature"]
         #my_data['temp'] = temperature_column
-    # # Injecting updated humidity
-    # humidity_column =[]
-    # if(len(updated_metric["humidity"])>0):
-    #     for item in updated_metric["humidity"]: humidity_column.append(item[3])
-    #     my_data['humidity'] = humidity_column
-    # # Injecting updated apparent_power
-    # apparent_power_column =[]
-    # if(len(updated_metric["apparent_power"])>0):
-    #     for item in updated_metric["apparent_power"]: apparent_power_column.append(item[3])
-    #     my_data['apparent_power'] = apparent_power_column            
+    # Injecting updated humidity
+    humidity_column =[]
+    if(len(updated_metric["humidity"])>0):
+        # for item in updated_metric["humidity"]: humidity_column.append(item[3])
+        # my_data['humidity'] = humidity_column
+        my_data.loc[my_df_updated_metric.index, 'humidity'] = my_df_updated_metric["updated_humidity"]
+    # Injecting updated apparent_power
+    apparent_power_column =[]
+    if(len(updated_metric["apparent_power"])>0):
+        # for item in updated_metric["apparent_power"]: apparent_power_column.append(item[3])
+        # my_data['apparent_power'] = apparent_power_column    
+        my_data.loc[my_df_updated_metric.index, 'apparent_power'] = my_df_updated_metric["updated_apparent_power"]        
     my_data = my_data.interpolate(method="linear", axis=0, limit_direction='both') # linear interpolation column by column; both directions so that the first and last columns are not left alone
     #my_data = A
     print("my data ", my_data.shape)

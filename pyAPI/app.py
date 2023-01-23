@@ -146,6 +146,10 @@ loading_message = "#### Models and data loading: Completed in %f seconds or %f m
 print(loading_message)
 app.logger.info(loading_message)
 
+default_response = ""
+# ### Initial Calling of processor for pre-loading ###
+# default_response = processor3()   
+
 ### Pipeline functions and others (non-callable externally) ###
 
 def prepare_general_input(start_date, end_date, solar_penetration, updated_metric):
@@ -722,10 +726,11 @@ def processor(start_date="2020-05-01 00:00:00", end_date="2020-05-03 00:00:00", 
 
 @app.route('/api/v1.3/processor',methods = ['POST', 'GET'])
 @app.route('/api/v@latest/processor',methods = ['POST', 'GET'])
-def processor3(start_date="2020-05-01 00:00:00", end_date="2020-05-03 00:00:00", solar_penetration=50):
+def processor3(start_date="2020-01-03 00:00:00", end_date="2020-01-04 00:00:00", solar_penetration=50):
     t = time.process_time()
     #start_date, end_date, solar_penetration = "2020-05-01 00:00:00", "2020-05-03 00:00:00", 50
     #start_date = validate_start_date(start_date)
+    global default_response
     updated_metric = {}
     metrics = ["temperature", "humidity", "apparent_power"]
     for i in metrics: updated_metric[i] = []
@@ -737,8 +742,17 @@ def processor3(start_date="2020-05-01 00:00:00", end_date="2020-05-03 00:00:00",
         end_date = req["end_date"]
         solar_penetration = req["solar_penetration"]
         for metric in metrics:
-            if(req["metrics_updated"][metric] == 1): updated_metric[metric] = req["updated_metric"][metric]        
+            if(req["metrics_updated"][metric] == 1): updated_metric[metric] = req["updated_metric"][metric] 
+        
+        """ Check if all initial parameters are same"""
+        metrics_updated_dict = req["metrics_updated"]
+        metrics_not_updated = all(value == 0 for value in metrics_updated_dict.values()) # This variable checks if none of the metrics are updated
+        if(start_date == "2020-01-03 00:00:00" and end_date == "2020-01-04 00:00:00" and solar_penetration == 50 and metrics_not_updated):
+            print(" I am in out loop")  
+            print(default_response)  
+            return default_response       
     print(start_date, solar_penetration)
+
     # if(len(updated_metric["temperature"])>0): print((updated_metric["temperature"])[0])
     time_intervals = get_time_intervals(validate_start_date(start_date), end_date)
     print("time intervals ", time_intervals)
@@ -769,6 +783,11 @@ def processor3(start_date="2020-05-01 00:00:00", end_date="2020-05-03 00:00:00",
     response.headers.add('Access-Control-Allow-Origin', '*')
     return response;
 
+@app.route('/api/v@initial/processor',methods = ['POST', 'GET'])
+def processor_initial():
+    global default_response
+    default_response = processor3()
+    return "The program is now initiated"
 @app.route('/api/v1.2x0/processor',methods = ['POST', 'GET'])
 def processor_v1_2x0(start_date="2020-05-01 00:00:00", end_date="2020-05-03 00:00:00", solar_penetration=50):
     t = time.process_time()
@@ -929,3 +948,4 @@ def index():
     response=make_response(jsonify(final_result2), 200) #removed processing
     response.headers.add('Access-Control-Allow-Origin', '*')
     return response;
+ 

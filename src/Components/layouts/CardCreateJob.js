@@ -11,6 +11,7 @@ import Sensitivity from '../charts/Sensitivity';
 import Tooltip from '@mui/material/Tooltip';
 import InputVariables from '../create_jobs/InputVariables';
 import NoiseDirection from '../create_jobs/NoiseDirection';
+import DateSelector from '../create_jobs/DateSelector';
 
 export class  CardOne extends Component {
   //const classes = useStyles();
@@ -35,7 +36,7 @@ return (
     <div>
       <Grid container spacing={3}>
         <Grid item xs={12}><InputVariables></InputVariables></Grid>
-        <Grid item xs={12}>Date</Grid>
+        <Grid item xs={12}><DateSelector></DateSelector></Grid>
         <Grid item xs={12}>Months</Grid>
         <Grid item xs={12}>Noise Level</Grid>
         <Grid item xs={12}><NoiseDirection></NoiseDirection></Grid>

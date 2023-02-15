@@ -19,6 +19,7 @@ class NoiseDirection extends Component {
     constructor(props) {
         super(props)
         console.log();
+        this.handleChange = this.handleChange.bind(this);
     }
     componentDidMount() {
         //this.setState({ temp: 0 });
@@ -26,6 +27,7 @@ class NoiseDirection extends Component {
     componentDidUpdate(prevProps, prevState) {
     }
     handleChange(event){
+        this.props.set_noise_direction_sa(event.target.value)
         console.log(event.target.value)
     }
     render() {
@@ -68,6 +70,7 @@ const maptstateToprop = (state) => {
 const mapdispatchToprop = (dispatch) => {
     return {
         set_blank_placeholder: (val) => dispatch({ type: "blank_placeholder", value: val }),
+        set_noise_direction_sa: (val) => dispatch({ type: "noise_direction_sa", value: val }),
     }
 }
 export default connect(maptstateToprop, mapdispatchToprop)(NoiseDirection);

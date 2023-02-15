@@ -42,6 +42,10 @@ let initialState = {
     freezed_axis:[],
     current_net_load_y_axis: [],
     selected_card_sensitivity_analysis: "create_job",
+    input_variable_sa: "temperature",
+    start_date_sa: "Start Date",
+    end_date_sa: "End Date",
+    noise_direction_sa: "bidirectional",
     animation_duration: 2500,
 }
 
@@ -171,6 +175,18 @@ const reducer = (state = initialState, action) => {
     }  
     if (action.type === "selected_card_sensitivity_analysis") {
         return { ...state, selected_card_sensitivity_analysis: action.value }
+    }
+    if (action.type === "input_variable_sa") {
+        return { ...state, input_variable_sa: action.value }
+    }
+    if (action.type === "start_date_sa") {
+        return { ...state, start_date_sa: action.value }
+    }
+    if (action.type === "end_date_sa") {
+        return { ...state, end_date_sa: action.value }
+    }
+    if (action.type === "noise_direction_sa") {
+        return { ...state, noise_direction_sa: action.value }
     }        
 
     return state;

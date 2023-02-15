@@ -19,6 +19,7 @@ class InputVariables extends Component {
     constructor(props) {
         super(props)
         console.log();
+        this.handleChange = this.handleChange.bind(this);
     }
     componentDidMount() {
         //this.setState({ temp: 0 });
@@ -26,6 +27,7 @@ class InputVariables extends Component {
     componentDidUpdate(prevProps, prevState) {
     }
     handleChange(event){
+        this.props.set_input_variable_sa(event.target.value);
         console.log(event.target.value)
     }
     render() {
@@ -63,11 +65,13 @@ class InputVariables extends Component {
 const maptstateToprop = (state) => {
     return {
         blank_placeholder:state.blank_placeholder,
+        input_variable_sa: state.input_variable_sa,
     }
 }
 const mapdispatchToprop = (dispatch) => {
     return {
         set_blank_placeholder: (val) => dispatch({ type: "blank_placeholder", value: val }),
+        set_input_variable_sa: (val) => dispatch({ type: "input_variable_sa", value: val }),
     }
 }
 export default connect(maptstateToprop, mapdispatchToprop)(InputVariables);

@@ -14,6 +14,7 @@ import NoiseDirection from '../create_jobs/NoiseDirection';
 import DateSelector from '../create_jobs/DateSelector';
 import MonthSelector from '../create_jobs/MonthSelector';
 import NoiseLevelSelector from '../create_jobs/NoiseLevelSelector';
+import NameSelector from '../create_jobs/NameSelector';
 
 export class  CardOne extends Component {
   //const classes = useStyles();
@@ -42,7 +43,7 @@ return (
         <Grid item xs={12}><MonthSelector></MonthSelector></Grid>
         <Grid item xs={12}><NoiseLevelSelector></NoiseLevelSelector></Grid>
         <Grid item xs={12}><NoiseDirection></NoiseDirection></Grid>
-        <Grid item xs={12}>Name</Grid>
+        <Grid item xs={12}><NameSelector></NameSelector></Grid>
         <Grid item xs={12}>Description</Grid>
       </Grid>
     </div>

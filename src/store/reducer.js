@@ -49,6 +49,8 @@ let initialState = {
     noise_direction_sa: "bidirectional",
     noise_level_sa: "None",
     number_of_observations_sa: "None",
+    name_sa: "",
+    description_sa: "",
     animation_duration: 2500,
 }
 
@@ -199,6 +201,12 @@ const reducer = (state = initialState, action) => {
     }
     if (action.type === "number_of_observations_sa") {
         return { ...state, number_of_observations_sa: action.value }
+    }
+    if (action.type === "name_sa") {
+        return { ...state, name_sa: action.value }
+    }
+    if (action.type === "description_sa") {
+        return { ...state, description_sa: action.value }
     }        
 
     return state;

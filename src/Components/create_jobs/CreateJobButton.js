@@ -8,6 +8,8 @@ import _ from 'lodash';
 import Grid from '@mui/material/Grid';
 import { fontSize, fontWeight } from '@mui/system';
 import Button from '@mui/material/Button';
+import Chip from '@mui/material/Chip';
+// import AccessAlarmIcon from '@mui/icons-material/AccessAlarm';
 
 
 
@@ -33,8 +35,17 @@ class CreateJobButton extends Component {
         <Grid container>
             <Grid item xs={2} style={{fontWeight:620, fontSize:"1.5em"}}> </Grid>
             <Grid item xs={10} style={{fontSize:"1.5em"}}>
-                <Grid container spacing={0}>
-                <Button variant="contained" size="large">Create Job</Button>
+                <Grid container spacing={2}>
+                    <Grid item>
+                        <Button variant="contained" size="large">Create Job</Button>
+                    </Grid>
+                    <Grid item>
+                        <Chip 
+                        // icon={<AccessAlarmIcon />}
+                        label="Estimated Time" />
+                    </Grid>
+                
+                
                     
                 </Grid>
             

@@ -41,6 +41,7 @@ let initialState = {
     mape_values:[],
     freezed_axis:[],
     current_net_load_y_axis: [],
+    selected_card_sensitivity_analysis: "create_job",
     animation_duration: 2500,
 }
 
@@ -167,6 +168,9 @@ const reducer = (state = initialState, action) => {
     } 
     if (action.type === "animation_duration") {
         return { ...state, animation_duration: action.value }
+    }  
+    if (action.type === "selected_card_sensitivity_analysis") {
+        return { ...state, selected_card_sensitivity_analysis: action.value }
     }        
 
     return state;

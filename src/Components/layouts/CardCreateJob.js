@@ -9,6 +9,8 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import Button from '@mui/material/Button';
 import Sensitivity from '../charts/Sensitivity';
 import Tooltip from '@mui/material/Tooltip';
+import InputVariables from '../create_jobs/InputVariables';
+import NoiseDirection from '../create_jobs/NoiseDirection';
 
 export class  CardOne extends Component {
   //const classes = useStyles();
@@ -31,8 +33,14 @@ render(){
 //const { selected_list } = this.state;  
 return (
     <div>
-      <Grid container>
-        <Grid item xs={12}>Line 1</Grid>
+      <Grid container spacing={3}>
+        <Grid item xs={12}><InputVariables></InputVariables></Grid>
+        <Grid item xs={12}>Date</Grid>
+        <Grid item xs={12}>Months</Grid>
+        <Grid item xs={12}>Noise Level</Grid>
+        <Grid item xs={12}><NoiseDirection></NoiseDirection></Grid>
+        <Grid item xs={12}>Name</Grid>
+        <Grid item xs={12}>Description</Grid>
       </Grid>
     </div>
     

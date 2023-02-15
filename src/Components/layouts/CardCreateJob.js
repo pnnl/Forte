@@ -39,6 +39,9 @@ render(){
 //const { selected_list } = this.state;  
 return (
     <div>
+       <Card>
+      {/*<Card.Header>Create sensitivity analysis jobs based on different parameters</Card.Header>
+      <Card.Body> */}
       <Grid container spacing={3}>
         <Grid item xs={12}><InputVariables></InputVariables></Grid>
         <Grid item xs={12}><DateSelector></DateSelector></Grid>
@@ -49,6 +52,8 @@ return (
         <Grid item xs={12}><DescriptionSelector></DescriptionSelector></Grid>
         <Grid item xs={12}><CreateJobButton></CreateJobButton></Grid>
       </Grid>
+      {/* </Card.Body>   */}
+      </Card>
     </div>
     
   );

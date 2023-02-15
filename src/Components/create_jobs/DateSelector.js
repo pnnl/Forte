@@ -38,7 +38,6 @@ class DateSelector extends Component {
         // css design is in App.css
         var dates_array = [...Array(29).keys()];
         dates_array.shift();
-        console.log(dates_array);
         return <div>
         <Grid container>
             <Grid item xs={2} style={{fontWeight:800, fontSize:"1.5em"}}>Dates:</Grid>

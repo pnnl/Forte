@@ -45,6 +45,7 @@ let initialState = {
     input_variable_sa: "temperature",
     start_date_sa: "Start Date",
     end_date_sa: "End Date",
+    months_sa: [],
     noise_direction_sa: "bidirectional",
     animation_duration: 2500,
 }
@@ -184,6 +185,9 @@ const reducer = (state = initialState, action) => {
     }
     if (action.type === "end_date_sa") {
         return { ...state, end_date_sa: action.value }
+    }
+    if (action.type === "months_sa") {
+        return { ...state, months_sa: action.value }
     }
     if (action.type === "noise_direction_sa") {
         return { ...state, noise_direction_sa: action.value }

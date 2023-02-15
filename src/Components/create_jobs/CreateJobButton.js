@@ -17,16 +17,31 @@ class CreateJobButton extends Component {
     constructor(props) {
         super(props)
         console.log();
-        this.handleChangeName = this.handleChangeName.bind(this);
+        this.calculateJobTime = this.calculateJobTime.bind(this);
     }
     componentDidMount() {
         //this.setState({ temp: 0 });
     }
     componentDidUpdate(prevProps, prevState) {
     }
-    handleChangeName(event){
-        this.props.set_name_sa(event.target.value)
-        console.log(event.target.value)
+
+    secondsToHms(d) {
+        d = Number(d);
+        var h = Math.floor(d / 3600);
+        var m = Math.floor(d % 3600 / 60);
+        var s = Math.floor(d % 3600 % 60);
+    
+        var hDisplay = h > 0 ? h + (h === 1 ? " hour, " : " hours, ") : "";
+        var mDisplay = m > 0 ? m + (m === 1 ? " minute, " : " minutes, ") : "";
+        var sDisplay = s > 0 ? s + (s === 1 ? " second" : " seconds") : "";
+        return hDisplay + mDisplay + sDisplay; 
+    }
+    calculateJobTime(){
+        var number_of_dates = this.props.end_date_sa - this.props.start_date_sa +1
+        var job_time = 90*this.props.number_of_observations_sa*this.props.noise_level_sa*number_of_dates*(this.props.months_sa).length;
+        //var job_time = 90;
+        var formatted_time = this.secondsToHms(job_time)
+        return formatted_time;
     }
    
     render() {
@@ -42,7 +57,7 @@ class CreateJobButton extends Component {
                     <Grid item>
                         <Chip 
                         // icon={<AccessAlarmIcon />}
-                        label="Estimated Time" />
+                        label={"Estimated Time: "+this.calculateJobTime()} />
                     </Grid>
                 
                 
@@ -59,7 +74,12 @@ class CreateJobButton extends Component {
 const maptstateToprop = (state) => {
     return {
         blank_placeholder:state.blank_placeholder,
-        name_sa: state.name_sa,
+        number_of_observations_sa: state.number_of_observations_sa,
+        noise_level_sa: state.noise_level_sa,
+        start_date_sa: state.start_date_sa,
+        end_date_sa: state.end_date_sa,
+        months_sa: state.months_sa,
+
     }
 }
 const mapdispatchToprop = (dispatch) => {

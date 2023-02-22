@@ -650,9 +650,9 @@ def sa_processor():
 
     """Uniform noise increase only"""
     mae_values, mape_values, mae_values_temp_all, mape_values_temp_all = [], [], [], []
-    for el in np.arange(0.0, 5, 1):
+    for el in np.arange(0.0, noise_level_sa+1, 1):
         mae_values_temp, mape_values_temp = [], []
-        for em in range(0,5):
+        for em in range(0,number_of_observations_sa):
         #print("Started for ", el)
             formatted_array_mini = [x[3] for x in formatted_array]
             updated_temperature = calculate_uniform_noise_increase(formatted_array_mini, el)

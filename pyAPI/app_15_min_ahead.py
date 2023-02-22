@@ -637,7 +637,11 @@ def sa_processor():
     print("My Printing")
     print(metrics_updated, updated_metric)    
     print(calculate_uniform_noise_increase([1,3,5], 5))
-    print(calculate_uniform_noise_decrease([1,3,5], 5))     
+    print(calculate_uniform_noise_decrease([1,3,5], 5))  
+    noise_function = ""
+    if(noise_direction_sa == "bidirectional"): noise_function = calculate_uniform_noise
+    elif(noise_direction_sa == "positive_direction"): noise_function = calculate_uniform_noise_increase 
+    else: noise_function = calculate_uniform_noise_decrease 
     
     """Initial Call"""
     payload = {"start_date": start_date, "end_date": end_date, "solar_penetration": solar_penetration, "metrics_updated":metrics_updated, "updated_metric":updated_metric}
@@ -655,7 +659,7 @@ def sa_processor():
         for em in range(0,number_of_observations_sa):
         #print("Started for ", el)
             formatted_array_mini = [x[3] for x in formatted_array]
-            updated_temperature = calculate_uniform_noise_increase(formatted_array_mini, el)
+            updated_temperature = noise_function(formatted_array_mini, el)
             #print(formatted_array_mini[0], updated_temperature[0])
             updated_temperature2=[]
             for i in range(0,len(formatted_array)): updated_temperature2.append([formatted_array[i][0], formatted_array[i][1], formatted_array[i][2], updated_temperature[i]])
@@ -704,7 +708,7 @@ def sa_processor():
     plt.scatter(xpoints_scatter, ypoints_scatter, alpha=0.3)
     #plt.plot(y_pred, label="pred")
     plt.legend(loc="upper right")
-    plt.title("Sensitivity analysis by adding uniform noise (unidrectionally positive) in temperature (February)")
+    plt.title("Sensitivity analysis by adding uniform noise (direction:"+noise_direction_sa+") in temperature (February)")
     #plt.xlabel("Temperature bias (°F)")
     plt.xlabel("Noise(%)")
     plt.ylabel("MAE (kW)")

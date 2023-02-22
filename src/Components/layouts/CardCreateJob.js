@@ -39,7 +39,7 @@ render(){
 //const { selected_list } = this.state;  
 return (
     <div>
-       <Card>
+       <Card style={{ border: "none", boxShadow: "none", marginLeft:5 }}>
       {/*<Card.Header>Create sensitivity analysis jobs based on different parameters</Card.Header>
       <Card.Body> */}
       <Grid container spacing={3}>

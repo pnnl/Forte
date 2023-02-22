@@ -9,6 +9,7 @@ import Grid from '@mui/material/Grid';
 import { fontSize, fontWeight } from '@mui/system';
 import Button from '@mui/material/Button';
 import Chip from '@mui/material/Chip';
+import * as jsonCall from "../../Algorithms/JSONCall";
 // import AccessAlarmIcon from '@mui/icons-material/AccessAlarm';
 
 
@@ -18,6 +19,7 @@ class CreateJobButton extends Component {
         super(props)
         console.log();
         this.calculateJobTime = this.calculateJobTime.bind(this);
+        this.handleClick = this.handleClick.bind(this);
     }
     componentDidMount() {
         //this.setState({ temp: 0 });
@@ -43,6 +45,20 @@ class CreateJobButton extends Component {
         var formatted_time = this.secondsToHms(job_time)
         return formatted_time;
     }
+
+    handleClick(){
+        jsonCall.download(this.props.url + "/api/v@latest/sa_processor", {
+            input_variable_sa: this.props.input_variable_sa, 
+            start_date_sa: this.props.start_date_sa,
+            end_date_sa: this.props.end_date_sa,
+            months_sa: this.props.months_sa,
+            noise_level_sa: this.props.noise_level_sa,
+            number_of_observations_sa: this.props.number_of_observations_sa,
+            noise_direction_sa: this.props.noise_direction_sa,
+        }).then(res =>{
+            console.log(res);
+        })
+    }
    
     render() {
         // css design is in App.css
@@ -52,7 +68,7 @@ class CreateJobButton extends Component {
             <Grid item xs={10} style={{fontSize:"1.5em"}}>
                 <Grid container spacing={2}>
                     <Grid item>
-                        <Button variant="contained" size="large">Create Job</Button>
+                        <Button variant="contained" size="large" onClick={this.handleClick}>Create Job</Button>
                     </Grid>
                     <Grid item>
                         <Chip 
@@ -74,11 +90,14 @@ class CreateJobButton extends Component {
 const maptstateToprop = (state) => {
     return {
         blank_placeholder:state.blank_placeholder,
+        url: state.url,
         number_of_observations_sa: state.number_of_observations_sa,
         noise_level_sa: state.noise_level_sa,
         start_date_sa: state.start_date_sa,
         end_date_sa: state.end_date_sa,
         months_sa: state.months_sa,
+        input_variable_sa: state.input_variable_sa,
+        noise_direction_sa: state.noise_direction_sa,
 
     }
 }

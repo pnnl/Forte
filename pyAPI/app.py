@@ -1,7 +1,7 @@
 from cmath import nan
 from tracemalloc import start
 from flask import Flask, render_template, Response, g, redirect, url_for, request,jsonify, make_response
-import time, os, re
+import time, os, re, random
 import pandas as pd
 import numpy as np
 from flask_cors import CORS
@@ -634,6 +634,34 @@ def get_time_intervals(start_date, end_date):
         edited_start_date = edited_start_date + timedelta(hours = 0.25)
         edited_end_date = edited_end_date + timedelta(hours = 0.25)
     return time_intervals
+
+def calculate_constant_bias_absolute(arr,noise):
+    noisy_arr = list(map(lambda el: el+noise, arr))
+    return noisy_arr
+
+def getRandomArbitrary(min, max):
+      return random.random() * (max - min) + min
+
+def calculate_uniform_noise(arr,noise):
+    lower_number = 1-(noise/100) 
+    upper_number = 1+(noise/100) 
+    noisy_arr = [getRandomArbitrary(lower_number*el, upper_number*el) for el in arr]
+    return noisy_arr
+def calculate_uniform_noise_increase(arr,noise):
+    lower_number = 1-(noise/100) 
+    upper_number = 1+(noise/100) 
+    noisy_arr = [getRandomArbitrary(el, upper_number*el) for el in arr]
+    return noisy_arr
+def calculate_uniform_noise_decrease(arr,noise):
+    lower_number = 1-(noise/100) 
+    upper_number = 1+(noise/100) 
+    noisy_arr = [getRandomArbitrary(lower_number*el, el) for el in arr]
+    return noisy_arr
+def convert_to_Array_of_Arrays(input, the_metric):
+    output = []
+    for obj in input:
+        output.append([obj["dummy"], obj["timeline"], obj["wasNan"], obj[the_metric]])
+    return output
 ### Callable functions ###
 # deprecated
 @app.route('/api/v1/processor',methods = ['POST', 'GET'])
@@ -856,6 +884,115 @@ def processor_v1_2x1(start_date="2020-05-01 00:00:00", end_date="2020-05-03 00:0
     response.headers.add('Access-Control-Allow-Origin', '*')
     return response;
 
+
+@app.route('/api/v1.3/sa_processor',methods = ['POST', 'GET'])
+@app.route('/api/v@latest/sa_processor',methods = ['POST', 'GET'])
+def sa_processor():
+    input_variable_sa, start_date_sa, end_date_sa, months_sa, noise_level_sa, number_of_observations_sa, noise_direction_sa = "", 2, 4, [], 0, 0, ""
+    if(request.is_json):
+        req = request.get_json()
+        print("Reading JSON")
+        input_variable_sa = req["input_variable_sa"]
+        start_date_sa = req["start_date_sa"]
+        end_date_sa = req["end_date_sa"]
+        months_sa = req["months_sa"]
+        noise_level_sa = req["noise_level_sa"]
+        number_of_observations_sa = req["number_of_observations_sa"]
+        noise_direction_sa = req["noise_direction_sa"]
+    print(input_variable_sa, start_date_sa, end_date_sa, months_sa, noise_level_sa, number_of_observations_sa, noise_direction_sa) 
+
+    """Setting variables"""
+    url_base = "http://localhost:5000"
+    api_url = url_base + "/api/v1.2x0/processor"
+    api_url_new = url_base + "/api/v@latest/processor"
+    api_url2 = url_base + "/api/v1.2x1/processor"
+    main_dir=os.getcwd()
+    start_date="2020-02-03 00:00:00" #February
+    end_date="2020-02-05 00:00:00"
+    solar_penetration=50
+    metrics_updated = {}
+    updated_metric = {"temperature":[], "humidity":[], "apparent_power":[]}
+    metrics = ["temperature", "humidity", "apparent_power"]
+    for em in metrics:
+        metrics_updated[em] = 0
+    print(metrics_updated, updated_metric)         
+    
+    """Initial Call"""
+    payload = {"start_date": start_date, "end_date": end_date, "solar_penetration": solar_penetration, "metrics_updated":metrics_updated, "updated_metric":updated_metric}
+    headers =  {"Content-Type":"application/json"}
+    response = requests.post(api_url, data=json.dumps(payload), headers=headers)
+    initial_output = response.json()
+    y_pred_ground_truth = initial_output["predicted_net_load"]
+    temperature_df = initial_output["temperature_df"]
+    formatted_array = convert_to_Array_of_Arrays(temperature_df, "temperature")
+
+    """Uniform noise increase only"""
+    mae_values, mape_values, mae_values_temp_all, mape_values_temp_all = [], [], [], []
+    for el in np.arange(0.0, 5, 1):
+        mae_values_temp, mape_values_temp = [], []
+        for em in range(0,5):
+        #print("Started for ", el)
+            formatted_array_mini = [x[3] for x in formatted_array]
+            updated_temperature = calculate_uniform_noise_increase(formatted_array_mini, el)
+            #print(formatted_array_mini[0], updated_temperature[0])
+            updated_temperature2=[]
+            for i in range(0,len(formatted_array)): updated_temperature2.append([formatted_array[i][0], formatted_array[i][1], formatted_array[i][2], updated_temperature[i]])
+            #print(updated_temperature2[0])
+            updated_metric["temperature"] = updated_temperature2
+            metrics_updated["temperature"] = 1
+            #print(updated_metric["temperature"][0], metrics_updated["temperature"])
+            payload = {"start_date": start_date, "end_date": end_date, "solar_penetration": solar_penetration, "metrics_updated":metrics_updated, "updated_metric":updated_metric, "y_pred_ground_truth": y_pred_ground_truth}
+            headers =  {"Content-Type":"application/json"}
+            response = requests.post(api_url2, data=json.dumps(payload), headers=headers)
+            res = response.json()
+            mae_values_temp.append(res["7. MAE"])
+            mape_values_temp.append(res["8. MAPE"])
+            mae_values_temp_all.append([el, res["7. MAE"]])
+            mape_values_temp_all.append([el, res["8. MAPE"]])
+        #mae_values.append([el, res["7. MAE"]])
+        #mape_values.append([el, res["8. MAPE"]])
+        mae_values.append([el, np.mean(mae_values_temp)])
+        mape_values.append([el, np.mean(mape_values_temp)])
+        print("Ended for ", el)
+
+        """
+        Saving the results
+        """
+        df_mae = pd.DataFrame(mae_values, columns=["Noise_Percentage", "Mean_MAE"])
+        print(main_dir)
+        df_mae.to_csv(main_dir+"/outputs/sensitivity_analysis/temperature/uniform_noise/february/mae_positive.csv", sep=',',index=False)
+        df_mae_all = pd.DataFrame(mae_values_temp_all, columns=["Noise_Percentage", "MAE"])
+        df_mae_all.to_csv(main_dir+"/outputs/sensitivity_analysis/temperature/uniform_noise/february/mae_positive_all.csv", sep=',',index=False)
+
+        df_mape = pd.DataFrame(mape_values, columns=["Noise_Percentage", "Mean_MAPE"])
+        df_mape.to_csv(main_dir+"/outputs/sensitivity_analysis/temperature/uniform_noise/february/mape_positive.csv", sep=',',index=False)
+        df_mape_all = pd.DataFrame(mape_values_temp_all, columns=["Noise_Percentage", "MAPE"])
+        df_mape_all.to_csv(main_dir+"/outputs/sensitivity_analysis/temperature/uniform_noise/february/mape_positive_all.csv", sep=',',index=False)
+        
+        """
+        Output
+        """
+        plt.rcParams["figure.figsize"] = (30,10)
+        plt.rcParams.update({'font.size': 18})
+        xpoints = [x[0] for x in mae_values]
+        ypoints = [x[1] for x in mae_values]
+        plt.plot(xpoints, ypoints, label="MAE")
+        xpoints_scatter = [x[0] for x in mae_values_temp_all]
+        ypoints_scatter = [x[1] for x in mae_values_temp_all]
+        plt.scatter(xpoints_scatter, ypoints_scatter, alpha=0.3)
+        #plt.plot(y_pred, label="pred")
+        plt.legend(loc="upper right")
+        plt.title("Sensitivity analysis by adding uniform noise (unidrectionally positive) in temperature (February)")
+        #plt.xlabel("Temperature bias (°F)")
+        plt.xlabel("Noise(%)")
+        plt.ylabel("MAE (kW)")
+        plt.savefig(main_dir+"/outputs/sensitivity_analysis/temperature/uniform_noise/february/mae_positive.png", facecolor='w')
+        plt.rcParams["figure.figsize"] = plt.rcParamsDefault["figure.figsize"]
+
+        final_result = {"message": "This endpoint is not ready yet"}
+        response=make_response(jsonify(final_result), 200) #removed processing
+        response.headers.add('Access-Control-Allow-Origin', '*')
+        return response;
 
 @app.route('/api/v1/stability_check', methods = ['POST', 'GET'])
 def stability_check():

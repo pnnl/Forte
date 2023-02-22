@@ -1,7 +1,7 @@
 from cmath import nan
 from tracemalloc import start
 from flask import Flask, render_template, Response, g, redirect, url_for, request,jsonify, make_response
-import time, os, re, random
+import time, os, re, random, calendar
 import pandas as pd
 import numpy as np
 from flask_cors import CORS
@@ -626,8 +626,15 @@ def sa_processor():
     api_url = url_base + "/api/v1.2x0/processor"
     api_url2 = url_base + "/api/v1.2x1/processor"
     main_dir=os.getcwd()
-    start_date="2020-02-03 00:00:00" #February
-    end_date="2020-02-05 00:00:00"
+    month_string = list(calendar.month_name).index(months_sa[0])
+    if(month_string/10<1): month_string = "0"+str(month_string) # Adding padding to month
+    else: month_string = str(month_string)
+    if(start_date_sa/10<1): start_date_sa = "0"+str(start_date_sa)
+    if(end_date_sa/10<1): end_date_sa = "0"+str(end_date_sa)
+    edited_start_date = "2020-"+month_string+"-"+str(start_date_sa)+" 00:00:00"
+    edited_end_date = "2020-"+month_string+"-"+str(end_date_sa)+" 00:00:00"
+    start_date= edited_start_date #"2020-02-03 00:00:00" #February
+    end_date=edited_end_date #"2020-02-05 00:00:00"
     solar_penetration=50
     metrics_updated = {}
     updated_metric = {"temperature":[], "humidity":[], "apparent_power":[]}
@@ -635,7 +642,7 @@ def sa_processor():
     for em in metrics:
         metrics_updated[em] = 0
     print("My Printing")
-    print(metrics_updated, updated_metric)    
+    print(metrics_updated, updated_metric, edited_start_date, edited_end_date)    
     print(calculate_uniform_noise_increase([1,3,5], 5))
     print(calculate_uniform_noise_decrease([1,3,5], 5))  
     noise_function = ""

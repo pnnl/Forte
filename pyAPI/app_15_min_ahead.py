@@ -656,23 +656,23 @@ def sa_processor():
     response = requests.post(api_url, data=json.dumps(payload), headers=headers)
     initial_output = response.json()
     y_pred_ground_truth = initial_output["predicted_net_load"]
-    temperature_df = initial_output["temperature_df"]
-    formatted_array = convert_to_Array_of_Arrays(temperature_df, "temperature")
+    metric_variable_df = initial_output[input_variable_sa+"_df"]
+    formatted_array = convert_to_Array_of_Arrays(metric_variable_df, input_variable_sa)
 
-    """Uniform noise increase only"""
+    """Main call"""
     mae_values, mape_values, mae_values_temp_all, mape_values_temp_all = [], [], [], []
     for el in np.arange(0.0, noise_level_sa+1, 1):
         mae_values_temp, mape_values_temp = [], []
         for em in range(0,number_of_observations_sa):
         #print("Started for ", el)
             formatted_array_mini = [x[3] for x in formatted_array]
-            updated_temperature = noise_function(formatted_array_mini, el)
+            updated_metric_variable = noise_function(formatted_array_mini, el)
             #print(formatted_array_mini[0], updated_temperature[0])
-            updated_temperature2=[]
-            for i in range(0,len(formatted_array)): updated_temperature2.append([formatted_array[i][0], formatted_array[i][1], formatted_array[i][2], updated_temperature[i]])
+            updated_metric_variable2=[]
+            for i in range(0,len(formatted_array)): updated_metric_variable2.append([formatted_array[i][0], formatted_array[i][1], formatted_array[i][2], updated_metric_variable[i]])
             #print(updated_temperature2[0])
-            updated_metric["temperature"] = updated_temperature2
-            metrics_updated["temperature"] = 1
+            updated_metric[input_variable_sa] = updated_metric_variable2
+            metrics_updated[input_variable_sa] = 1
             #print(updated_metric["temperature"][0], metrics_updated["temperature"])
             payload = {"start_date": start_date, "end_date": end_date, "solar_penetration": solar_penetration, "metrics_updated":metrics_updated, "updated_metric":updated_metric, "y_pred_ground_truth": y_pred_ground_truth}
             headers =  {"Content-Type":"application/json"}
@@ -715,7 +715,7 @@ def sa_processor():
     plt.scatter(xpoints_scatter, ypoints_scatter, alpha=0.3)
     #plt.plot(y_pred, label="pred")
     plt.legend(loc="upper right")
-    plt.title("Sensitivity analysis by adding uniform noise (direction:"+noise_direction_sa+") in temperature (February)")
+    plt.title("Sensitivity analysis by adding uniform noise (direction:"+noise_direction_sa+") in "+input_variable_sa+" (February)")
     #plt.xlabel("Temperature bias (°F)")
     plt.xlabel("Noise(%)")
     plt.ylabel("MAE (kW)")

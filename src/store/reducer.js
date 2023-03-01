@@ -51,6 +51,8 @@ let initialState = {
     number_of_observations_sa: "None",
     name_sa: "",
     description_sa: "",
+    created_jobs_name_sa: [],
+    selected_job_name_sa: "sample1",
     animation_duration: 2500,
 }
 
@@ -207,6 +209,12 @@ const reducer = (state = initialState, action) => {
     }
     if (action.type === "description_sa") {
         return { ...state, description_sa: action.value }
+    }
+    if (action.type === "created_jobs_name_sa") {
+        return { ...state, created_jobs_name_sa: action.value }
+    }
+    if (action.type === "selected_job_name_sa") {
+        return { ...state, selected_job_name_sa: action.value }
     }        
 
     return state;

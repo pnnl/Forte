@@ -47,6 +47,9 @@ class CreateJobButton extends Component {
     }
 
     handleClick(){
+        var created_jobs = [...this.props.created_jobs_name_sa];
+        created_jobs.push(this.props.name_sa);
+        this.props.set_created_jobs_name_sa(created_jobs);
         jsonCall.download(this.props.url + "/api/v@latest/sa_processor", {
             input_variable_sa: this.props.input_variable_sa, 
             start_date_sa: this.props.start_date_sa,
@@ -55,6 +58,7 @@ class CreateJobButton extends Component {
             noise_level_sa: this.props.noise_level_sa,
             number_of_observations_sa: this.props.number_of_observations_sa,
             noise_direction_sa: this.props.noise_direction_sa,
+            name_sa: this.props.name_sa,
         }).then(res =>{
             console.log(res);
         })
@@ -98,6 +102,8 @@ const maptstateToprop = (state) => {
         months_sa: state.months_sa,
         input_variable_sa: state.input_variable_sa,
         noise_direction_sa: state.noise_direction_sa,
+        name_sa: state.name_sa,
+        created_jobs_name_sa: state.created_jobs_name_sa,
 
     }
 }
@@ -105,6 +111,7 @@ const mapdispatchToprop = (dispatch) => {
     return {
         set_blank_placeholder: (val) => dispatch({ type: "blank_placeholder", value: val }),
         set_name_sa: (val) => dispatch({ type: "name_sa", value: val }),
+        set_created_jobs_name_sa: (val) => dispatch({ type: "created_jobs_name_sa", value: val }),
     }
 }
 export default connect(maptstateToprop, mapdispatchToprop)(CreateJobButton);

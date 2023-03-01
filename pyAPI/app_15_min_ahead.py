@@ -20,10 +20,13 @@ from sklearn.metrics import mean_absolute_error, mean_squared_error, mean_absolu
 import properscoring as ps
 import matplotlib.pyplot as plt
 from datetime import datetime, timedelta
+from apiflask import APIFlask, Schema, abort
+from apiflask.fields import Integer, String, List
+from apiflask.validators import Length, OneOf, Range
 
 pd.options.mode.chained_assignment = None  # default='warn'
 
-app = Flask(__name__)
+app = APIFlask(__name__)
 CORS(app)
 logging.basicConfig(filename='pyAPI/logs/flask.log',level=logging.DEBUG,format='%(asctime)s %(levelname)s %(name)s %(threadName)s : %(message)s') #https://www.scalyr.com/blog/getting-started-quickly-with-flask-logging/
 path_parent = os.getcwd()
@@ -619,6 +622,7 @@ def sa_processor():
         noise_level_sa = req["noise_level_sa"]
         number_of_observations_sa = req["number_of_observations_sa"]
         noise_direction_sa = req["noise_direction_sa"]
+        name_sa = req["name_sa"]
     print(input_variable_sa, start_date_sa, end_date_sa, months_sa, noise_level_sa, number_of_observations_sa, noise_direction_sa) 
 
     """Setting variables"""
@@ -693,14 +697,16 @@ def sa_processor():
     """
     df_mae = pd.DataFrame(mae_values, columns=["Noise_Percentage", "Mean_MAE"])
     print(main_dir)
-    df_mae.to_csv(main_dir+"/outputs/sensitivity_analysis/temperature/uniform_noise/february/mae_positive.csv", sep=',',index=False)
+    df_mae.to_csv(main_dir+"/src/outputs/sensitivity_analysis/temperature/uniform_noise/february/mae_positive.csv", sep=',',index=False)
+    df_mae.to_csv(main_dir+"/src/outputs/sensitivity_analysis/temperature/uniform_noise/february/mae_positive_"+name_sa+".csv", sep=',',index=False)
     df_mae_all = pd.DataFrame(mae_values_temp_all, columns=["Noise_Percentage", "MAE"])
-    df_mae_all.to_csv(main_dir+"/outputs/sensitivity_analysis/temperature/uniform_noise/february/mae_positive_all.csv", sep=',',index=False)
+    df_mae_all.to_csv(main_dir+"/src/outputs/sensitivity_analysis/temperature/uniform_noise/february/mae_positive_all.csv", sep=',',index=False)
+    df_mae_all.to_csv(main_dir+"/src/outputs/sensitivity_analysis/temperature/uniform_noise/february/mae_positive_all_"+name_sa+".csv", sep=',',index=False)
 
     df_mape = pd.DataFrame(mape_values, columns=["Noise_Percentage", "Mean_MAPE"])
-    df_mape.to_csv(main_dir+"/outputs/sensitivity_analysis/temperature/uniform_noise/february/mape_positive.csv", sep=',',index=False)
+    df_mape.to_csv(main_dir+"/src/outputs/sensitivity_analysis/temperature/uniform_noise/february/mape_positive.csv", sep=',',index=False)
     df_mape_all = pd.DataFrame(mape_values_temp_all, columns=["Noise_Percentage", "MAPE"])
-    df_mape_all.to_csv(main_dir+"/outputs/sensitivity_analysis/temperature/uniform_noise/february/mape_positive_all.csv", sep=',',index=False)
+    df_mape_all.to_csv(main_dir+"/src/outputs/sensitivity_analysis/temperature/uniform_noise/february/mape_positive_all.csv", sep=',',index=False)
     
     """
     Output
@@ -719,7 +725,7 @@ def sa_processor():
     #plt.xlabel("Temperature bias (°F)")
     plt.xlabel("Noise(%)")
     plt.ylabel("MAE (kW)")
-    plt.savefig(main_dir+"/outputs/sensitivity_analysis/temperature/uniform_noise/february/mae_positive.png", facecolor='w')
+    plt.savefig(main_dir+"/src/outputs/sensitivity_analysis/temperature/uniform_noise/february/mae_positive.png", facecolor='w')
     plt.rcParams["figure.figsize"] = plt.rcParamsDefault["figure.figsize"]
 
     final_result = {"message": "This endpoint is not ready yet"}

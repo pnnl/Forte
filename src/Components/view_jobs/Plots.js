@@ -39,13 +39,14 @@ class Plots extends Component {
         height = 600 - margin.top - margin.bottom;
 
         // append the svg object to the body of the page
-        var svg = d3.select("#my_dataviz_svg")
+        var svg1 = d3.select("#my_dataviz_svg")
         //.append("svg")
         .attr("width", width + margin.left + margin.right)
         .attr("height", height + margin.top + margin.bottom)
         // var svg1 = svg.select(".g_initial").data([0]).join("g")
         // .attr("class", "g_initial")
-        .append("g")
+        var svg = svg1.selectAll(".g_initial").data([0]).join("g").attr("class", "g_initial")
+        //.append("g")
         .attr("transform", `translate(${margin.left},${margin.top})`);
         
 
@@ -65,7 +66,8 @@ function(data) {
   
   const xAxisTicks = x.ticks()
     .filter(tick => Number.isInteger(tick));  
-  svg.append("g")
+  //svg.append("g")
+  svg.selectAll(".g_x").data([0]).join("g").attr("class", "g_x")
     .attr("transform", `translate(0, ${height})`)
     .call(d3.axisBottom(x).tickValues(xAxisTicks).tickFormat(d=> d+"%"));
 
@@ -73,11 +75,13 @@ function(data) {
   const y = d3.scaleLinear()
     .domain([0, d3.max(data, function(d) { return +d.Mean_MAE; })])
     .range([ height, 0 ]);
-  svg.append("g")
+  svg.selectAll(".g_y").data([0]).join("g").attr("class", "g_y")
+    //svg.append("g")
     .call(d3.axisLeft(y));
 
   // Add the line
-  svg.append("path")
+  //svg.append("path")
+  svg.selectAll(".paths").data([0]).join("path").attr("class", "paths")
     .datum(data)
     .attr("fill", "none")
     .attr("stroke", "steelblue")
@@ -89,11 +93,13 @@ function(data) {
 
     d3.csv(path2).then(
         function(data2){
-            svg.append('g')
-                .selectAll("dot")
-                .data(data2)
-                .enter()
-                .append("circle")
+          var g_dots = svg.selectAll(".g_dots").data([0]).join("g").attr("class", "g_dots")
+            //svg.append('g')
+            g_dots.selectAll(".observation_dots").data(data2).join("circle").attr("class", "observation_dots")
+                // .selectAll("dot")
+                // .data(data2)
+                // .enter()
+                // .append("circle")
                 .attr("cx", function (d) { return x(d.Noise_Percentage); } )
                 .attr("cy", function (d) { return y(d.MAE); } )
                 .attr("r", 2.5)

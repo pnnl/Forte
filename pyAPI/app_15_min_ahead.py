@@ -697,36 +697,41 @@ def sa_processor():
     """
     df_mae = pd.DataFrame(mae_values, columns=["Noise_Percentage", "Mean_MAE"])
     print(main_dir)
-    df_mae.to_csv(main_dir+"/src/outputs/sensitivity_analysis/temperature/uniform_noise/february/mae_positive.csv", sep=',',index=False)
-    df_mae.to_csv(main_dir+"/src/outputs/sensitivity_analysis/temperature/uniform_noise/february/mae_positive_"+name_sa+".csv", sep=',',index=False)
+    job_path = main_dir+"/pyAPI/outputs/jobs/"+name_sa
+    if not os.path.exists(job_path):
+        os.makedirs(job_path)
+    #df_mae.to_csv(main_dir+"/src/outputs/sensitivity_analysis/temperature/uniform_noise/february/mae_positive.csv", sep=',',index=False)
+    df_mae.to_csv(main_dir+"/pyAPI/outputs/jobs/"+name_sa+"/mae.csv", sep=',',index=False)
     df_mae_all = pd.DataFrame(mae_values_temp_all, columns=["Noise_Percentage", "MAE"])
-    df_mae_all.to_csv(main_dir+"/src/outputs/sensitivity_analysis/temperature/uniform_noise/february/mae_positive_all.csv", sep=',',index=False)
-    df_mae_all.to_csv(main_dir+"/src/outputs/sensitivity_analysis/temperature/uniform_noise/february/mae_positive_all_"+name_sa+".csv", sep=',',index=False)
+    #df_mae_all.to_csv(main_dir+"/src/outputs/sensitivity_analysis/temperature/uniform_noise/february/mae_positive_all.csv", sep=',',index=False)
+    df_mae_all.to_csv(main_dir+"/pyAPI/outputs/jobs/"+name_sa+"/mae_all.csv", sep=',',index=False)
 
     df_mape = pd.DataFrame(mape_values, columns=["Noise_Percentage", "Mean_MAPE"])
-    df_mape.to_csv(main_dir+"/src/outputs/sensitivity_analysis/temperature/uniform_noise/february/mape_positive.csv", sep=',',index=False)
+    #df_mape.to_csv(main_dir+"/src/outputs/sensitivity_analysis/temperature/uniform_noise/february/mape_positive.csv", sep=',',index=False)
+    df_mape.to_csv(main_dir+"/pyAPI/outputs/jobs/"+name_sa+"/mape.csv", sep=',',index=False)
     df_mape_all = pd.DataFrame(mape_values_temp_all, columns=["Noise_Percentage", "MAPE"])
-    df_mape_all.to_csv(main_dir+"/src/outputs/sensitivity_analysis/temperature/uniform_noise/february/mape_positive_all.csv", sep=',',index=False)
+    #df_mape_all.to_csv(main_dir+"/src/outputs/sensitivity_analysis/temperature/uniform_noise/february/mape_positive_all.csv", sep=',',index=False)
+    df_mape_all.to_csv(main_dir+"/pyAPI/outputs/jobs/"+name_sa+"/mape_all.csv", sep=',',index=False)
     
     """
     Output
     """
-    plt.rcParams["figure.figsize"] = (30,10)
-    plt.rcParams.update({'font.size': 18})
-    xpoints = [x[0] for x in mae_values]
-    ypoints = [x[1] for x in mae_values]
-    plt.plot(xpoints, ypoints, label="MAE")
-    xpoints_scatter = [x[0] for x in mae_values_temp_all]
-    ypoints_scatter = [x[1] for x in mae_values_temp_all]
-    plt.scatter(xpoints_scatter, ypoints_scatter, alpha=0.3)
-    #plt.plot(y_pred, label="pred")
-    plt.legend(loc="upper right")
-    plt.title("Sensitivity analysis by adding uniform noise (direction:"+noise_direction_sa+") in "+input_variable_sa+" (February)")
-    #plt.xlabel("Temperature bias (°F)")
-    plt.xlabel("Noise(%)")
-    plt.ylabel("MAE (kW)")
-    plt.savefig(main_dir+"/src/outputs/sensitivity_analysis/temperature/uniform_noise/february/mae_positive.png", facecolor='w')
-    plt.rcParams["figure.figsize"] = plt.rcParamsDefault["figure.figsize"]
+    # plt.rcParams["figure.figsize"] = (30,10)
+    # plt.rcParams.update({'font.size': 18})
+    # xpoints = [x[0] for x in mae_values]
+    # ypoints = [x[1] for x in mae_values]
+    # plt.plot(xpoints, ypoints, label="MAE")
+    # xpoints_scatter = [x[0] for x in mae_values_temp_all]
+    # ypoints_scatter = [x[1] for x in mae_values_temp_all]
+    # plt.scatter(xpoints_scatter, ypoints_scatter, alpha=0.3)
+    # #plt.plot(y_pred, label="pred")
+    # plt.legend(loc="upper right")
+    # plt.title("Sensitivity analysis by adding uniform noise (direction:"+noise_direction_sa+") in "+input_variable_sa+" (February)")
+    # #plt.xlabel("Temperature bias (°F)")
+    # plt.xlabel("Noise(%)")
+    # plt.ylabel("MAE (kW)")
+    # plt.savefig(main_dir+"/src/outputs/sensitivity_analysis/temperature/uniform_noise/february/mae_positive.png", facecolor='w')
+    # plt.rcParams["figure.figsize"] = plt.rcParamsDefault["figure.figsize"]
 
     final_result = {"message": "This endpoint is not ready yet"}
     response=make_response(jsonify(final_result), 200) #removed processing
@@ -814,9 +819,11 @@ def metrics_check():
     df.to_csv(path_parent+"/metrics.csv", index=False)             
     return "Output saved at metrics.csv"
 
-@app.route('/reports/<path:path>')
+@app.route('/outputs/jobs/<path:path>')
 def send_report(path):
-    return send_from_directory('reports', path)
+    """Returns the file at the specified path"""
+    print(path)
+    return send_from_directory('outputs/jobs', path)
 @app.errorhandler(404)
 def handle_404(e):
     # handle all other routes here

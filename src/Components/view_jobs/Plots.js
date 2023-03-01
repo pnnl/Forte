@@ -30,6 +30,8 @@ class Plots extends Component {
     }
 
     plot_output(selected_job_name_sa, url){
+        var path1 = url+"/outputs/jobs/"+selected_job_name_sa+"/mae.csv"
+        var path2 = url+"/outputs/jobs/"+selected_job_name_sa+"/mae_all.csv"
         // set the dimensions and margins of the graph
         var margin = {top: 10, right: 30, bottom: 30, left: 60},
         width = 760 - margin.left - margin.right,
@@ -47,7 +49,7 @@ class Plots extends Component {
         
 
         //Read the data
-d3.csv(url+"/reports/mae_positive.csv").then(
+d3.csv(path1).then(
 
 // Now I can use this dataset:
 function(data) {
@@ -79,7 +81,7 @@ function(data) {
       .y(function(d) { return y(d.Mean_MAE) })
       )
 
-    d3.csv(mycsv2).then(
+    d3.csv(path2).then(
         function(data2){
             svg.append('g')
                 .selectAll("dot")

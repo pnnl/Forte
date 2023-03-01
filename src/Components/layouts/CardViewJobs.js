@@ -6,14 +6,11 @@ import { Card, CardGroup} from 'react-bootstrap';
 import Grid from '@mui/material/Grid';
 import * as $ from "jquery";
 import 'bootstrap/dist/css/bootstrap.min.css';
-import Button from '@mui/material/Button';
-import Sensitivity from '../charts/Sensitivity';
-import Tooltip from '@mui/material/Tooltip';
-import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
 import ShowJob from '../view_jobs/ShowJob';
+import * as jsonCall from "../../Algorithms/JSONCall";
 
 
 export class  CardOne extends Component {
@@ -33,6 +30,11 @@ shouldComponentUpdate(nextProps, nextState){
 handleTabChange(event, value){
   console.log(value);
   this.props.set_selected_job_name_sa(value);
+  jsonCall.download(this.props.url + "/check_job/jobs/"+value, {
+}).then(res =>{
+    console.log(res["message"]);
+    this.props.set_is_job_ready_sa(res["message"])
+})
 }
 
 
@@ -72,6 +74,7 @@ const maptstateToprop = (state) => {
   return {
       blank_placeholder: state.blank_placeholder,
       isLoadingUpdate: state.isLoadingUpdate,
+      url: state.url,
       net_load_df: state.net_load_df,
       enable_seasons_choice: state.enable_seasons_choice,
       mae_values: state.mae_values,
@@ -83,6 +86,7 @@ const mapdispatchToprop = (dispatch) => {
   return {
       set_blank_placeholder: (val) => dispatch({ type: "blank_placeholder", value: val }),
       set_selected_job_name_sa: (val) => dispatch({ type: "selected_job_name_sa", value: val }),
+      set_is_job_ready_sa: (val) => dispatch({ type: "is_job_ready_sa", value: val }),
   }
 }
 

@@ -824,6 +824,17 @@ def send_report(path):
     """Returns the file at the specified path"""
     print(path)
     return send_from_directory('outputs/jobs', path)
+@app.route('/check_job/jobs/<path:path>', methods = ['POST', 'GET'])
+def check_if_job_exists(path):
+    """Returns if a specified folder is present or not"""
+    print(path)
+    main_dir=os.getcwd()
+    path_to_check = main_dir+"/pyAPI/outputs/jobs/"+path
+    present = os.path.isdir(path_to_check)
+    final_result = {"message": present}
+    response=make_response(jsonify(final_result), 200) #removed processing
+    response.headers.add('Access-Control-Allow-Origin', '*')
+    return response; 
 @app.errorhandler(404)
 def handle_404(e):
     # handle all other routes here

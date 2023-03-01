@@ -24,6 +24,7 @@ class Plots extends Component {
     }
     componentDidMount() {
         //this.setState({ temp: 0 });
+        this.plot_output(this.props.selected_job_name_sa, this.props.url)
     }
     componentDidUpdate(prevProps, prevState) {
         this.plot_output(this.props.selected_job_name_sa, this.props.url)

@@ -25,7 +25,16 @@ class ShowJob extends Component {
 
         return <div>
         <Grid container>
-            <Grid item><Plots></Plots></Grid>
+            <Grid item>{
+                (this.props.is_job_ready_sa)?<Plots></Plots>:
+                <Grid container direction="row" alignItems="center" height="95vh">
+                    <Grid item>
+                        <Grid container direction="column" alignItems="center" width="75vw">
+                            <Grid item><h3>This job is not ready yet</h3></Grid>
+                        </Grid>
+                    </Grid>
+                </Grid>
+                }</Grid>
         </Grid>
       </div>
        
@@ -36,6 +45,7 @@ const maptstateToprop = (state) => {
     return {
         blank_placeholder:state.blank_placeholder,
         selected_job_name_sa: state.selected_job_name_sa,
+        is_job_ready_sa: state.is_job_ready_sa,
     }
 }
 const mapdispatchToprop = (dispatch) => {

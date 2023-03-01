@@ -34,15 +34,17 @@ class Plots extends Component {
         var path1 = url+"/outputs/jobs/"+selected_job_name_sa+"/mae.csv"
         var path2 = url+"/outputs/jobs/"+selected_job_name_sa+"/mae_all.csv"
         // set the dimensions and margins of the graph
-        var margin = {top: 10, right: 30, bottom: 30, left: 60},
+        var margin = {top: 20, right: 30, bottom: 30, left: 60},
         width = 760 - margin.left - margin.right,
         height = 600 - margin.top - margin.bottom;
 
         // append the svg object to the body of the page
-        const svg = d3.select("#my_dataviz_svg")
+        var svg = d3.select("#my_dataviz_svg")
         //.append("svg")
         .attr("width", width + margin.left + margin.right)
         .attr("height", height + margin.top + margin.bottom)
+        // var svg1 = svg.select(".g_initial").data([0]).join("g")
+        // .attr("class", "g_initial")
         .append("g")
         .attr("transform", `translate(${margin.left},${margin.top})`);
         
@@ -59,10 +61,13 @@ function(data) {
   // Add X axis --> it is a date format
   const x = d3.scaleLinear()
     .domain([0, d3.max(data, function(d) { return +d.Noise_Percentage; })])
-    .range([ 0, width ]);
+    .range([ 0, width ]); 
+  
+  const xAxisTicks = x.ticks()
+    .filter(tick => Number.isInteger(tick));  
   svg.append("g")
     .attr("transform", `translate(0, ${height})`)
-    .call(d3.axisBottom(x));
+    .call(d3.axisBottom(x).tickValues(xAxisTicks).tickFormat(d=> d+"%"));
 
   // Add Y axis
   const y = d3.scaleLinear()

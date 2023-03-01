@@ -5,9 +5,15 @@ import { connect } from "react-redux";
 import * as $ from "jquery";
 import * as d3 from "d3";
 import _ from 'lodash';
-//import * as fs from "fs";
+//import fs from "fs";
+//import * as fs from 'node:fs';
+//import * as fs from 'node:fs/promises';
+import { promises as fs } from "fs";
 import mycsv1 from '../../outputs/sensitivity_analysis/temperature/uniform_noise/february/mae_positive.csv'
 import mycsv2 from '../../outputs/sensitivity_analysis/temperature/uniform_noise/february/mae_positive_all.csv'
+
+
+
 
 
 
@@ -20,10 +26,10 @@ class Plots extends Component {
         //this.setState({ temp: 0 });
     }
     componentDidUpdate(prevProps, prevState) {
-        this.plot_output(this.props.selected_job_name_sa)
+        this.plot_output(this.props.selected_job_name_sa, this.props.url)
     }
 
-    plot_output(selected_job_name_sa){
+    plot_output(selected_job_name_sa, url){
         // set the dimensions and margins of the graph
         var margin = {top: 10, right: 30, bottom: 30, left: 60},
         width = 760 - margin.left - margin.right,
@@ -36,15 +42,16 @@ class Plots extends Component {
         .attr("height", height + margin.top + margin.bottom)
         .append("g")
         .attr("transform", `translate(${margin.left},${margin.top})`);
+        
 
-        // var csv = fs.readFileSync('../../outputs/sensitivity_analysis/temperature/uniform_noise/february/mae_positive.csv', "utf8");
-        // var data =d3.csvParse(csv);
+        
 
         //Read the data
-d3.csv(mycsv1).then(
+d3.csv(url+"/reports/mae_positive.csv").then(
 
 // Now I can use this dataset:
 function(data) {
+  //console.log(data1);
 
   // Add X axis --> it is a date format
   const x = d3.scaleLinear()
@@ -106,6 +113,7 @@ const maptstateToprop = (state) => {
     return {
         blank_placeholder:state.blank_placeholder,
         selected_job_name_sa: state.selected_job_name_sa,
+        url: state.url,
     }
 }
 const mapdispatchToprop = (dispatch) => {

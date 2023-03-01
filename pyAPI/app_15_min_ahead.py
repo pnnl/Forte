@@ -1,6 +1,6 @@
 from cmath import nan
 from tracemalloc import start
-from flask import Flask, render_template, Response, g, redirect, url_for, request,jsonify, make_response
+from flask import Flask, render_template, Response, g, redirect, url_for, request,jsonify, make_response, send_from_directory
 import time, os, re, random, calendar
 import pandas as pd
 import numpy as np
@@ -813,6 +813,10 @@ def metrics_check():
     df = pd.DataFrame(d)
     df.to_csv(path_parent+"/metrics.csv", index=False)             
     return "Output saved at metrics.csv"
+
+@app.route('/reports/<path:path>')
+def send_report(path):
+    return send_from_directory('reports', path)
 @app.errorhandler(404)
 def handle_404(e):
     # handle all other routes here

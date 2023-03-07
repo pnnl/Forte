@@ -51,12 +51,7 @@ class Plots extends Component {
         .attr("transform", `translate(${margin.left},${margin.top})`);
 
         //svg.append("text")
-        svg.selectAll(".title_text").data([0]).join("text").attr("class", "title_text")
-        .attr("x", (width / 2))             
-        .attr("y", 0 - (margin.top / 2))
-        .attr("text-anchor", "middle")  
-        .style("font-size", "16px")  
-        .text("Sensitivity Analysis");
+        
         
 
         
@@ -67,6 +62,19 @@ d3.csv(path1).then(
 // Now I can use this dataset:
 function(data) {
   //console.log(data1);
+  var the_title = "Sensitivity Analysis"
+  d3.text(url+"/outputs/jobs/"+selected_job_name_sa+"/title.txt").then(function(data1){
+    the_title = data1; 
+    console.log(the_title);
+    svg.selectAll(".title_text").data([0]).join("text").attr("class", "title_text")
+        .attr("x", (width / 2))             
+        .attr("y", 0 - (margin.top / 2))
+        .attr("text-anchor", "middle")  
+        .style("font-size", "16px")  
+        .text(the_title);
+  
+  })
+  
 
   // Add X axis --> it is a date format
   const x = d3.scaleLinear()

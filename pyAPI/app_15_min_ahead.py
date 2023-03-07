@@ -712,6 +712,13 @@ def sa_processor():
     df_mape_all = pd.DataFrame(mape_values_temp_all, columns=["Noise_Percentage", "MAPE"])
     #df_mape_all.to_csv(main_dir+"/src/outputs/sensitivity_analysis/temperature/uniform_noise/february/mape_positive_all.csv", sep=',',index=False)
     df_mape_all.to_csv(main_dir+"/pyAPI/outputs/jobs/"+name_sa+"/mape_all.csv", sep=',',index=False)
+
+    """
+    Creating title
+    """
+    the_title = "Sensitivity analysis by adding uniform noise(direction: "+noise_direction_sa+") in "+input_variable_sa+" ("+months_sa[0]+")"
+    with open(main_dir+"/pyAPI/outputs/jobs/"+name_sa+"/title.txt", 'w') as f:
+        f.write(the_title)
     
     """
     Output

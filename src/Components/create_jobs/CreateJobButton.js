@@ -50,6 +50,9 @@ class CreateJobButton extends Component {
         var created_jobs = [...this.props.created_jobs_name_sa];
         created_jobs.push(this.props.name_sa);
         this.props.set_created_jobs_name_sa(created_jobs);
+        // this.props.set_selected_card_sensitivity_analysis(key)
+        // this.props.set_selected_card_sensitivity_analysis("view_jobs");
+        alert("Your job has been queued. Please check \"View Jobs\" tab when the job is ready to view")
         jsonCall.download(this.props.url + "/api/v@latest/sa_processor", {
             input_variable_sa: this.props.input_variable_sa, 
             start_date_sa: this.props.start_date_sa,
@@ -112,6 +115,7 @@ const mapdispatchToprop = (dispatch) => {
         set_blank_placeholder: (val) => dispatch({ type: "blank_placeholder", value: val }),
         set_name_sa: (val) => dispatch({ type: "name_sa", value: val }),
         set_created_jobs_name_sa: (val) => dispatch({ type: "created_jobs_name_sa", value: val }),
+        set_selected_card_sensitivity_analysis: (val) => dispatch({ type: "selected_card_sensitivity_analysis", value: val }),
     }
 }
 export default connect(maptstateToprop, mapdispatchToprop)(CreateJobButton);

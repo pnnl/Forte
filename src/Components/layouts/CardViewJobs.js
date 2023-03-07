@@ -21,7 +21,13 @@ export class  CardOne extends Component {
     this.handleTabChange = this.handleTabChange.bind(this);
   
 }
-componentDidMount() {}
+componentDidMount() {
+  jsonCall.download(this.props.url + "/check_job/all_jobs", {
+  }).then(res =>{
+      console.log(res["message"]);
+      this.props.set_created_jobs_name_sa(res["message"])
+  })
+}
 componentDidUpdate() {}
 shouldComponentUpdate(nextProps, nextState){
     return true
@@ -87,6 +93,7 @@ const mapdispatchToprop = (dispatch) => {
       set_blank_placeholder: (val) => dispatch({ type: "blank_placeholder", value: val }),
       set_selected_job_name_sa: (val) => dispatch({ type: "selected_job_name_sa", value: val }),
       set_is_job_ready_sa: (val) => dispatch({ type: "is_job_ready_sa", value: val }),
+      set_created_jobs_name_sa: (val) => dispatch({ type: "created_jobs_name_sa", value: val }),
   }
 }
 

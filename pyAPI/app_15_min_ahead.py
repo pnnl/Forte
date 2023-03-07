@@ -842,6 +842,18 @@ def check_if_job_exists(path):
     response=make_response(jsonify(final_result), 200) #removed processing
     response.headers.add('Access-Control-Allow-Origin', '*')
     return response; 
+
+@app.route('/check_job/all_jobs', methods = ['POST', 'GET'])
+def return_job_list():
+    """Returns all jobs"""
+    main_dir=os.getcwd()
+    path_to_check = main_dir+"/pyAPI/outputs/jobs/"
+    all_jobs = os.listdir(path_to_check)
+    final_result = {"message": all_jobs}
+    response=make_response(jsonify(final_result), 200) #removed processing
+    response.headers.add('Access-Control-Allow-Origin', '*')
+    return response; 
+
 @app.errorhandler(404)
 def handle_404(e):
     # handle all other routes here

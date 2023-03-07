@@ -54,6 +54,7 @@ let initialState = {
     created_jobs_name_sa: [],
     selected_job_name_sa: "sample1",
     is_job_ready_sa: false,
+    the_title_sa: "Sensitivity Analysis",
     animation_duration: 2500,
 }
 
@@ -219,6 +220,9 @@ const reducer = (state = initialState, action) => {
     }  
     if (action.type === "is_job_ready_sa") {
         return { ...state, is_job_ready_sa: action.value }
+    } 
+    if (action.type === "the_title_sa") {
+        return { ...state, the_title_sa: action.value }
     }        
 
     return state;

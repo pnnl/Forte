@@ -29,7 +29,7 @@ class ShowJob extends Component {
                 (this.props.is_job_ready_sa)?<Plots></Plots>:
                 <Grid container direction="row" alignItems="center" height="95vh">
                     <Grid item>
-                        <Grid container direction="column" alignItems="center" width="75vw">
+                        <Grid container direction="column" alignItems="center" width="80vw">
                             <Grid item><h3>This job is not ready yet</h3></Grid>
                         </Grid>
                     </Grid>

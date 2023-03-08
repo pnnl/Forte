@@ -223,7 +223,8 @@ const reducer = (state = initialState, action) => {
     } 
     if (action.type === "the_title_sa") {
         return { ...state, the_title_sa: action.value }
-    }        
+    }
+           
 
     return state;
 }

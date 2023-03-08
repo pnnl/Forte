@@ -630,15 +630,23 @@ def sa_processor():
     api_url = url_base + "/api/v1.2x0/processor"
     api_url2 = url_base + "/api/v1.2x1/processor"
     main_dir=os.getcwd()
-    month_string = list(calendar.month_name).index(months_sa[0])
-    if(month_string/10<1): month_string = "0"+str(month_string) # Adding padding to month
-    else: month_string = str(month_string)
-    if(start_date_sa/10<1): start_date_sa = "0"+str(start_date_sa)
-    if(end_date_sa/10<1): end_date_sa = "0"+str(end_date_sa)
-    edited_start_date = "2020-"+month_string+"-"+str(start_date_sa)+" 00:00:00"
-    edited_end_date = "2020-"+month_string+"-"+str(end_date_sa)+" 00:00:00"
-    start_date= edited_start_date #"2020-02-03 00:00:00" #February
-    end_date=edited_end_date #"2020-02-05 00:00:00"
+    # Setting months
+    start_date_list, end_date_list = [], []
+    start_date_sa_copy, end_date_sa_copy = start_date_sa, end_date_sa
+    for each_month in months_sa:
+        month_string = list(calendar.month_name).index(each_month)
+        if(month_string/10<1): month_string = "0"+str(month_string) # Adding padding to month
+        else: month_string = str(month_string)
+        if(start_date_sa_copy/10<1): start_date_sa = "0"+str(start_date_sa_copy)
+        if(end_date_sa_copy/10<1): end_date_sa = "0"+str(end_date_sa_copy)
+        edited_start_date = "2020-"+month_string+"-"+str(start_date_sa)+" 00:00:00"
+        edited_end_date = "2020-"+month_string+"-"+str(end_date_sa)+" 00:00:00"
+        start_date_list.append(edited_start_date)
+        end_date_list.append(edited_end_date)
+        start_date= edited_start_date #"2020-02-03 00:00:00" #February
+        end_date=edited_end_date #"2020-02-05 00:00:00"
+    print(start_date_list, end_date_list)    
+
     solar_penetration=50
     metrics_updated = {}
     updated_metric = {"temperature":[], "humidity":[], "apparent_power":[]}
@@ -654,62 +662,66 @@ def sa_processor():
     elif(noise_direction_sa == "positive_direction"): noise_function = calculate_uniform_noise_increase 
     else: noise_function = calculate_uniform_noise_decrease 
     
-    """Initial Call"""
-    payload = {"start_date": start_date, "end_date": end_date, "solar_penetration": solar_penetration, "metrics_updated":metrics_updated, "updated_metric":updated_metric}
-    headers =  {"Content-Type":"application/json"}
-    response = requests.post(api_url, data=json.dumps(payload), headers=headers)
-    initial_output = response.json()
-    y_pred_ground_truth = initial_output["predicted_net_load"]
-    metric_variable_df = initial_output[input_variable_sa+"_df"]
-    formatted_array = convert_to_Array_of_Arrays(metric_variable_df, input_variable_sa)
-
-    """Main call"""
     mae_values, mape_values, mae_values_temp_all, mape_values_temp_all = [], [], [], []
-    for el in np.arange(0.0, noise_level_sa+1, 1):
-        mae_values_temp, mape_values_temp = [], []
-        for em in range(0,number_of_observations_sa):
-        #print("Started for ", el)
-            formatted_array_mini = [x[3] for x in formatted_array]
-            updated_metric_variable = noise_function(formatted_array_mini, el)
-            #print(formatted_array_mini[0], updated_temperature[0])
-            updated_metric_variable2=[]
-            for i in range(0,len(formatted_array)): updated_metric_variable2.append([formatted_array[i][0], formatted_array[i][1], formatted_array[i][2], updated_metric_variable[i]])
-            #print(updated_temperature2[0])
-            updated_metric[input_variable_sa] = updated_metric_variable2
-            metrics_updated[input_variable_sa] = 1
-            #print(updated_metric["temperature"][0], metrics_updated["temperature"])
-            payload = {"start_date": start_date, "end_date": end_date, "solar_penetration": solar_penetration, "metrics_updated":metrics_updated, "updated_metric":updated_metric, "y_pred_ground_truth": y_pred_ground_truth}
-            headers =  {"Content-Type":"application/json"}
-            response = requests.post(api_url2, data=json.dumps(payload), headers=headers)
-            res = response.json()
-            mae_values_temp.append(res["7. MAE"])
-            mape_values_temp.append(res["8. MAPE"])
-            mae_values_temp_all.append([el, res["7. MAE"]])
-            mape_values_temp_all.append([el, res["8. MAPE"]])
-        #mae_values.append([el, res["7. MAE"]])
-        #mape_values.append([el, res["8. MAPE"]])
-        mae_values.append([el, np.mean(mae_values_temp)])
-        mape_values.append([el, np.mean(mape_values_temp)])
-        print("Ended for ", el)
+    for month_index, month in enumerate(months_sa):
+        start_date = start_date_list[month_index]
+        end_date = end_date_list[month_index]
+        """Initial Call"""
+        payload = {"start_date": start_date, "end_date": end_date, "solar_penetration": solar_penetration, "metrics_updated":metrics_updated, "updated_metric":updated_metric}
+        headers =  {"Content-Type":"application/json"}
+        response = requests.post(api_url, data=json.dumps(payload), headers=headers)
+        initial_output = response.json()
+        y_pred_ground_truth = initial_output["predicted_net_load"]
+        metric_variable_df = initial_output[input_variable_sa+"_df"]
+        formatted_array = convert_to_Array_of_Arrays(metric_variable_df, input_variable_sa)
+
+        """Main call"""
+       
+        for el in np.arange(0.0, noise_level_sa+1, 1):
+            mae_values_temp, mape_values_temp = [], []
+            for em in range(0,number_of_observations_sa):
+            #print("Started for ", el)
+                formatted_array_mini = [x[3] for x in formatted_array]
+                updated_metric_variable = noise_function(formatted_array_mini, el)
+                #print(formatted_array_mini[0], updated_temperature[0])
+                updated_metric_variable2=[]
+                for i in range(0,len(formatted_array)): updated_metric_variable2.append([formatted_array[i][0], formatted_array[i][1], formatted_array[i][2], updated_metric_variable[i]])
+                #print(updated_temperature2[0])
+                updated_metric[input_variable_sa] = updated_metric_variable2
+                metrics_updated[input_variable_sa] = 1
+                #print(updated_metric["temperature"][0], metrics_updated["temperature"])
+                payload = {"start_date": start_date, "end_date": end_date, "solar_penetration": solar_penetration, "metrics_updated":metrics_updated, "updated_metric":updated_metric, "y_pred_ground_truth": y_pred_ground_truth}
+                headers =  {"Content-Type":"application/json"}
+                response = requests.post(api_url2, data=json.dumps(payload), headers=headers)
+                res = response.json()
+                mae_values_temp.append(res["7. MAE"])
+                mape_values_temp.append(res["8. MAPE"])
+                mae_values_temp_all.append([el, res["7. MAE"], month])
+                mape_values_temp_all.append([el, res["8. MAPE"], month])
+            #mae_values.append([el, res["7. MAE"]])
+            #mape_values.append([el, res["8. MAPE"]])
+            mae_values.append([el, np.mean(mae_values_temp), month])
+            mape_values.append([el, np.mean(mape_values_temp), month])
+            print("Ended for ", el)
 
     """
     Saving the results
     """
-    df_mae = pd.DataFrame(mae_values, columns=["Noise_Percentage", "Mean_MAE"])
+    df_mae = pd.DataFrame(mae_values, columns=["Noise_Percentage", "Mean_MAE", "Month"])
     print(main_dir)
     job_path = main_dir+"/pyAPI/outputs/jobs/"+name_sa
     if not os.path.exists(job_path):
         os.makedirs(job_path)
     #df_mae.to_csv(main_dir+"/src/outputs/sensitivity_analysis/temperature/uniform_noise/february/mae_positive.csv", sep=',',index=False)
     df_mae.to_csv(main_dir+"/pyAPI/outputs/jobs/"+name_sa+"/mae.csv", sep=',',index=False)
-    df_mae_all = pd.DataFrame(mae_values_temp_all, columns=["Noise_Percentage", "MAE"])
+    df_mae_all = pd.DataFrame(mae_values_temp_all, columns=["Noise_Percentage", "MAE", "Month"])
     #df_mae_all.to_csv(main_dir+"/src/outputs/sensitivity_analysis/temperature/uniform_noise/february/mae_positive_all.csv", sep=',',index=False)
     df_mae_all.to_csv(main_dir+"/pyAPI/outputs/jobs/"+name_sa+"/mae_all.csv", sep=',',index=False)
 
-    df_mape = pd.DataFrame(mape_values, columns=["Noise_Percentage", "Mean_MAPE"])
+    df_mape = pd.DataFrame(mape_values, columns=["Noise_Percentage", "Mean_MAPE", "Month"])
     #df_mape.to_csv(main_dir+"/src/outputs/sensitivity_analysis/temperature/uniform_noise/february/mape_positive.csv", sep=',',index=False)
     df_mape.to_csv(main_dir+"/pyAPI/outputs/jobs/"+name_sa+"/mape.csv", sep=',',index=False)
-    df_mape_all = pd.DataFrame(mape_values_temp_all, columns=["Noise_Percentage", "MAPE"])
+    df_mape_all = pd.DataFrame(mape_values_temp_all, columns=["Noise_Percentage", "MAPE", "Month"])
     #df_mape_all.to_csv(main_dir+"/src/outputs/sensitivity_analysis/temperature/uniform_noise/february/mape_positive_all.csv", sep=',',index=False)
     df_mape_all.to_csv(main_dir+"/pyAPI/outputs/jobs/"+name_sa+"/mape_all.csv", sep=',',index=False)
 

@@ -728,7 +728,8 @@ def sa_processor():
     """
     Creating title
     """
-    the_title = "Sensitivity analysis by adding uniform noise(direction: "+noise_direction_sa+") in "+input_variable_sa+" ("+months_sa[0]+")"
+    title_month_string = ", ".join(months_sa)
+    the_title = "Sensitivity analysis by adding uniform noise(direction: "+noise_direction_sa+") in "+input_variable_sa+" ("+title_month_string+")"
     with open(main_dir+"/pyAPI/outputs/jobs/"+name_sa+"/title.txt", 'w') as f:
         f.write(the_title)
     

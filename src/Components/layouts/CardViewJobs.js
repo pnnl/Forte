@@ -63,7 +63,7 @@ return (
         sx={{ borderRight: 1, borderColor: 'divider' }}
       >
         {(this.props.created_jobs_name_sa).map(d=><Tab label={d} title={d} key={d} value={d}  />)}
-        <Tab label="Sample Job 1" title="Item One" value={"sample1"}  />
+        {/* <Tab label="Sample Job 1" title="Item One" value={"sample1"}  /> */}
         <Tab label="Sample Job 2" title="Item Two" value={"sample2"} />
         
       </Tabs>

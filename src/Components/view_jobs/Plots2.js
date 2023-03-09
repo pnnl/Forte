@@ -28,12 +28,14 @@ class Plots extends Component {
         this.plot_output_mae_multi(this.props.selected_job_name_sa, this.props.url, this.props.set_months_present_sa)
         this.plot_output_mape_multi(this.props.selected_job_name_sa, this.props.url)
         this.plotLegend(this.props.selected_job_name_sa, this.props.url)
+        this.plot_output_monthly(this.props.selected_job_name_sa, this.props.url)
     }
     componentDidUpdate(prevProps, prevState) {
         this.getTitle();
         this.plot_output_mae_multi(this.props.selected_job_name_sa, this.props.url, this.props.set_months_present_sa)
         this.plot_output_mape_multi(this.props.selected_job_name_sa, this.props.url)
         this.plotLegend(this.props.selected_job_name_sa, this.props.url)
+        this.plot_output_monthly(this.props.selected_job_name_sa, this.props.url)
     }
 
     getTitle(){
@@ -313,6 +315,133 @@ svg.selectAll(".paths").data(sumstat).join("path").attr("class", "paths")
 
     }
 
+    plot_output_monthly(selected_job_name_sa, url){
+      var path1 = url+"/outputs/jobs/"+selected_job_name_sa+"/mae.csv"
+      var path2 = url+"/outputs/jobs/"+selected_job_name_sa+"/mae_all.csv"
+      var path3 = url+"/outputs/jobs/"+selected_job_name_sa+"/mape.csv"
+      var path4 = url+"/outputs/jobs/"+selected_job_name_sa+"/mape_all.csv"
+      // set the dimensions and margins of the graph
+      var parent_width = $(".plots_container_parent").width()
+      var parent_height = $(".plots_container_parent").height()
+      console.log(parent_width, parent_height)
+      var margin = {top: 40, right: 30, bottom: 45, left: 60},
+      width = parent_width - margin.left - margin.right,
+      height = parent_height - margin.top - margin.bottom;
+
+      // append the svg object to the body of the page
+      var svg1 = d3.select("#my_dataviz_svg_monthly")
+      //.append("svg")
+      .attr("width", width + margin.left + margin.right)
+      .attr("height", height + margin.top + margin.bottom)
+      
+      var svg = svg1.selectAll(".g_initial").data([0]).join("g").attr("class", "g_initial")
+      .attr("transform", `translate(${margin.left},${margin.top})`);
+
+      //svg.append("text")
+      
+      
+
+      
+
+      //Read the data
+      d3.csv(path1).then(
+
+      // Now I can use this dataset:
+      function(data) {
+      //console.log(data1);
+      // var the_title = "Sensitivity Analysis"
+      // d3.text(url+"/outputs/jobs/"+selected_job_name_sa+"/title.txt").then(function(data1){
+      //   the_title = data1; 
+      //   console.log(the_title);
+      //   svg.selectAll(".title_text").data([0]).join("text").attr("class", "title_text")
+      //       .attr("x", (width / 2))             
+      //       .attr("y", 0 - (margin.top / 2))
+      //       .attr("text-anchor", "middle")  
+      //       .style("font-size", "12px")  
+      //       .text(the_title);
+
+      // })
+
+      var sumstat = d3.group(data, d => d.Month);
+      var months_present_sa = Array.from(sumstat.keys());
+
+      svg1.selectAll(".mini_svg_monthly").data(months_present_sa).join("svg").attr("class", "mini_svg_monthly")
+      .attr("width", 0.5*width + margin.left + margin.right)
+      .attr("height", height + margin.top + margin.bottom)
+      .attr("id", (d)=>d);
+
+
+      // // Add X axis --> it is a date format
+      // const x = d3.scaleLinear()
+      //   .domain([0, 1.10*d3.max(data, function(d) { return +d.Noise_Percentage; })])
+      //   .range([ 0, width ]); 
+
+      // const xAxisTicks = x.ticks()
+      //   .filter(tick => Number.isInteger(tick));  
+      // //svg.append("g")
+      // svg.selectAll(".g_x").data([0]).join("g").attr("class", "g_x")
+      //   .attr("transform", `translate(0, ${height})`)
+      //   .call(d3.axisBottom(x).tickValues(xAxisTicks).tickFormat(d=> d+"%"));
+
+      //   svg.selectAll(".x_axis_label").data([0]).join("text").attr("class", "x_axis_label")
+      //   //.append("text")
+      //   //.attr("class", "x label")
+      //   .attr("text-anchor", "end")
+      //   .attr("x", width/1.8)
+      //   .attr("y", height+40)
+      //   .text("Noise Percentage(%)");
+
+      // // Add Y axis
+      // const y = d3.scaleLinear()
+      //   .domain([0, 1.10*d3.max(data, function(d) { return +d.Mean_MAE; })])
+      //   .range([ height, 0 ]);
+      // svg.selectAll(".g_y").data([0]).join("g").attr("class", "g_y")
+      //   //svg.append("g")
+      //   .call(d3.axisLeft(y));
+
+      //   svg.selectAll(".y_axis_label").data([0]).join("text").attr("class", "y_axis_label")
+      //   //svg.append("text")
+      //   //.attr("class", "y label")
+      //   .attr("text-anchor", "end")
+      //   .attr("y", -50)
+      //   .attr("dy", ".75em")
+      //   .attr("x", -height/2.2)
+      //   .attr("transform", "rotate(-90)")
+      //   .text("MAE(kW)");  
+
+      // // Add the line
+      // //svg.append("path")
+      // svg.selectAll(".paths").data([0]).join("path").attr("class", "paths")
+      //   .datum(data)
+      //   .attr("fill", "none")
+      //   .attr("stroke", "steelblue")
+      //   .attr("stroke-width", 1.5)
+      //   .attr("d", d3.line()
+      //     .x(function(d) { return x(d.Noise_Percentage) })
+      //     .y(function(d) { return y(d.Mean_MAE) })
+      //     )
+
+      //   d3.csv(path2).then(
+      //       function(data2){
+      //         var g_dots = svg.selectAll(".g_dots").data([0]).join("g").attr("class", "g_dots")
+      //           //svg.append('g')
+      //           g_dots.selectAll(".observation_dots").data(data2).join("circle").attr("class", "observation_dots")
+      //               // .selectAll("dot")
+      //               // .data(data2)
+      //               // .enter()
+      //               // .append("circle")
+      //               .attr("cx", function (d) { return x(d.Noise_Percentage); } )
+      //               .attr("cy", function (d) { return y(d.MAE); } )
+      //               .attr("r", 2.5)
+      //               .style("opacity", 0.6)
+      //               .style("fill", "#69b3a2")
+      //       }
+
+      //   )  
+      })
+
+  }
+
     plot_output_mae(selected_job_name_sa, url){
         var path1 = url+"/outputs/jobs/"+selected_job_name_sa+"/mae.csv"
         var path2 = url+"/outputs/jobs/"+selected_job_name_sa+"/mae_all.csv"
@@ -441,16 +570,14 @@ function(data) {
       height = 0.65*parent_height - margin.top - margin.bottom;
 
       // append the svg object to the body of the page
-      var svg1 = d3.select("#my_dataviz_svg_mape")
+      var svg1 = d3.select("#my_dataviz_svg_monthly")
       //.append("svg")
       .attr("width", width + margin.left + margin.right)
       .attr("height", height + margin.top + margin.bottom)
       
       var svg = svg1.selectAll(".g_initial").data([0]).join("g").attr("class", "g_initial")
-      .attr("transform", `translate(${margin.left},${margin.top})`);
+       .attr("transform", `translate(${margin.left},${margin.top})`);
 
-      //svg.append("text")
-      
       
 
       
@@ -458,8 +585,8 @@ function(data) {
       //Read the data
 d3.csv(path1).then(
 
-// Now I can use this dataset:
 function(data) {
+
 //console.log(data1);
 // var the_title = "Sensitivity Analysis"
 // d3.text(url+"/outputs/jobs/"+selected_job_name_sa+"/title.txt").then(function(data1){
@@ -475,7 +602,7 @@ function(data) {
 // })
 
 
-// Add X axis --> it is a date format
+//Add X axis --> it is a date format
 const x = d3.scaleLinear()
   .domain([0, 1.10*d3.max(data, function(d) { return +d.Noise_Percentage; })])
   .range([ 0, width ]); 

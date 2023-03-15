@@ -509,7 +509,7 @@ svg.selectAll(".paths").data(sumstat).join("path").attr("class", "paths")
               var parent_width = $(".plots_container_parent").width()
               var parent_height = $(".plots_container_parent").height()
               console.log(parent_width, parent_height)
-              var margin = {top: 80, right: 30, bottom: 45, left: 60},
+              var margin = {top: 80, right: 15, bottom: 45, left: 20},
               width = 0.45*parent_width - margin.left - margin.right,
               height = 0.65*parent_height - margin.top - margin.bottom;
 

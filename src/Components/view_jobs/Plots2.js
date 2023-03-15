@@ -490,6 +490,10 @@ svg.selectAll(".paths").data(sumstat).join("path").attr("class", "paths")
       var path3 = url+"/outputs/jobs/"+selected_job_name_sa+"/mape.csv"
       var path4 = url+"/outputs/jobs/"+selected_job_name_sa+"/mape_all.csv"
 
+      const color = d3.scaleOrdinal()
+                      .domain(["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December", "Average"])
+                      .range(['#a6cee3','#1f78b4','#b2df8a','#33a02c','#fb9a99','#e31a1c','#fdbf6f','#ff7f00','#cab2d6','#6a3d9a','#ffff99','#b15928', '#000000'])
+
 
       d3.csv(path1).then(function(data1){
         d3.csv(path2).then(function(data2){
@@ -533,6 +537,7 @@ svg.selectAll(".paths").data(sumstat).join("path").attr("class", "paths")
                   var this_metric = element.attr("metric");
                   //Filtering data based on month
                   var monthly_data = (this_metric === "mae")?(data1.filter(d => d.Month === this_month)):(data3.filter(d => d.Month === this_month));
+                  var monthly_data_dots = (this_metric === "mae")?(data2.filter(d => d.Month === this_month)):(data4.filter(d => d.Month === this_month));
                   var unfiltered_data = (this_metric === "mae")?data1:data3;
 
                   const x = d3.scaleLinear()
@@ -554,12 +559,21 @@ svg.selectAll(".paths").data(sumstat).join("path").attr("class", "paths")
                   element.selectAll(".paths").data([0]).join("path").attr("class", "paths")
                     .datum(monthly_data)
                     .attr("fill", "none")
-                    .attr("stroke", "steelblue")
+                    .attr("stroke", (d)=> {return color(this_month)})
                     .attr("stroke-width", 1.5)
                     .attr("d", d3.line()
                       .x(function(d) { return x(d.Noise_Percentage) })
                       .y(function(d) { return (this_metric === "mae")?(y(d.Mean_MAE)):(y(d.Mean_MAPE)) })
-                      )  
+                      );
+
+                  var g_dots = element.selectAll(".g_dots").data([0]).join("g").attr("class", "g_dots")
+                      //svg.append('g')
+                  g_dots.selectAll(".observation_dots").data(monthly_data_dots).join("circle").attr("class", "observation_dots")
+                          .attr("cx", function (d) { return x(d.Noise_Percentage); } )
+                          .attr("cy", function (d) { return (this_metric === "mae")?y(d.MAE):y(d.MAPE); } )
+                          .attr("r", 2.5)
+                          .style("opacity", 0.6)
+                          .style("fill", color(this_month))      
 
               })
 

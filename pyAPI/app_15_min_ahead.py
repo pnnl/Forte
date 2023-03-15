@@ -704,26 +704,28 @@ def sa_processor():
             mae_values.append([el, np.mean(mae_values_temp), month])
             mape_values.append([el, np.mean(mape_values_temp), month])
             print("Ended for ", el)
-
+    
     """
     Saving the results
     """
     df_mae = pd.DataFrame(mae_values, columns=["Noise_Percentage", "Mean_MAE", "Month"])
+    df_mae_grouped = df_mae.groupby(["Noise_Percentage"]).mean().reset_index()
+    df_mae_grouped["Month"] = "Average"
+    df_mae = pd.concat([df_mae, df_mae_grouped])
     print(main_dir)
     job_path = main_dir+"/pyAPI/outputs/jobs/"+name_sa
     if not os.path.exists(job_path):
         os.makedirs(job_path)
-    #df_mae.to_csv(main_dir+"/src/outputs/sensitivity_analysis/temperature/uniform_noise/february/mae_positive.csv", sep=',',index=False)
     df_mae.to_csv(main_dir+"/pyAPI/outputs/jobs/"+name_sa+"/mae.csv", sep=',',index=False)
     df_mae_all = pd.DataFrame(mae_values_temp_all, columns=["Noise_Percentage", "MAE", "Month"])
-    #df_mae_all.to_csv(main_dir+"/src/outputs/sensitivity_analysis/temperature/uniform_noise/february/mae_positive_all.csv", sep=',',index=False)
     df_mae_all.to_csv(main_dir+"/pyAPI/outputs/jobs/"+name_sa+"/mae_all.csv", sep=',',index=False)
 
     df_mape = pd.DataFrame(mape_values, columns=["Noise_Percentage", "Mean_MAPE", "Month"])
-    #df_mape.to_csv(main_dir+"/src/outputs/sensitivity_analysis/temperature/uniform_noise/february/mape_positive.csv", sep=',',index=False)
+    df_mape_grouped = df_mape.groupby(["Noise_Percentage"]).mean().reset_index()
+    df_mape_grouped["Month"] = "Average"
+    df_mape = pd.concat([df_mape, df_mape_grouped])
     df_mape.to_csv(main_dir+"/pyAPI/outputs/jobs/"+name_sa+"/mape.csv", sep=',',index=False)
     df_mape_all = pd.DataFrame(mape_values_temp_all, columns=["Noise_Percentage", "MAPE", "Month"])
-    #df_mape_all.to_csv(main_dir+"/src/outputs/sensitivity_analysis/temperature/uniform_noise/february/mape_positive_all.csv", sep=',',index=False)
     df_mape_all.to_csv(main_dir+"/pyAPI/outputs/jobs/"+name_sa+"/mape_all.csv", sep=',',index=False)
 
     """

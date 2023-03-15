@@ -59,17 +59,17 @@ class Plots extends Component {
       .attr("width", width + margin.left + margin.right)
       .attr("height", height + margin.top + margin.bottom)
 
-      var keys = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+      var keys = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December", "Average"];
       const color = d3.scaleOrdinal()
                     .domain(keys)
-                    .range(['#a6cee3','#1f78b4','#b2df8a','#33a02c','#fb9a99','#e31a1c','#fdbf6f','#ff7f00','#cab2d6','#6a3d9a','#ffff99','#b15928']);
+                    .range(['#a6cee3','#1f78b4','#b2df8a','#33a02c','#fb9a99','#e31a1c','#fdbf6f','#ff7f00','#cab2d6','#6a3d9a','#ffff99','#b15928', '#000000']);
       
       var path1 = url+"/outputs/jobs/"+selected_job_name_sa+"/mae.csv";
       d3.csv(path1).then(
         function(data){
           var sumstat = d3.group(data, d => d.Month);
           var months_present_sa = Array.from(sumstat.keys());
-          var keys_filtered = keys.filter(item => months_present_sa.includes(item))              
+          var keys_filtered = keys.filter(item => months_present_sa.includes(item))             
 
 
           svg.selectAll(".legend_dots").data(keys_filtered).join("circle").attr("class", "legend_dots")
@@ -180,8 +180,8 @@ svg.selectAll(".g_y").data([0]).join("g").attr("class", "g_y")
 var sumstat = d3.group(data, d => d.Month);
 
 const color = d3.scaleOrdinal()
-    .domain(["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"])
-    .range(['#a6cee3','#1f78b4','#b2df8a','#33a02c','#fb9a99','#e31a1c','#fdbf6f','#ff7f00','#cab2d6','#6a3d9a','#ffff99','#b15928'])
+    .domain(["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December", "Average"])
+    .range(['#a6cee3','#1f78b4','#b2df8a','#33a02c','#fb9a99','#e31a1c','#fdbf6f','#ff7f00','#cab2d6','#6a3d9a','#ffff99','#b15928', '#000000'])
  
 //svg.append("path")
 //svg.selectAll(".paths").data([0]).join("path").attr("class", "paths")
@@ -290,8 +290,8 @@ svg.selectAll(".g_y").data([0]).join("g").attr("class", "g_y")
 // Add the line
 var sumstat = d3.group(data, d => d.Month);
 const color = d3.scaleOrdinal()
-    .domain(["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"])
-    .range(['#a6cee3','#1f78b4','#b2df8a','#33a02c','#fb9a99','#e31a1c','#fdbf6f','#ff7f00','#cab2d6','#6a3d9a','#ffff99','#b15928'])
+    .domain(["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December", "Average"])
+    .range(['#a6cee3','#1f78b4','#b2df8a','#33a02c','#fb9a99','#e31a1c','#fdbf6f','#ff7f00','#cab2d6','#6a3d9a','#ffff99','#b15928', '#000000'])
  
 //svg.append("path")
 //svg.selectAll(".paths").data([0]).join("path").attr("class", "paths")

@@ -28,14 +28,14 @@ class Plots extends Component {
         this.plot_output_mae_multi(this.props.selected_job_name_sa, this.props.url, this.props.set_months_present_sa)
         this.plot_output_mape_multi(this.props.selected_job_name_sa, this.props.url)
         this.plotLegend(this.props.selected_job_name_sa, this.props.url)
-        this.plot_output_monthly(this.props.selected_job_name_sa, this.props.url)
+        this.plot_output_monthly2(this.props.selected_job_name_sa, this.props.url)
     }
     componentDidUpdate(prevProps, prevState) {
         this.getTitle();
         this.plot_output_mae_multi(this.props.selected_job_name_sa, this.props.url, this.props.set_months_present_sa)
         this.plot_output_mape_multi(this.props.selected_job_name_sa, this.props.url)
         this.plotLegend(this.props.selected_job_name_sa, this.props.url)
-        this.plot_output_monthly(this.props.selected_job_name_sa, this.props.url)
+        this.plot_output_monthly2(this.props.selected_job_name_sa, this.props.url)
     }
 
     getTitle(){
@@ -61,17 +61,17 @@ class Plots extends Component {
       .attr("width", width + margin.left + margin.right)
       .attr("height", height + margin.top + margin.bottom)
 
-      var keys = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+      var keys = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December", "Average"];
       const color = d3.scaleOrdinal()
                     .domain(keys)
-                    .range(['#a6cee3','#1f78b4','#b2df8a','#33a02c','#fb9a99','#e31a1c','#fdbf6f','#ff7f00','#cab2d6','#6a3d9a','#ffff99','#b15928']);
+                    .range(['#a6cee3','#1f78b4','#b2df8a','#33a02c','#fb9a99','#e31a1c','#fdbf6f','#ff7f00','#cab2d6','#6a3d9a','#ffff99','#b15928', '#000000']);
       
       var path1 = url+"/outputs/jobs/"+selected_job_name_sa+"/mae.csv";
       d3.csv(path1).then(
         function(data){
           var sumstat = d3.group(data, d => d.Month);
           var months_present_sa = Array.from(sumstat.keys());
-          var keys_filtered = keys.filter(item => months_present_sa.includes(item))              
+          var keys_filtered = keys.filter(item => months_present_sa.includes(item))             
 
 
           svg.selectAll(".legend_dots").data(keys_filtered).join("circle").attr("class", "legend_dots")
@@ -86,6 +86,7 @@ class Plots extends Component {
           .style("fill", function(d){ return color(d)})
           .text(function(d){ return d})
           .attr("text-anchor", "left")
+          .style("font-weight", (d)=>{return (d === "Average")?"bold":"normal"})
           .style("alignment-baseline", "middle")
         }
       )
@@ -182,8 +183,8 @@ svg.selectAll(".g_y").data([0]).join("g").attr("class", "g_y")
 var sumstat = d3.group(data, d => d.Month);
 
 const color = d3.scaleOrdinal()
-    .domain(["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"])
-    .range(['#a6cee3','#1f78b4','#b2df8a','#33a02c','#fb9a99','#e31a1c','#fdbf6f','#ff7f00','#cab2d6','#6a3d9a','#ffff99','#b15928'])
+    .domain(["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December", "Average"])
+    .range(['#a6cee3','#1f78b4','#b2df8a','#33a02c','#fb9a99','#e31a1c','#fdbf6f','#ff7f00','#cab2d6','#6a3d9a','#ffff99','#b15928', '#000000'])
  
 //svg.append("path")
 //svg.selectAll(".paths").data([0]).join("path").attr("class", "paths")
@@ -191,7 +192,7 @@ svg.selectAll(".paths").data(sumstat).join("path").attr("class", "paths")
   //.data(sumstat)
   .attr("fill", "none")
   .attr("stroke", (d)=>{return color(d[0])})
-  .attr("stroke-width", 1.5)
+  .attr("stroke-width", (d)=>{return (d[0] === "Average")?4:1.5})
   .attr("d", function(d){
     return d3.line()
     .x(function(d) { return x(d.Noise_Percentage) })
@@ -292,8 +293,8 @@ svg.selectAll(".g_y").data([0]).join("g").attr("class", "g_y")
 // Add the line
 var sumstat = d3.group(data, d => d.Month);
 const color = d3.scaleOrdinal()
-    .domain(["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"])
-    .range(['#a6cee3','#1f78b4','#b2df8a','#33a02c','#fb9a99','#e31a1c','#fdbf6f','#ff7f00','#cab2d6','#6a3d9a','#ffff99','#b15928'])
+    .domain(["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December", "Average"])
+    .range(['#a6cee3','#1f78b4','#b2df8a','#33a02c','#fb9a99','#e31a1c','#fdbf6f','#ff7f00','#cab2d6','#6a3d9a','#ffff99','#b15928', '#000000'])
  
 //svg.append("path")
 //svg.selectAll(".paths").data([0]).join("path").attr("class", "paths")
@@ -301,7 +302,7 @@ svg.selectAll(".paths").data(sumstat).join("path").attr("class", "paths")
   //.data(sumstat)
   .attr("fill", "none")
   .attr("stroke", (d)=>{return color(d[0])})
-  .attr("stroke-width", 1.5)
+  .attr("stroke-width", (d)=>{return (d[0] === "Average")?4:1.5})
   .attr("d", function(d){
     return d3.line()
     .x(function(d) { return x(d.Noise_Percentage) })
@@ -347,7 +348,7 @@ svg.selectAll(".paths").data(sumstat).join("path").attr("class", "paths")
       d3.csv(path1).then(
 
       // Now I can use this dataset:
-      function(data) {
+      function(data1) {
       //console.log(data1);
       // var the_title = "Sensitivity Analysis"
       // d3.text(url+"/outputs/jobs/"+selected_job_name_sa+"/title.txt").then(function(data1){
@@ -362,13 +363,54 @@ svg.selectAll(".paths").data(sumstat).join("path").attr("class", "paths")
 
       // })
 
-      var sumstat = d3.group(data, d => d.Month);
-      var months_present_sa = Array.from(sumstat.keys());
+      var sumstat = d3.group(data1, d => d.Month);
+      var months_present_sa = (Array.from(sumstat.keys())).filter(item => item !== "Average");
 
       svg1.selectAll(".mini_svg_monthly").data(months_present_sa).join("svg").attr("class", "mini_svg_monthly")
-      .attr("width", 0.5*width + margin.left + margin.right)
-      .attr("height", height + margin.top + margin.bottom)
-      .attr("id", (d)=>d);
+      .attr("width", width + margin.left + margin.right)
+      .attr("height", (height/months_present_sa.length) + margin.top + margin.bottom)
+      .attr("id", (d)=>"mini_svg_monthly_"+d)
+      .attr("month", (d)=>d);
+
+      var p = svg1.selectAll(".mini_svg_monthly")
+      p.each(function(a,b){
+        var monthly_svg = d3.select(this);
+        var this_month = monthly_svg.attr("month");
+        var monthly_data = data1.filter(d => d.Month === this_month);
+
+        // X Axis
+        const x = d3.scaleLinear()
+         .domain([0, 1.10*d3.max(monthly_data, function(d) { return +d.Noise_Percentage; })])
+         .range([ 0, width ]); 
+
+        const xAxisTicks = x.ticks()
+        .filter(tick => Number.isInteger(tick));  
+      //svg.append("g")
+      monthly_svg.selectAll(".g_x").data([0]).join("g").attr("class", "g_x")
+        .attr("transform", `translate(0, ${height})`)
+        .call(d3.axisBottom(x).tickValues(xAxisTicks).tickFormat(d=> d+"%"));
+        
+      // Add Y axis
+      const y = d3.scaleLinear()
+        .domain([0, 1.10*d3.max(monthly_data, function(d) { return +d.Mean_MAE; })])
+        .range([ height, 0 ]);
+      monthly_svg.selectAll(".g_y").data([0]).join("g").attr("class", "g_y")
+        //svg.append("g")
+        .call(d3.axisLeft(y));  
+
+      // Add the line
+    
+      monthly_svg.selectAll(".paths").data([0]).join("path").attr("class", "paths")
+        .datum(monthly_data)
+        .attr("fill", "none")
+        .attr("stroke", "steelblue")
+        .attr("stroke-width", 1.5)
+        .attr("d", d3.line()
+          .x(function(d) { return x(d.Noise_Percentage) })
+          .y(function(d) { return y(d.Mean_MAE) })
+          )  
+
+      }) //monthly svg ends
 
 
       // // Add X axis --> it is a date format
@@ -441,6 +483,57 @@ svg.selectAll(".paths").data(sumstat).join("path").attr("class", "paths")
       })
 
   }
+
+    plot_output_monthly2(selected_job_name_sa, url){
+      var path1 = url+"/outputs/jobs/"+selected_job_name_sa+"/mae.csv"
+      var path2 = url+"/outputs/jobs/"+selected_job_name_sa+"/mae_all.csv"
+      var path3 = url+"/outputs/jobs/"+selected_job_name_sa+"/mape.csv"
+      var path4 = url+"/outputs/jobs/"+selected_job_name_sa+"/mape_all.csv"
+
+
+      d3.csv(path1).then(function(data1){
+        d3.csv(path2).then(function(data2){
+          d3.csv(path3).then(function(data3){
+            d3.csv(path4).then(function(data4){
+              var sumstat = d3.group(data1, d => d.Month);
+              var months_present_sa = (Array.from(sumstat.keys())).filter(item => item !== "Average");
+              var svg_present = months_present_sa.flatMap(d => [d+"_mae", d+"_mape"] );
+              console.log(svg_present);
+
+              var parent_width = $(".plots_container_parent").width()
+              var parent_height = $(".plots_container_parent").height()
+              console.log(parent_width, parent_height)
+              var margin = {top: 40, right: 30, bottom: 45, left: 60},
+              width = 0.45*parent_width - margin.left - margin.right,
+              height = 0.65*parent_height - margin.top - margin.bottom;
+
+              // append the svg object to the body of the page
+              var svg1 = d3.select("#my_dataviz_svg_monthly")
+              //.append("svg")
+              .attr("width", parent_width)
+              .attr("height", height*months_present_sa.length); //giving it full width and height of each element multiplied by number of months
+              
+              var svg = svg1.selectAll(".g_initial").data([0]).join("g").attr("class", "g_initial")
+              .attr("transform", `translate(${margin.left},${margin.top})`);
+
+
+              svg.selectAll(".svg_monthly_mini").data(svg_present).join("svg").attr("class", "svg_monthly_mini")
+              .attr("id", (d)=> d )
+              .attr("width", width + margin.left + margin.right)
+              .attr("height", height + margin.top + margin.bottom)
+              .attr("x", (d,i)=> {return (i%2)*(width + margin.left + margin.right)})
+              .attr("y", (d,i)=> {return parseInt(i/2)*(height + margin.top + margin.bottom)})
+
+
+
+
+            })
+          })
+        })
+      })
+
+
+    }
 
     plot_output_mae(selected_job_name_sa, url){
         var path1 = url+"/outputs/jobs/"+selected_job_name_sa+"/mae.csv"

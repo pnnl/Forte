@@ -6,7 +6,7 @@ import Grid from '@mui/material/Grid';
 import * as $ from "jquery";
 import * as d3 from "d3";
 import _ from 'lodash';
-import Plots from './Plots';
+import Plots from './Plots2';
 
 
 

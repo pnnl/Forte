@@ -551,7 +551,7 @@ svg.selectAll(".paths").data(sumstat).join("path").attr("class", "paths")
 
                   const x = d3.scaleLinear()
                     .domain([0, 1.10*d3.max(monthly_data, function(d) { return +d.Noise_Percentage; })])
-                    .range([ 0, width]); 
+                    .range([ margin.left+margin.right, width]); 
                   
                   const xAxisTicks = x.ticks()
                     .filter(tick => Number.isInteger(tick));  
@@ -569,7 +569,7 @@ svg.selectAll(".paths").data(sumstat).join("path").attr("class", "paths")
                     .domain([0, 1.10*d3.max(unfiltered_data, function(d) { return (this_metric === "mae")?(+d.MAE):(+d.MAPE); })])
                     .range([ height, 0 ]);
                   element.selectAll(".g_y").data([0]).join("g").attr("class", "g_y")
-                    //.attr("transform", `translate(${margin.left}, 0)`)
+                    .attr("transform", `translate(${margin.left+margin.right}, 0)`)
                     .call(d3.axisLeft(y));  
 
                   element.selectAll(".paths").data([0]).join("path").attr("class", "paths")

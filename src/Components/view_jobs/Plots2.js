@@ -515,7 +515,7 @@ svg.selectAll(".paths").data(sumstat).join("path").attr("class", "paths")
               var svg1 = d3.select("#my_dataviz_svg_monthly")
               //.append("svg")
               .attr("width", parent_width)
-              .attr("height", height*months_present_sa.length); //giving it full width and height of each element multiplied by number of months
+              .attr("height", (height + margin.top + margin.bottom)*months_present_sa.length); //giving it full width and height of each element multiplied by number of months
               
               var svg = svg1.selectAll(".g_initial").data([0]).join("g").attr("class", "g_initial")
               .attr("transform", `translate(${margin.left},${margin.top})`);
@@ -542,7 +542,7 @@ svg.selectAll(".paths").data(sumstat).join("path").attr("class", "paths")
 
                   const x = d3.scaleLinear()
                     .domain([0, 1.10*d3.max(monthly_data, function(d) { return +d.Noise_Percentage; })])
-                    .range([ 0, width ]); 
+                    .range([ 0, width]); 
                   
                   const xAxisTicks = x.ticks()
                     .filter(tick => Number.isInteger(tick));  

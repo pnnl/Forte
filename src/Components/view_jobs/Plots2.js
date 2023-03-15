@@ -523,6 +523,45 @@ svg.selectAll(".paths").data(sumstat).join("path").attr("class", "paths")
               .attr("height", height + margin.top + margin.bottom)
               .attr("x", (d,i)=> {return (i%2)*(width + margin.left + margin.right)})
               .attr("y", (d,i)=> {return parseInt(i/2)*(height + margin.top + margin.bottom)})
+              .attr("month", (d)=> {return (d.split("_"))[0]})
+              .attr("metric", (d)=> {return (d.split("_"))[1]})
+
+              var p = svg.selectAll(".svg_monthly_mini");
+              p.each(function(d, i){
+                  var element = d3.select(this);
+                  var this_month = element.attr("month");
+                  var this_metric = element.attr("metric");
+                  //Filtering data based on month
+                  var monthly_data = (this_metric === "mae")?(data1.filter(d => d.Month === this_month)):(data3.filter(d => d.Month === this_month));
+                  var unfiltered_data = (this_metric === "mae")?data1:data3;
+
+                  const x = d3.scaleLinear()
+                    .domain([0, 1.10*d3.max(monthly_data, function(d) { return +d.Noise_Percentage; })])
+                    .range([ 0, width ]); 
+                  
+                  const xAxisTicks = x.ticks()
+                    .filter(tick => Number.isInteger(tick));  
+                  element.selectAll(".g_x").data([0]).join("g").attr("class", "g_x")
+                    .attr("transform", `translate(0, ${height})`)
+                    .call(d3.axisBottom(x).tickValues(xAxisTicks).tickFormat(d=> d+"%"));
+
+                  const y = d3.scaleLinear()
+                    .domain([0, 1.10*d3.max(unfiltered_data, function(d) { return (this_metric === "mae")?(+d.Mean_MAE):(+d.Mean_MAPE); })])
+                    .range([ height, 0 ]);
+                  element.selectAll(".g_y").data([0]).join("g").attr("class", "g_y")
+                    .call(d3.axisLeft(y));  
+
+                  element.selectAll(".paths").data([0]).join("path").attr("class", "paths")
+                    .datum(monthly_data)
+                    .attr("fill", "none")
+                    .attr("stroke", "steelblue")
+                    .attr("stroke-width", 1.5)
+                    .attr("d", d3.line()
+                      .x(function(d) { return x(d.Noise_Percentage) })
+                      .y(function(d) { return (this_metric === "mae")?(y(d.Mean_MAE)):(y(d.Mean_MAPE)) })
+                      )  
+
+              })
 
 
 

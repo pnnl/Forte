@@ -7,6 +7,7 @@ import TimeSelection from './appbarOptions/TimeSelection';
 import UpdateButton from './appbarOptions/UpdateButton';
 import SolarPenetrationOption from './appbarOptions/SolarPenetrationOption';
 import SeasonSelector from './appbarOptions/SeasonSelector';
+import OptionsSelection from './appbarOptions/OptionsSelection';
 
 
 
@@ -38,6 +39,9 @@ return (
         <Nav.Item><TimeSelection></TimeSelection></Nav.Item>
         <Nav.Item style={{opacity:(this.props.isLoadingUpdate)?0.4:1}}>
         <SolarPenetrationOption></SolarPenetrationOption>
+        </Nav.Item>
+        <Nav.Item style={{opacity:(this.props.isLoadingUpdate)?0.4:1}}>
+        <OptionsSelection></OptionsSelection>
         </Nav.Item>
         {(this.props.enable_seasons_flag)?<Nav.Item style={{opacity:(this.props.isLoadingUpdate)?0.4:1}}>
         <SeasonSelector></SeasonSelector>

@@ -352,7 +352,7 @@ def lstm_func_shap1(latent_gen, sequence_input, pred_train, y_ground, y_prev, so
         test_item = np.array(sub_item_mega, dtype=np.float32)
         item_mega.append(test_item)
     item_mega = np.array(item_mega, dtype=np.float32)
-    #print(item_mega)
+    print(item_mega)
     #print(y_pred, y_pred.shape)
     def dummy_func(my_model, my_input):
         #Convert item_mega into X
@@ -363,25 +363,26 @@ def lstm_func_shap1(latent_gen, sequence_input, pred_train, y_ground, y_prev, so
         # get the output
         # convert the output into item_mega format
         return y_pred_shap_
-    class new_model(lstm_model):
-        def __init__(self):
-            super().__init__()
-            self.value1 = "Inside copy model"
-        def call(self, input_tensor, training=False, **kwargs):
-            # forward pass
-            pass
-        def build_graph(self, raw_shape): 
-            pass    
-        def predict(self, X, **kwargs):
-            ans = super().predict(X) 
-            ans_ = [item[0] for item in ans]
-            ans_ = np.array(ans_, dtype=np.float32) 
-            return ans_ 
-    nm = new_model(lstm_model)
-    print(nm.predict(X))
-    explainer = shap.DeepExplainer(nm, item_mega)
-    
+    # class new_model(lstm_model):
+    #     def __init__(self):
+    #         super().__init__()
+    #         self.value1 = "Inside copy model"
+    #     def call(self, input_tensor, training=False, **kwargs):
+    #         # forward pass
+    #         pass
+    #     def build_graph(self, raw_shape): 
+    #         pass    
+    #     def predict(self, X, **kwargs):
+    #         ans = super().predict(X) 
+    #         ans_ = [item[0] for item in ans]
+    #         ans_ = np.array(ans_, dtype=np.float32) 
+    #         return ans_ 
+    # nm = new_model(lstm_model)
+    # print(nm.predict(X))
+
+    explainer = shap.DeepExplainer(lstm_model, item_mega)
     shap_values = explainer.shap_values(item_mega)
+
     print(shap_values)
 
     elapsed_time_lstm = time.process_time() - t

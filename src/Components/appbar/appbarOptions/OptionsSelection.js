@@ -8,6 +8,7 @@ import { connect } from "react-redux";
 import Button from '@mui/material/Button';
 import Popover from '@mui/material/Popover';
 // import Portals from './Portals';
+import Grid from '@mui/material/Grid';
 import _ from 'lodash';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
@@ -44,8 +45,13 @@ return (
             onClick={handlePopoverClick}
           >Select Options</Button>
 
-        <Popover  id={id} open={open} anchorEl={anchorEl_pop} onClose={handlePopoverClose} anchorOrigin={{ vertical: 'bottom', horizontal: 'center',}} transformOrigin={{vertical: 'top', horizontal: 'center',}}>
-        {/* <Portals></Portals> */}
+        <Popover  
+        style={{boxShadow:"none", maxWidth:"95vw",maxHeight:"20vh", borderRadius:"0 0 10px 10px", border:"1px solid grey", padding:"20px", backgroundColor:"#F2F2F2", marginTop:"6vh"}}
+        id={id} open={open} anchorEl={anchorEl_pop} onClose={handlePopoverClose} anchorOrigin={{ vertical: 'bottom', horizontal: 'center',}} transformOrigin={{vertical: 'top', horizontal: 'center',}}>
+            <Grid container>
+                <Grid item xs={4}>Model</Grid>
+                <Grid item xs={4}>Variables</Grid>
+            </Grid>
         </Popover>
   </div>
     

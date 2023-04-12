@@ -16,6 +16,7 @@ import { FormControlLabel, Radio } from '@mui/material';
 //import styles from './foo.OptionsSelection.css'
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import ModelsSelectionOptions from './ModelsSelectionOptions';
+import VariablesSelectionOptions from './VariablesSelectionOptions';
 
 
 
@@ -59,7 +60,7 @@ return (
         id={id} open={open} anchorEl={anchorEl_pop} onClose={handlePopoverClose} anchorOrigin={{ vertical: 'bottom', horizontal: 'center',}} transformOrigin={{vertical: 'top', horizontal: 'center',}}>
             <Grid container>
                 <Grid item xs={3}><ModelsSelectionOptions></ModelsSelectionOptions></Grid>
-                <Grid item xs={9}>Variables</Grid>
+                <Grid item xs={9}><VariablesSelectionOptions></VariablesSelectionOptions></Grid>
             </Grid>
         </Popover>
   </div>

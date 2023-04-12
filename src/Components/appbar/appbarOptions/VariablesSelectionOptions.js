@@ -5,12 +5,12 @@ import { connect } from "react-redux";
 import * as $ from "jquery";
 import * as d3 from "d3";
 import _ from 'lodash';
-import { FormControlLabel, Radio, RadioGroup } from '@mui/material';
+import { Checkbox, FormControlLabel, Radio, RadioGroup } from '@mui/material';
 import Grid from '@mui/material/Grid';
 
 
 
-class ModelsSelectionOptions extends Component {
+class VariablesSelectionOptions extends Component {
     constructor(props) {
         super(props)
         console.log();
@@ -23,20 +23,25 @@ class ModelsSelectionOptions extends Component {
     }
 
     handleChange(event){
-        this.props.set_selected_model(event.target.name)
+        //this.props.set_selected_model(event.target.name)
     }
     render() {
         // css design is in App.css
         var models = ["net load 15 min ahead", "net load 24 hr ahead", "real power"];
-
+        var variables = {"net load 15 min ahead":["temperature", "humidity", "apparent power"],
+                         "net load 24 hr ahead": ["temperature", "humidity", "apparent power"],
+                         "real power": ["SZA", "AZM", "ETR", "GHI", "wind speed", "temperature"]}
+        var size = (variables[this.props.selected_model]).length;
+        var size_key = (size<=3)?12:4;
 
         return <Grid container spacing={0}>
-        <Grid item xs={12}><b>Models</b></Grid>    
-        {models.map(model=>{
-                return <Grid item xs={12} key={model}><FormControlLabel 
-                        label={model}
-                        key={model}
-                        control={<Radio onChange={this.handleChange} name={model} checked={this.props.selected_model === model} key={model} />}
+        <Grid item xs={12}><b>Variables</b></Grid>    
+        {variables[this.props.selected_model].map(variable=>{
+                var size
+                return <Grid item xs={size_key} key={variable}><FormControlLabel 
+                        label={variable}
+                        key={variable}
+                        control={<Checkbox onChange={this.handleChange} name={variable}  key={variable} />}
                 
                         /></Grid>
             })} 
@@ -57,4 +62,4 @@ const mapdispatchToprop = (dispatch) => {
         set_selected_model: (val) => dispatch({ type: "selected_model", value: val }),
     }
 }
-export default connect(maptstateToprop, mapdispatchToprop)(ModelsSelectionOptions);
+export default connect(maptstateToprop, mapdispatchToprop)(VariablesSelectionOptions);

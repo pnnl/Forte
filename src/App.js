@@ -10,6 +10,7 @@ import CardLeft from './Components/layouts/CardLeft';
 import CardRight from './Components/layouts/CardRight';
 import moment from 'moment-timezone';
 import * as jsonCall from "./Algorithms/JSONCall";
+import './App.css'
 
 
 

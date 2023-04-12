@@ -41,6 +41,7 @@ let initialState = {
     mape_values:[],
     freezed_axis:[],
     current_net_load_y_axis: [],
+    selected_model:"net load 15 min ahead",
     selected_card_sensitivity_analysis: "create_job",
     input_variable_sa: "temperature",
     start_date_sa: "Start Date",
@@ -178,6 +179,9 @@ const reducer = (state = initialState, action) => {
     } 
     if (action.type === "current_net_load_y_axis") {
         return { ...state, current_net_load_y_axis: action.value }
+    } 
+    if (action.type === "selected_model") {
+        return { ...state, selected_model: action.value }
     } 
     if (action.type === "animation_duration") {
         return { ...state, animation_duration: action.value }

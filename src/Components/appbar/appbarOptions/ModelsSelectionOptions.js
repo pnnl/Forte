@@ -23,7 +23,11 @@ class ModelsSelectionOptions extends Component {
     }
 
     handleChange(event){
+        var default_variables = {"net load 15 min ahead":["temperature", "humidity", "apparent power"],
+                         "net load 24 hr ahead": ["temperature", "humidity", "apparent power"],
+                         "real power": ["wind speed", "temperature"]}
         this.props.set_selected_model(event.target.name)
+        this.props.set_selected_variables_temp(default_variables[event.target.name])
     }
     render() {
         // css design is in App.css
@@ -49,12 +53,14 @@ const maptstateToprop = (state) => {
     return {
         blank_placeholder:state.blank_placeholder,
         selected_model: state.selected_model,
+        selected_variables_temp: state.selected_variables_temp,
     }
 }
 const mapdispatchToprop = (dispatch) => {
     return {
         set_blank_placeholder: (val) => dispatch({ type: "blank_placeholder", value: val }),
         set_selected_model: (val) => dispatch({ type: "selected_model", value: val }),
+        set_selected_variables_temp:(val)=>dispatch({type:"selected_variables_temp",value:val}), 
     }
 }
 export default connect(maptstateToprop, mapdispatchToprop)(ModelsSelectionOptions);

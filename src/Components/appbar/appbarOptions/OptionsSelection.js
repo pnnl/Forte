@@ -30,7 +30,7 @@ const useStyles = makeStyles((theme) => ({
     padding:"20px",
     //maxWidth:"95vw !important",
     width: "100vw !important",
-    height:'25vh !important',
+    height:'28vh !important',
     backgroundColor:"#F2F2F2 !important",
   },
 }));

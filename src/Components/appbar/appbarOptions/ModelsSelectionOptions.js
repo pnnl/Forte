@@ -25,13 +25,13 @@ class ModelsSelectionOptions extends Component {
     handleChange(event){
         var default_variables = {"net load 15 min ahead":["temperature", "humidity", "apparent power"],
                          "net load 24 hr ahead": ["temperature", "humidity", "apparent power"],
-                         "real power": ["wind speed", "temperature"]}
+                         "net load v2": ["wind speed", "temperature"]}
         this.props.set_selected_model(event.target.name)
         this.props.set_selected_variables_temp(default_variables[event.target.name])
     }
     render() {
         // css design is in App.css
-        var models = ["net load 15 min ahead", "net load 24 hr ahead", "real power"];
+        var models = ["net load 15 min ahead", "net load 24 hr ahead", "net load v2"];
 
 
         return <Grid container spacing={0}>

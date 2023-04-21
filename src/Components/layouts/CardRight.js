@@ -33,15 +33,15 @@ shouldComponentUpdate(nextProps, nextState){
 
 
 render(){ 
-var metrics = ["temperature", "humidity", "apparent_power"];
+var metrics = this.props.selected_variables;//["temperature", "humidity", "apparent_power"];
 var metrics_unit = [" (°F)", " (%)", " (kVA)"];
-var metrics_data = [[...this.props.temperature_df], [...this.props.humidity_df], [...this.props.apparent_power_df]];
-var metrics_nan_percentage = [Math.round(this.props.temperature_nans_percentage), Math.round(this.props.humidity_nans_percentage), Math.round(this.props.apparent_power_nans_percentage)];
-var mini_card_height = (100/metrics.length) + "%";
+var metrics_data = [[...this.props.temperature_df], [...this.props.humidity_df], [...this.props.apparent_power_df], [...this.props.temperature_df]];
+var metrics_nan_percentage = [Math.round(this.props.temperature_nans_percentage), Math.round(this.props.humidity_nans_percentage), Math.round(this.props.apparent_power_nans_percentage), Math.round(this.props.apparent_power_nans_percentage)];
+var mini_card_height = (metrics.length<=3)?((100/metrics.length) + "%"):((100/3) + "%");
 
 
 return (
-    <div style={{height: "90vh"}}>
+    <div style={{height: "90vh", overflow:"scroll"}}>
     {metrics.map((metric, metric_index) =>{
         return <Card key={metric_index} style={{height: mini_card_height}}>
         <Card.Header>
@@ -157,6 +157,7 @@ const maptstateToprop = (state) => {
       updated_apparent_power: state.updated_apparent_power, // need to keep this to trigger an update
       updated_metric: state.updated_metric,
       noise_control: state.noise_control,
+      selected_variables: state.selected_variables,
   }
 }
 const mapdispatchToprop = (dispatch) => {

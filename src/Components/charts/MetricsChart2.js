@@ -269,9 +269,12 @@ class MetricsChart extends Component {
         tooltip = d3.select("body").selectAll(".tooltip_matches").data([0]).join('div')
             .attr("class", "tooltip_matches")
             .style("opacity", 0);
+        
+            var the_height = ((this.props.selected_variables).length>=3)?"22vh":(((90/(this.props.selected_variables).length)-8)+"vh");
+            console.log(the_height)
 
         return <div >
-        <div id={"metricChartDiv_"+this.props.the_metric} style={{height:"22vh"}}>
+        <div id={"metricChartDiv_"+this.props.the_metric} style={{height:the_height}}>
         <svg className={"metricChart_"+this.props.the_metric} onMouseEnter={this.handleMouseEnter} onMouseLeave={this.handleMouseExit} ></svg>
         </div>
       </div>
@@ -285,6 +288,7 @@ const maptstateToprop = (state) => {
         net_load_df: state.net_load_df,
         temp_check: state.temp_check,
         updated_metric: state.updated_metric,
+        selected_variables: state.selected_variables,
     }
 }
 const mapdispatchToprop = (dispatch) => {

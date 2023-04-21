@@ -38,7 +38,7 @@ class VariablesSelectionOptions extends Component {
         var models = ["net load 15 min ahead", "net load 24 hr ahead", "real power"];
         var variables = {"net load 15 min ahead":["temperature", "humidity", "apparent power"],
                          "net load 24 hr ahead": ["temperature", "humidity", "apparent power"],
-                         "real power": ["SZA", "AZM", "ETR", "GHI", "wind speed", "temperature"]}
+                         "net load v2": ["SZA", "AZM", "ETR", "GHI", "wind speed", "temperature"]}
         var size = (variables[this.props.selected_model]).length;
         var size_key = (size<=3)?12:4;
 

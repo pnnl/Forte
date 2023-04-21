@@ -38,7 +38,7 @@ class UpdateButton extends Component {
             var metrics = ["temperature", "humidity", "apparent_power"]
             metrics.map(em => {metrics_updated[em]=((this.props.updated_metric[em]).length>0)?0:0}) // capturing which metrics are updated; reset all metrics when this button is clicked
 
-            jsonCall.download(this.props.url + "/api/v@latest/processor", {start_date: converted_start_date, end_date: converted_end_date, solar_penetration:this.props.solar_penetration_temp, temperature_updated:0, humidity_updated:0, apparent_power_updated:0, metrics_updated:metrics_updated, updated_metric:this.props.updated_metric}).then(res =>{
+            jsonCall.download(this.props.url + "/api/v@latest/processor", {start_date: converted_start_date, end_date: converted_end_date, solar_penetration:this.props.solar_penetration_temp, temperature_updated:0, humidity_updated:0, apparent_power_updated:0, metrics_updated:metrics_updated, updated_metric:this.props.updated_metric, selected_model: this.props.selected_model}).then(res =>{
                 console.log(res);
                 this.props.set_net_load_df_old(this.props.net_load_df);
                 this.props.set_conf_95_df_old(this.props.conf_95_df); //Saving the older values
@@ -109,6 +109,7 @@ const maptstateToprop = (state) => {
         noise_control: state.noise_control,
         net_load_df: state.net_load_df,
         conf_95_df: state.conf_95_df,
+        selected_model: state.selected_model,
     }
 }
 const mapdispatchToprop = (dispatch) => {

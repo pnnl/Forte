@@ -34,11 +34,15 @@ class UpdateButton extends Component {
             converted_end_date = (converted_end_date.toISOString()).replace("T", " ").replace(".000Z", "")
             console.log(converted_start_date, converted_end_date)
 
+            var processor = "processor_15min_ahead";
+            if(this.props.selected_model === "net load 15 min ahead"){processor = "processor_15min_ahead"}
+            else if(this.props.selected_model === "net load 24 hr ahead"){processor = "processor_24hr_ahead"}
+
             var metrics_updated ={}
             var metrics = ["temperature", "humidity", "apparent_power"]
             metrics.map(em => {metrics_updated[em]=((this.props.updated_metric[em]).length>0)?0:0}) // capturing which metrics are updated; reset all metrics when this button is clicked
 
-            jsonCall.download(this.props.url + "/api/v@latest/processor", {start_date: converted_start_date, end_date: converted_end_date, solar_penetration:this.props.solar_penetration_temp, temperature_updated:0, humidity_updated:0, apparent_power_updated:0, metrics_updated:metrics_updated, updated_metric:this.props.updated_metric, selected_model: this.props.selected_model}).then(res =>{
+            jsonCall.download(this.props.url + "/api/v@latest/"+processor, {start_date: converted_start_date, end_date: converted_end_date, solar_penetration:this.props.solar_penetration_temp, temperature_updated:0, humidity_updated:0, apparent_power_updated:0, metrics_updated:metrics_updated, updated_metric:this.props.updated_metric, selected_model: this.props.selected_model}).then(res =>{
                 console.log(res);
                 this.props.set_net_load_df_old(this.props.net_load_df);
                 this.props.set_conf_95_df_old(this.props.conf_95_df); //Saving the older values
@@ -51,6 +55,7 @@ class UpdateButton extends Component {
                 this.props.set_humidity_nans_percentage(res["humidity_nans_percentage"]);
                 this.props.set_apparent_power_nans_percentage(res["apparent_power_nans_percentage"]);
                 this.props.set_enable_seasons_choice(this.props.enable_seasons_choice_temp);
+                this.props.set_selected_variables(this.props.selected_variables_temp)
                 var updated_metric = this.props.updated_metric;
                 var noise_control = this.props.noise_control;
                 metrics.map(el => {
@@ -110,6 +115,7 @@ const maptstateToprop = (state) => {
         net_load_df: state.net_load_df,
         conf_95_df: state.conf_95_df,
         selected_model: state.selected_model,
+        selected_variables_temp: state.selected_variables_temp,
     }
 }
 const mapdispatchToprop = (dispatch) => {
@@ -135,6 +141,7 @@ const mapdispatchToprop = (dispatch) => {
         set_noise_control: (val) => dispatch({ type: "noise_control", value: val }),
         set_mae: (val) => dispatch({ type: "mae", value: val}),
         set_mape: (val) => dispatch({ type: "mape", value: val}),
+        set_selected_variables: (val) => dispatch({ type: "selected_variables", value: val}),
     }
 }
 export default connect(maptstateToprop, mapdispatchToprop)(UpdateButton);

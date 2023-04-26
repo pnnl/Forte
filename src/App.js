@@ -29,8 +29,12 @@ class App extends Component{
     converted_end_date = (converted_end_date.toISOString()).replace("T", " ").replace(".000Z", "")
     var metrics_updated ={}
     var metrics = ["temperature", "humidity", "apparent_power"]
+    var processor = "processor_15min_ahead";
+    if(this.props.selected_model === "net load 15 min ahead"){processor = "processor_15min_ahead"}
+    else if(this.props.selected_model === "net load 24 hr ahead"){processor = "processor_24hr_ahead"}
+    console.log(this.props.url + "/api/v@latest/"+processor);
     metrics.map(em => {metrics_updated[em]=0}) // none of the metrics should be updated
-    jsonCall.download(this.props.url + "/api/v@latest/processor", {start_date: converted_start_date, end_date: converted_end_date, solar_penetration:this.props.solar_penetration, temperature_updated:0,humidity_updated:0, apparent_power_updated:0, metrics_updated:metrics_updated, updated_metric:this.props.updated_metric, selected_model:this.props.selected_model}).then(res =>{
+    jsonCall.download(this.props.url + "/api/v@latest/"+processor, {start_date: converted_start_date, end_date: converted_end_date, solar_penetration:this.props.solar_penetration, temperature_updated:0,humidity_updated:0, apparent_power_updated:0, metrics_updated:metrics_updated, updated_metric:this.props.updated_metric, selected_model:this.props.selected_model}).then(res =>{
       console.log(res);
       this.props.set_net_load_df(res["net_load_df"]);
       this.props.set_conf_95_df(res["conf_95_df"]);

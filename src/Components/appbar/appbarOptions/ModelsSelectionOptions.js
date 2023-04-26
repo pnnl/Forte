@@ -40,6 +40,7 @@ class ModelsSelectionOptions extends Component {
                 return <Grid item xs={12} key={model}><FormControlLabel 
                         label={model}
                         key={model}
+                        disabled={(model === "net load v2")}
                         control={<Radio onChange={this.handleChange} name={model} checked={this.props.selected_model === model} key={model} />}
                 
                         /></Grid>

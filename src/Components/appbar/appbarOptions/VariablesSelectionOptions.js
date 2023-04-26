@@ -36,14 +36,14 @@ class VariablesSelectionOptions extends Component {
     render() {
         // css design is in App.css
         var models = ["net load 15 min ahead", "net load 24 hr ahead", "real power"];
-        var variables = {"net load 15 min ahead":["temperature", "humidity", "apparent power"],
-                         "net load 24 hr ahead": ["temperature", "humidity", "apparent power"],
+        var variables = {"net load 15 min ahead":["temperature", "humidity", "apparent_power"],
+                         "net load 24 hr ahead": ["temperature", "humidity", "apparent_power"],
                          "net load v2": ["SZA", "AZM", "ETR", "GHI", "wind speed", "temperature"]}
         var size = (variables[this.props.selected_model]).length;
         var size_key = (size<=3)?12:4;
 
         return <Grid container spacing={0}>
-        <Grid item xs={12}><b>Variables</b></Grid>    
+        <Grid item xs={12}><b>Variables to display</b></Grid>    
         {variables[this.props.selected_model].map(variable=>{
                 return <Grid item xs={size_key} key={variable}><FormControlLabel 
                         label={variable}

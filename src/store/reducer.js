@@ -42,7 +42,7 @@ let initialState = {
     freezed_axis:[],
     current_net_load_y_axis: [],
     selected_model:"net load 15 min ahead",
-    selected_variables_temp: [],
+    selected_variables_temp: ["temperature", "humidity", "apparent_power"],
     selected_variables: ["temperature", "humidity", "apparent_power"],
     selected_card_sensitivity_analysis: "create_job",
     input_variable_sa: "temperature",

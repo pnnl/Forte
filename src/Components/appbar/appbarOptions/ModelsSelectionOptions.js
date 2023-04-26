@@ -23,11 +23,13 @@ class ModelsSelectionOptions extends Component {
     }
 
     handleChange(event){
-        var default_variables = {"net load 15 min ahead":["temperature", "humidity", "apparent power"],
-                         "net load 24 hr ahead": ["temperature", "humidity", "apparent power"],
+        var default_variables = {"net load 15 min ahead":["temperature", "humidity", "apparent_power"],
+                         "net load 24 hr ahead": ["temperature", "humidity"],
                          "net load v2": ["wind speed", "temperature"]}
+        var changed_variables = default_variables[event.target.name];                 
+        this.props.set_selected_variables_temp([...changed_variables])
         this.props.set_selected_model(event.target.name)
-        this.props.set_selected_variables_temp(default_variables[event.target.name])
+        
     }
     render() {
         // css design is in App.css

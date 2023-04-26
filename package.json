@@ -1,6 +1,6 @@
 {
   "name": "netloadforecasting",
-  "version": "0.1.254",
+  "version": "0.1.255",
   "private": true,
   "dependencies": {
     "@emotion/react": "^11.9.3",

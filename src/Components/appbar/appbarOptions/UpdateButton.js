@@ -55,6 +55,7 @@ class UpdateButton extends Component {
                 this.props.set_humidity_nans_percentage(res["humidity_nans_percentage"]);
                 this.props.set_apparent_power_nans_percentage(res["apparent_power_nans_percentage"]);
                 this.props.set_enable_seasons_choice(this.props.enable_seasons_choice_temp);
+                console.log("Selected Variables Temp: ",this.props.selected_variables_temp);
                 this.props.set_selected_variables(this.props.selected_variables_temp)
                 var updated_metric = this.props.updated_metric;
                 var noise_control = this.props.noise_control;

@@ -460,15 +460,32 @@ def lstm_func(latent_gen, sequence_input, pred_train, y_ground, y_prev, solar_pe
     Y_test=Y*(np.max(total_train_data[:,41])-np.min(total_train_data[:,41]))+np.min(total_train_data[:,41])
     #y_pred = y_pred.flatten()
     #print(y_pred, Y_test)
-    mean = lambda x: x.mean()#.flatten()
-    sd = lambda x: x.std()#.flatten() 
-    conf_int_95 = np.array([mean(y_pred) - 2*sd(y_pred), mean(y_pred) + 2*sd(y_pred)]) #https://datascience.stackexchange.com/questions/109048/get-the-confidence-interval-for-prediction-results-with-lstm
-    two_sd = 2*sd(y_pred)
-    # lower_y_pred = y_pred + conf_int_95[0]
-    # higher_y_pred = y_pred + conf_int_95[1]
-    lower_y_pred = y_pred - two_sd
-    higher_y_pred = y_pred + two_sd
-    #print("Conf", conf_int_95)
+
+    # Un comment for old way of calculating confidence interval
+    # mean = lambda x: x.mean()#.flatten()
+    # sd = lambda x: x.std()#.flatten() 
+    # conf_int_95 = np.array([mean(y_pred) - 2*sd(y_pred), mean(y_pred) + 2*sd(y_pred)]) #https://datascience.stackexchange.com/questions/109048/get-the-confidence-interval-for-prediction-results-with-lstm
+    # two_sd = 2*sd(y_pred)
+    # lower_y_pred = y_pred - two_sd
+    # higher_y_pred = y_pred + two_sd
+
+    func = K.function([lstm_model.get_layer(index=0).input], lstm_model.get_layer(index=6).output)
+    layerOutput = func(X)  # input_data is a numpy array
+    print(layerOutput.shape)
+    y_pred = y_pred.flatten()
+    conf_array_higher_limit, conf_array_lower_limit = [], []
+    for index, concatenated_data in enumerate(layerOutput): # concatenated_data = [mean, sd]
+        # sigma_sign = 1
+        # if(concatenated_data[1]<0): sigma_sign = -1
+        # sigma = sigma_sign * np.sqrt(abs(concatenated_data[1]))
+        sigma = concatenated_data[1]
+        lower_limit = y_pred[index] - 2*sigma
+        higher_limit = y_pred[index] + 2*sigma
+        conf_array_lower_limit.append(lower_limit) #reversing
+        conf_array_higher_limit.append(higher_limit)
+    lower_y_pred = np.array(conf_array_lower_limit) #y_pred - two_sd
+    higher_y_pred = np.array(conf_array_higher_limit) #y_pred + two_sd
+    
     #np.savetxt(path_parent+"/data/outputs/pen_"+str(solar_penetration)+"/y_pred.csv", y_pred, delimiter=",")
     #np.savetxt(path_parent+"/data/outputs/pen_"+str(solar_penetration)+"/Y_test.csv", Y_test, delimiter=",")
     #np.savetxt(path_parent+"/data/outputs/pen_"+str(solar_penetration)+"/lower_y_pred.csv", lower_y_pred, delimiter=",")

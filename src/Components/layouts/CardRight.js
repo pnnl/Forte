@@ -62,9 +62,13 @@ return (
 
                   var metrics_updated ={}
                   metrics.map(em => {metrics_updated[em]=((this.props.updated_metric[em]).length===0 || em===metric)?0:1}) // capturing which metrics are updated
+
+                  var processor = "processor_15min_ahead";
+                  if(this.props.selected_model === "net load 15 min ahead"){processor = "processor_15min_ahead"}
+                  else if(this.props.selected_model === "net load 24 hr ahead"){processor = "processor_24hr_ahead"}
                   
 
-                  jsonCall.download(this.props.url + "/api/v@latest/processor", {start_date: converted_start_date, end_date: converted_end_date, solar_penetration:this.props.solar_penetration_temp, metrics_updated:metrics_updated, updated_metric:this.props.updated_metric}).then(res =>{
+                  jsonCall.download(this.props.url + "/api/v@latest/"+processor, {start_date: converted_start_date, end_date: converted_end_date, solar_penetration:this.props.solar_penetration_temp, metrics_updated:metrics_updated, updated_metric:this.props.updated_metric}).then(res =>{
                     console.log(res);
                     this.props.set_net_load_df_old(this.props.net_load_df);
                     this.props.set_conf_95_df_old(this.props.conf_95_df); //Saving the older values
@@ -99,8 +103,11 @@ return (
                   var metrics_updated ={}
                   metrics.map(em => {metrics_updated[em]=((this.props.updated_metric[em]).length>0)?1:0}) // capturing which metrics are updated
                   
+                  var processor = "processor_15min_ahead";
+                  if(this.props.selected_model === "net load 15 min ahead"){processor = "processor_15min_ahead"}
+                  else if(this.props.selected_model === "net load 24 hr ahead"){processor = "processor_24hr_ahead"}
 
-                  jsonCall.download(this.props.url + "/api/v@latest/processor", {start_date: converted_start_date, end_date: converted_end_date, solar_penetration:this.props.solar_penetration_temp, metrics_updated:metrics_updated, updated_metric: this.props.updated_metric}).then(res =>{
+                  jsonCall.download(this.props.url + "/api/v@latest/"+processor, {start_date: converted_start_date, end_date: converted_end_date, solar_penetration:this.props.solar_penetration_temp, metrics_updated:metrics_updated, updated_metric: this.props.updated_metric}).then(res =>{
                     console.log(res);
                     this.props.set_net_load_df_old(this.props.net_load_df);
                     this.props.set_conf_95_df_old(this.props.conf_95_df); //Saving the older values
@@ -159,6 +166,7 @@ const maptstateToprop = (state) => {
       updated_metric: state.updated_metric,
       noise_control: state.noise_control,
       selected_variables: state.selected_variables,
+      selected_model: state.selected_model,
   }
 }
 const mapdispatchToprop = (dispatch) => {

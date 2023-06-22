@@ -703,6 +703,208 @@ def lstm_func_shap1(latent_gen, sequence_input, pred_train, y_ground, y_prev, so
 #     #return y_pred, Y_test, mae, mape, crps, pbb, mse, elapsed_time_lstm
 #     return y_pred, Y_test, lower_y_pred, higher_y_pred, mae, mape, elapsed_time_lstm
 
+
+def prepare_input_1_4(start_date, end_date, solar_penetration, updated_metric):
+    t = time.process_time()
+    A=pd.read_csv(path_parent+"/data/inputs/df1_solar_"+str(solar_penetration)+"_pen.csv") # Reading file
+    my_data = A.loc[(A['min_t'] >= start_date) & (A['min_t'] < end_date)]
+    my_data.reset_index(inplace=True, drop=True)
+    temperature_nans = (my_data['temp'].apply(np.isnan)).tolist() # getting a list with index positions of NaNs
+    humidity_nans = (my_data['humidity'].apply(np.isnan)).tolist()
+    apparent_power_nans = (my_data['apparent_power'].apply(np.isnan)).tolist()
+    temperature_nans_percentage = (sum(temperature_nans)/len(temperature_nans))*100 #counting the percentage of NaNs in data
+    humidity_nans_percentage = (sum(humidity_nans)/len(humidity_nans))*100
+    apparent_power_nans_percentage = (sum(apparent_power_nans)/len(apparent_power_nans))*100
+    #my_data=my_data.fillna(99999)
+    # Injecting updated temperature
+    temperature_column =[]
+    if(len(updated_metric["temperature"])>0):
+        for item in updated_metric["temperature"]: temperature_column.append(item[3])
+        # print("Temperature was increased ", temperature_column[0])
+        my_data['temp'] = temperature_column
+    # Injecting updated humidity
+    humidity_column =[]
+    if(len(updated_metric["humidity"])>0):
+        for item in updated_metric["humidity"]: humidity_column.append(item[3])
+        my_data['humidity'] = humidity_column
+    # Injecting updated apparent_power
+    apparent_power_column =[]
+    if(len(updated_metric["apparent_power"])>0):
+        for item in updated_metric["apparent_power"]: apparent_power_column.append(item[3])
+        my_data['apparent_power'] = apparent_power_column            
+    my_data = my_data.interpolate(method="linear", axis=0, limit_direction='both') # linear interpolation column by column; both directions so that the first and last columns are not left alone
+    #my_data = A
+    timeline = my_data['min_t'].to_list() # capturing the timeline called
+    timeline_original = timeline
+    temperature_original = my_data['temp'].to_list() # capturing the original temperature
+    humidity_original = my_data['humidity'].to_list() # capturing the original temperature
+    apparent_power_original = my_data['apparent_power'].to_list() # capturing the original temperature
+    #temperature_original = [99999 if math.isnan(item) else item for item in temperature_original]
+    timeline = timeline[48:] # removing the first 48 entries(i.e., 12 hours)
+    my_data=my_data.drop(['min_t'], axis=1) # Drop this axis
+    #my_data=my_data.fillna(99999)
+
+    sequence_length = 24*2 # Length of historical datapoints to use for forecast
+    sequence_input = []
+    for seq in gen_seq(my_data, sequence_length, my_data.columns):
+        sequence_input.append(seq)    
+    sequence_input = np.asarray(sequence_input) 
+    #print(sequence_input)
+    
+    y_ground=[]
+    for i in range(len(sequence_input)):
+        y_ground.append(my_data.iloc[i+48]['power'])   # Original code
+        #y_ground.append(my_data.iloc[i]['power'])   
+    y_ground=np.asarray(y_ground)
+    #pd.DataFrame(y_ground).to_csv(path_parent+"/data/outputs/pen_"+str(solar_penetration)+"/y_ground.csv", header=None, index=None)
+
+    temperature = []
+    for i in range(len(sequence_input)):
+        temperature.append(my_data.iloc[i+48]['temp'])
+    humidity = []
+    for i in range(len(sequence_input)):
+        humidity.append(my_data.iloc[i+48]['humidity'])
+    apparent_power = []
+    for i in range(len(sequence_input)):
+        apparent_power.append(my_data.iloc[i+48]['apparent_power'])        
+  
+
+    y_prev = []
+    sequence_target = []
+    #AA=A
+    B=my_data.drop(['apparent_power', 'humidity','temp'], axis=1)
+    for seq in gen_seq(B, sequence_length, B.columns):
+        y_prev.append(seq)
+    y_prev=np.asarray(y_prev)
+    y_prev=y_prev.reshape((y_prev.shape[0],y_prev.shape[1]))
+    elapsed_time_prepare_input = time.process_time() - t
+    return sequence_input, y_ground, y_prev, temperature, temperature_original, temperature_nans, temperature_nans_percentage, humidity, humidity_original, humidity_nans, humidity_nans_percentage, apparent_power, apparent_power_original, apparent_power_nans, apparent_power_nans_percentage, elapsed_time_prepare_input, timeline, timeline_original
+
+
+def autoencoder_func_1_4(sequence_input, solar_penetration):
+    t = time.process_time()
+    scaler_target = Scaler1D().fit(sequence_input)
+    seq_inp_norm = scaler_target.transform(sequence_input)
+    #pred_train=autoencoder_model.predict(seq_inp_norm) # this one does not work
+    encoder_model = encoder_models[str(solar_penetration)]
+    pred_train=encoder_model.predict(seq_inp_norm)
+    #print(pred_train)
+    #pd.DataFrame(pred_train).to_csv(path_parent+'/data/outputs/pen_"+str(solar_penetration)+"/pred_train.csv', header=None, index=None)
+    elapsed_time_autoencoder = time.process_time() - t
+    return pred_train, elapsed_time_autoencoder
+
+def kPF_func_1_4(pred_train, solar_penetration):
+    t = time.process_time()
+    latent_gen = latent_gens[str(solar_penetration)]
+    elapsed_time_kpf = time.process_time() - t
+    return latent_gen, elapsed_time_kpf
+
+def lstm_func_1_4(latent_gen, sequence_input, pred_train, y_ground, y_prev, solar_penetration):
+    t = time.process_time()
+    aa = (latent_gen)
+    #total_train=int(len(sequence_input) - 48) # did not use this since we are not using training data
+    total_train=int(len(sequence_input))
+    yyy=np.zeros((total_train,40))
+    for index in range(total_train):
+        yyy[index,0:20]=np.mean(aa[np.argsort(np.linalg.norm(aa[:,:]-pred_train[index,:],axis=1))[0:10],:],axis=0)
+        yyy[index,20:40]=np.std(aa[np.argsort(np.linalg.norm(aa[:,:]-pred_train[index,:],axis=1))[0:10],:],axis=0)
+        
+    yyy1=np.concatenate((yyy,y_prev[:,47].reshape((len(y_prev),1))),axis=1)
+
+    y_train_sol=y_ground
+    total_train_data=np.concatenate((yyy1,y_train_sol.reshape((len(y_train_sol),1))),axis=1)
+    scaler_target = Scaler1D().fit(total_train_data)
+    total_norm_train = scaler_target.transform(total_train_data)
+    X=total_norm_train[:,0:41].reshape((total_norm_train.shape[0],41,1))
+    Y=total_norm_train[:,41]
+
+    lstm_model = lstm_models[str(solar_penetration)]
+    y_pred = lstm_model.predict(X)
+    y_pred=y_pred*(np.max(total_train_data[:,41])-np.min(total_train_data[:,41]))+np.min(total_train_data[:,41])
+    Y_test=Y*(np.max(total_train_data[:,41])-np.min(total_train_data[:,41]))+np.min(total_train_data[:,41])
+    #y_pred = y_pred.flatten()
+    #print(y_pred, Y_test)
+
+    # Un comment for old way of calculating confidence interval
+    # mean = lambda x: x.mean()#.flatten()
+    # sd = lambda x: x.std()#.flatten() 
+    # conf_int_95 = np.array([mean(y_pred) - 2*sd(y_pred), mean(y_pred) + 2*sd(y_pred)]) #https://datascience.stackexchange.com/questions/109048/get-the-confidence-interval-for-prediction-results-with-lstm
+    # two_sd = 2*sd(y_pred)
+    # lower_y_pred = y_pred - two_sd
+    # higher_y_pred = y_pred + two_sd
+
+    func = K.function([lstm_model.get_layer(index=0).input], lstm_model.get_layer(index=6).output)
+    layerOutput = func(X)  # input_data is a numpy array
+    print(layerOutput.shape)
+    y_pred = y_pred.flatten()
+    conf_array_higher_limit, conf_array_lower_limit = [], []
+    for index, concatenated_data in enumerate(layerOutput): # concatenated_data = [mean, sd]
+        # sigma_sign = 1
+        # if(concatenated_data[1]<0): sigma_sign = -1
+        # sigma = sigma_sign * np.sqrt(abs(concatenated_data[1]))
+        sigma = concatenated_data[1]
+        lower_limit = y_pred[index] - 2*sigma
+        higher_limit = y_pred[index] + 2*sigma
+        conf_array_lower_limit.append(lower_limit) #reversing
+        conf_array_higher_limit.append(higher_limit)
+    lower_y_pred = np.array(conf_array_lower_limit) #y_pred - two_sd
+    higher_y_pred = np.array(conf_array_higher_limit) #y_pred + two_sd
+    
+    #np.savetxt(path_parent+"/data/outputs/pen_"+str(solar_penetration)+"/y_pred.csv", y_pred, delimiter=",")
+    #np.savetxt(path_parent+"/data/outputs/pen_"+str(solar_penetration)+"/Y_test.csv", Y_test, delimiter=",")
+    #np.savetxt(path_parent+"/data/outputs/pen_"+str(solar_penetration)+"/lower_y_pred.csv", lower_y_pred, delimiter=",")
+    #np.savetxt(path_parent+"/data/outputs/pen_"+str(solar_penetration)+"/higher_y_pred.csv", higher_y_pred, delimiter=",")
+    mae = mean_absolute_error(Y_test, y_pred)
+    mape = mean_absolute_percentage_error(Y_test, y_pred)
+    # crps = ps.crps_ensemble(y_pred.flatten(), Y_test).mean()
+    # pbb = pbb_calculation(Y_test, y_pred.flatten())
+    mse = mean_squared_error(Y_test, y_pred)
+    elapsed_time_lstm = time.process_time() - t
+    #return y_pred, Y_test, mae, mape, crps, pbb, mse, elapsed_time_lstm
+    return y_pred, Y_test, lower_y_pred, higher_y_pred, mae, mape, elapsed_time_lstm
+
+def prepare_output_df_1_4(y_pred, Y_test, lower_y_pred, higher_y_pred, timeline, timeline_original, temperature_original, temperature_nans, humidity, humidity_original, humidity_nans, apparent_power, apparent_power_original, apparent_power_nans):
+    net_load = ((Y_test.flatten()).tolist())
+    net_load.extend((y_pred.flatten()).tolist())
+    net_load.extend((lower_y_pred.flatten()).tolist())
+    net_load.extend((higher_y_pred.flatten()).tolist())
+    y_pred_old = y_pred -1
+    net_load.extend((y_pred_old.flatten()).tolist())
+
+    net_load_type = (["actual"] * Y_test.size)
+    net_load_type.extend(["predicted"] * y_pred.size)
+    net_load_type.extend(["lower"] * lower_y_pred.size)
+    net_load_type.extend(["higher"] * higher_y_pred.size)
+    net_load_type.extend(["predicted_old"] * y_pred_old.size)
+
+    years = (list(range(1,Y_test.size+1)))
+    years.extend(list(range(1,y_pred.size+1)))
+    years.extend(list(range(1,lower_y_pred.size+1)))
+    years.extend(list(range(1,higher_y_pred.size+1)))
+    years.extend(list(range(1,y_pred_old.size+1)))
+    
+    conf_95_df = pd.DataFrame({"timeline": timeline, "lower_limit": (lower_y_pred.flatten()).tolist(), "higher_limit": (higher_y_pred.flatten()).tolist()})
+    # temperature_df = pd.DataFrame({"temperature": temperature, "timeline": timeline, "dummy":[1]*len(temperature)})
+    temperature_df = pd.DataFrame({"temperature": temperature_original, "timeline": timeline_original, "wasNan": temperature_nans, "dummy":[1]*len(temperature_original)})
+    humidity_df = pd.DataFrame({"humidity": humidity_original, "timeline": timeline_original, "wasNan": humidity_nans, "dummy":[1]*len(humidity_original)})
+    apparent_power_df = pd.DataFrame({"apparent_power": apparent_power_original, "timeline": timeline_original, "wasNan": apparent_power_nans, "dummy":[1]*len(apparent_power_original)})
+    #print(timeline[0], timeline[-1], len(timeline))
+    timeline_initial = list(timeline)
+    timeline.extend(timeline_initial)
+    timeline.extend(timeline_initial)
+    timeline.extend(timeline_initial)
+    timeline.extend(timeline_initial)
+    #print(len(net_load), len(net_load_type), len(years), len(timeline))
+    net_load_df = pd.DataFrame({"net_load": net_load, "net_load_type": net_load_type, "years": years, "timeline": timeline})
+    # net_load_df.to_csv(path_parent+"/data/outputs/pen_"+str(solar_penetration)+"/net_load_df.csv", index=False)
+    net_load_df_safe = net_load_df.to_dict(orient="records")
+    conf_95_df_safe = conf_95_df.to_dict(orient="records")
+    temperature_df_safe = temperature_df.to_dict(orient="records")
+    humidity_df_safe = humidity_df.to_dict(orient="records")
+    apparent_power_df_safe = apparent_power_df.to_dict(orient="records")
+    return net_load_df_safe, temperature_df_safe, humidity_df_safe, apparent_power_df_safe, conf_95_df_safe
+
+
 # Used only for Sensitivity Analysis experiments
 def lstm_func_1_2x1(latent_gen, sequence_input, pred_train, y_ground, y_prev, solar_penetration,y_pred_ground_truth):
     t = time.process_time()
@@ -1487,6 +1689,41 @@ def processor_1_3(start_date="2020-05-01 00:00:00", end_date="2020-05-03 00:00:0
     #y_pred, Y_test, mae, mape, crps, pbb, mse, elapsed_time_lstm = lstm_func(latent_gen, sequence_input, pred_train, y_ground, y_prev)
     y_pred, Y_test, lower_y_pred, higher_y_pred, mae, mape, elapsed_time_lstm = lstm_func(latent_gen, sequence_input, pred_train, y_ground, y_prev, solar_penetration)
     net_load_df_safe, temperature_df_safe, humidity_df_safe, apparent_power_df_safe, conf_95_df_safe = prepare_output_df0(y_pred, Y_test, lower_y_pred, higher_y_pred, timeline, timeline_original, temperature_original, temperature_nans,  humidity, humidity_original, humidity_nans, apparent_power, apparent_power_original, apparent_power_nans)
+    #generate_comparison_image(y_pred, Y_test, solar_penetration, "processor", start_date, end_date)
+    elapsed_time_total = time.process_time() - t
+    print("MAE: ", mae)
+    #final_result ={"1. message":"Program executed", "2. time taken (prepare input)": elapsed_time_prepare_input, "3. time taken (autoencoder)":elapsed_time_autoencoder, "4. time taken (kPF)": elapsed_time_kpf, "5. time taken (LSTM)": elapsed_time_lstm, "6. total time taken":elapsed_time_total, "7. MAE": mae, "8. MAPE": mape, "9. CRPS": crps, "10. PBB": pbb, "11. MSE": mse}
+    final_result ={"1. message":"Program executed", "2. time taken (prepare input)": elapsed_time_prepare_input, "3. time taken (autoencoder)":elapsed_time_autoencoder, "4. time taken (kPF)": elapsed_time_kpf, "5. time taken (LSTM)": elapsed_time_lstm, "6. total time taken":elapsed_time_total, "7. MAE": mae, "8. MAPE": mape, "predicted_net_load":y_pred.flatten().tolist(), "actual_net_load": Y_test.tolist(), "predicted_net_load_conf_95_higher":higher_y_pred.flatten().tolist(), "predicted_net_load_conf_95_lower":lower_y_pred.flatten().tolist(), "temperature":temperature, "humidity":humidity, "apparent_power":apparent_power, "net_load_df": net_load_df_safe, "conf_95_df":conf_95_df_safe, "temperature_df": temperature_df_safe, "temperature_nans_percentage":temperature_nans_percentage, "humidity_df": humidity_df_safe, "humidity_nans_percentage": humidity_nans_percentage, "apparent_power_df": apparent_power_df_safe, "apparent_power_nans_percentage": apparent_power_nans_percentage}
+    response=make_response(jsonify(final_result), 200) #removed processing
+    response.headers.add('Access-Control-Allow-Origin', '*')
+    return response;
+
+
+@app.route('/api/v@1.4/processor',methods = ['POST', 'GET'])
+#@app.route('/api/v@latest/processor',methods = ['POST', 'GET'])
+def processor_1_4(start_date="2020-05-01 00:00:00", end_date="2020-05-03 00:00:00", solar_penetration=50):
+    t = time.process_time()
+    #start_date, end_date, solar_penetration = "2020-05-01 00:00:00", "2020-05-03 00:00:00", 50
+    start_date = validate_start_date(start_date)
+    updated_metric = {}
+    metrics = ["temperature", "humidity", "apparent_power"]
+    for i in metrics: updated_metric[i] = []
+    if(request.is_json):
+        req = request.get_json()
+        print("Reading JSON")
+        start_date = validate_start_date(req["start_date"])
+        end_date = req["end_date"]
+        solar_penetration = req["solar_penetration"]
+        for metric in metrics:
+            if(req["metrics_updated"][metric] == 1): updated_metric[metric] = req["updated_metric"][metric]        
+    print(start_date, solar_penetration)
+    # if(len(updated_metric["temperature"])>0): print((updated_metric["temperature"])[0])
+    sequence_input, y_ground, y_prev, temperature, temperature_original, temperature_nans, temperature_nans_percentage, humidity, humidity_original, humidity_nans, humidity_nans_percentage, apparent_power, apparent_power_original, apparent_power_nans, apparent_power_nans_percentage, elapsed_time_prepare_input, timeline, timeline_original = prepare_input_1_4(start_date, end_date, solar_penetration, updated_metric)
+    pred_train, elapsed_time_autoencoder = autoencoder_func_1_4(sequence_input, solar_penetration)
+    latent_gen, elapsed_time_kpf = kPF_func_1_4(pred_train, solar_penetration)
+    #y_pred, Y_test, mae, mape, crps, pbb, mse, elapsed_time_lstm = lstm_func(latent_gen, sequence_input, pred_train, y_ground, y_prev)
+    y_pred, Y_test, lower_y_pred, higher_y_pred, mae, mape, elapsed_time_lstm = lstm_func_1_4(latent_gen, sequence_input, pred_train, y_ground, y_prev, solar_penetration)
+    net_load_df_safe, temperature_df_safe, humidity_df_safe, apparent_power_df_safe, conf_95_df_safe = prepare_output_df_1_4(y_pred, Y_test, lower_y_pred, higher_y_pred, timeline, timeline_original, temperature_original, temperature_nans,  humidity, humidity_original, humidity_nans, apparent_power, apparent_power_original, apparent_power_nans)
     #generate_comparison_image(y_pred, Y_test, solar_penetration, "processor", start_date, end_date)
     elapsed_time_total = time.process_time() - t
     print("MAE: ", mae)

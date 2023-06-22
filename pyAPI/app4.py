@@ -706,45 +706,73 @@ def lstm_func_shap1(latent_gen, sequence_input, pred_train, y_ground, y_prev, so
 
 def prepare_input_1_4(start_date, end_date, solar_penetration, updated_metric):
     t = time.process_time()
-    A=pd.read_csv(path_parent+"/data/inputs/df1_solar_"+str(solar_penetration)+"_pen.csv") # Reading file
-    my_data = A.loc[(A['min_t'] >= start_date) & (A['min_t'] < end_date)]
+    #A=pd.read_csv(path_parent+"/data/inputs/df1_solar_"+str(solar_penetration)+"_pen.csv") # Reading file
+    A=pd.read_csv(path_parent+"/data/inputs/input_1_4_pen_"+str(solar_penetration)+".csv") # Reading file
+    my_data = A.loc[(A['timestamp'] >= start_date) & (A['timestamp'] < end_date)]
     my_data.reset_index(inplace=True, drop=True)
-    temperature_nans = (my_data['temp'].apply(np.isnan)).tolist() # getting a list with index positions of NaNs
-    humidity_nans = (my_data['humidity'].apply(np.isnan)).tolist()
-    apparent_power_nans = (my_data['apparent_power'].apply(np.isnan)).tolist()
-    temperature_nans_percentage = (sum(temperature_nans)/len(temperature_nans))*100 #counting the percentage of NaNs in data
-    humidity_nans_percentage = (sum(humidity_nans)/len(humidity_nans))*100
-    apparent_power_nans_percentage = (sum(apparent_power_nans)/len(apparent_power_nans))*100
+    nans_dict, nans_dict_percentage = {}, {}
+    for input_variable in ["SZA", "AZM", "ETR (W/m^2)", "GHI", "Wind_Speed", "Temperature"]:
+        nans_dict[input_variable] = (my_data[input_variable].apply(np.isnan)).tolist() # getting a list with index positions of NaNs
+        nans_dict_percentage[input_variable] = (sum(nans_dict[input_variable])/len(nans_dict[input_variable]))*100 #counting the percentage of NaNs in data
+    print(nans_dict)
+    print(nans_dict_percentage)
+    ##### To BE DELETED START #####
+    # temperature_nans = (my_data['temp'].apply(np.isnan)).tolist() # getting a list with index positions of NaNs
+    # humidity_nans = (my_data['humidity'].apply(np.isnan)).tolist()
+    # apparent_power_nans = (my_data['apparent_power'].apply(np.isnan)).tolist()
+    # temperature_nans_percentage = (sum(temperature_nans)/len(temperature_nans))*100 #counting the percentage of NaNs in data
+    # humidity_nans_percentage = (sum(humidity_nans)/len(humidity_nans))*100
+    # apparent_power_nans_percentage = (sum(apparent_power_nans)/len(apparent_power_nans))*100
     #my_data=my_data.fillna(99999)
+    ##### To BE DELETED END #####
+
+    #Injecting updated input variables
+    for input_variable in ["SZA", "AZM", "ETR (W/m^2)", "GHI", "Wind_Speed", "Temperature"]:
+        temp_column = []
+        if(len(updated_metric[input_variable])>0):
+            for item in updated_metric[input_variable]: temp_column.append(item[3])
+            # print("Temperature was increased ", temperature_column[0])
+            my_data[input_variable] = temp_column
+    ##### To BE DELETED START #####
     # Injecting updated temperature
-    temperature_column =[]
-    if(len(updated_metric["temperature"])>0):
-        for item in updated_metric["temperature"]: temperature_column.append(item[3])
-        # print("Temperature was increased ", temperature_column[0])
-        my_data['temp'] = temperature_column
-    # Injecting updated humidity
-    humidity_column =[]
-    if(len(updated_metric["humidity"])>0):
-        for item in updated_metric["humidity"]: humidity_column.append(item[3])
-        my_data['humidity'] = humidity_column
-    # Injecting updated apparent_power
-    apparent_power_column =[]
-    if(len(updated_metric["apparent_power"])>0):
-        for item in updated_metric["apparent_power"]: apparent_power_column.append(item[3])
-        my_data['apparent_power'] = apparent_power_column            
+    # temperature_column =[]
+    # if(len(updated_metric["temperature"])>0):
+    #     for item in updated_metric["temperature"]: temperature_column.append(item[3])
+    #     # print("Temperature was increased ", temperature_column[0])
+    #     my_data['temp'] = temperature_column
+    # # Injecting updated humidity
+    # humidity_column =[]
+    # if(len(updated_metric["humidity"])>0):
+    #     for item in updated_metric["humidity"]: humidity_column.append(item[3])
+    #     my_data['humidity'] = humidity_column
+    # # Injecting updated apparent_power
+    # apparent_power_column =[]
+    # if(len(updated_metric["apparent_power"])>0):
+    #     for item in updated_metric["apparent_power"]: apparent_power_column.append(item[3])
+    #     my_data['apparent_power'] = apparent_power_column            
+    ##### To BE DELETED END #####
     my_data = my_data.interpolate(method="linear", axis=0, limit_direction='both') # linear interpolation column by column; both directions so that the first and last columns are not left alone
     #my_data = A
-    timeline = my_data['min_t'].to_list() # capturing the timeline called
+    timeline = my_data['timestamp'].to_list() # capturing the timeline called
     timeline_original = timeline
-    temperature_original = my_data['temp'].to_list() # capturing the original temperature
-    humidity_original = my_data['humidity'].to_list() # capturing the original temperature
-    apparent_power_original = my_data['apparent_power'].to_list() # capturing the original temperature
+
+    # Capturing the original input variable values
+    input_variable_original = {}
+    for input_variable in ["SZA", "AZM", "ETR (W/m^2)", "GHI", "Wind_Speed", "Temperature"]:
+        input_variable_original[input_variable] = my_data[input_variable].to_list()
+
+    ##### To BE DELETED START #####
+    # temperature_original = my_data['temp'].to_list() # capturing the original temperature
+    # humidity_original = my_data['humidity'].to_list() # capturing the original temperature
+    # apparent_power_original = my_data['apparent_power'].to_list() # capturing the original temperature
+    ##### To BE DELETED END #####
+
     #temperature_original = [99999 if math.isnan(item) else item for item in temperature_original]
-    timeline = timeline[48:] # removing the first 48 entries(i.e., 12 hours)
-    my_data=my_data.drop(['min_t'], axis=1) # Drop this axis
+    timeline = timeline[96:] # removing the first 48 entries(i.e., 12 hours)
+    my_data=my_data.drop(['timestamp'], axis=1) # Drop this axis
     #my_data=my_data.fillna(99999)
 
-    sequence_length = 24*2 # Length of historical datapoints to use for forecast
+    sequence_length = 24*4*1 #This is one day historical data #24*2 # Length of historical datapoints to use for forecast
     sequence_input = []
     for seq in gen_seq(my_data, sequence_length, my_data.columns):
         sequence_input.append(seq)    
@@ -778,7 +806,8 @@ def prepare_input_1_4(start_date, end_date, solar_penetration, updated_metric):
     y_prev=np.asarray(y_prev)
     y_prev=y_prev.reshape((y_prev.shape[0],y_prev.shape[1]))
     elapsed_time_prepare_input = time.process_time() - t
-    return sequence_input, y_ground, y_prev, temperature, temperature_original, temperature_nans, temperature_nans_percentage, humidity, humidity_original, humidity_nans, humidity_nans_percentage, apparent_power, apparent_power_original, apparent_power_nans, apparent_power_nans_percentage, elapsed_time_prepare_input, timeline, timeline_original
+    #return sequence_input, y_ground, y_prev, temperature, temperature_original, temperature_nans, temperature_nans_percentage, humidity, humidity_original, humidity_nans, humidity_nans_percentage, apparent_power, apparent_power_original, apparent_power_nans, apparent_power_nans_percentage, elapsed_time_prepare_input, timeline, timeline_original
+    return sequence_input, y_ground, y_prev, temperature, temperature_original, humidity, humidity_original, apparent_power, apparent_power_original, nans_dict, nans_dict_percentage, elapsed_time_prepare_input, timeline, timeline_original
 
 
 def autoencoder_func_1_4(sequence_input, solar_penetration):
@@ -863,7 +892,7 @@ def lstm_func_1_4(latent_gen, sequence_input, pred_train, y_ground, y_prev, sola
     #return y_pred, Y_test, mae, mape, crps, pbb, mse, elapsed_time_lstm
     return y_pred, Y_test, lower_y_pred, higher_y_pred, mae, mape, elapsed_time_lstm
 
-def prepare_output_df_1_4(y_pred, Y_test, lower_y_pred, higher_y_pred, timeline, timeline_original, temperature_original, temperature_nans, humidity, humidity_original, humidity_nans, apparent_power, apparent_power_original, apparent_power_nans):
+def prepare_output_df_1_4(y_pred, Y_test, lower_y_pred, higher_y_pred, timeline, timeline_original, temperature_original, temperature_nans, humidity, humidity_original, humidity_nans, apparent_power, apparent_power_original, apparent_power_nans, nans_dict, nans_dict_percentage):
     net_load = ((Y_test.flatten()).tolist())
     net_load.extend((y_pred.flatten()).tolist())
     net_load.extend((lower_y_pred.flatten()).tolist())
@@ -903,6 +932,19 @@ def prepare_output_df_1_4(y_pred, Y_test, lower_y_pred, higher_y_pred, timeline,
     humidity_df_safe = humidity_df.to_dict(orient="records")
     apparent_power_df_safe = apparent_power_df.to_dict(orient="records")
     return net_load_df_safe, temperature_df_safe, humidity_df_safe, apparent_power_df_safe, conf_95_df_safe
+
+def validate_start_date_1_4(start_date):
+    """
+    This function reduces 12 hrs from the start date
+    Input:
+    start_date: String (e.g.: "2020-05-01 00:00:00")
+    Output:
+    edited_start_date: String (e.g.: "2020-04-30 12:00:00")
+    """
+    received_start_date = datetime.strptime(start_date, "%Y-%m-%d %H:%M:%S")
+    edited_start_date = datetime.strftime((received_start_date - timedelta(hours = 12)), "%Y-%m-%d %H:%M:%S" )
+    # Handle sending lesser than 1st Jan dates
+    return edited_start_date
 
 
 # Used only for Sensitivity Analysis experiments
@@ -985,14 +1027,14 @@ def generate_comparison_image(y_pred, Y_test, solar_penetration, purpose, start_
 
 def validate_start_date(start_date):
     """
-    This function reduces 12 hrs from the start date
+    This function reduces 24 hrs from the start date
     Input:
-    start_date: String (e.g.: "2020-05-01 00:00:00")
+    start_date: String (e.g.: "2020-05-02 00:00:00")
     Output:
-    edited_start_date: String (e.g.: "2020-04-30 12:00:00")
+    edited_start_date: String (e.g.: "2020-05-01 12:00:00")
     """
     received_start_date = datetime.strptime(start_date, "%Y-%m-%d %H:%M:%S")
-    edited_start_date = datetime.strftime((received_start_date - timedelta(hours = 12)), "%Y-%m-%d %H:%M:%S" )
+    edited_start_date = datetime.strftime((received_start_date - timedelta(hours = 24)), "%Y-%m-%d %H:%M:%S" )
     # Handle sending lesser than 1st Jan dates
     return edited_start_date
 
@@ -1701,29 +1743,29 @@ def processor_1_3(start_date="2020-05-01 00:00:00", end_date="2020-05-03 00:00:0
 
 @app.route('/api/v@1.4/processor',methods = ['POST', 'GET'])
 #@app.route('/api/v@latest/processor',methods = ['POST', 'GET'])
-def processor_1_4(start_date="2020-05-01 00:00:00", end_date="2020-05-03 00:00:00", solar_penetration=50):
+def processor_1_4(start_date="2020-05-01 00:00:00", end_date="2020-05-03 00:00:00", solar_penetration=20):
     t = time.process_time()
     #start_date, end_date, solar_penetration = "2020-05-01 00:00:00", "2020-05-03 00:00:00", 50
-    start_date = validate_start_date(start_date)
+    start_date = validate_start_date_1_4(start_date)
     updated_metric = {}
     metrics = ["temperature", "humidity", "apparent_power"]
     for i in metrics: updated_metric[i] = []
     if(request.is_json):
         req = request.get_json()
         print("Reading JSON")
-        start_date = validate_start_date(req["start_date"])
+        start_date = validate_start_date_1_4(req["start_date"])
         end_date = req["end_date"]
-        solar_penetration = req["solar_penetration"]
+        solar_penetration = 20 #req["solar_penetration"]
         for metric in metrics:
             if(req["metrics_updated"][metric] == 1): updated_metric[metric] = req["updated_metric"][metric]        
     print(start_date, solar_penetration)
     # if(len(updated_metric["temperature"])>0): print((updated_metric["temperature"])[0])
-    sequence_input, y_ground, y_prev, temperature, temperature_original, temperature_nans, temperature_nans_percentage, humidity, humidity_original, humidity_nans, humidity_nans_percentage, apparent_power, apparent_power_original, apparent_power_nans, apparent_power_nans_percentage, elapsed_time_prepare_input, timeline, timeline_original = prepare_input_1_4(start_date, end_date, solar_penetration, updated_metric)
+    sequence_input, y_ground, y_prev, temperature, temperature_original, humidity, humidity_original, apparent_power, apparent_power_original, apparent_power_nans, nans_dict, nans_dict_percentage, elapsed_time_prepare_input, timeline, timeline_original = prepare_input_1_4(start_date, end_date, solar_penetration, updated_metric)
     pred_train, elapsed_time_autoencoder = autoencoder_func_1_4(sequence_input, solar_penetration)
     latent_gen, elapsed_time_kpf = kPF_func_1_4(pred_train, solar_penetration)
     #y_pred, Y_test, mae, mape, crps, pbb, mse, elapsed_time_lstm = lstm_func(latent_gen, sequence_input, pred_train, y_ground, y_prev)
     y_pred, Y_test, lower_y_pred, higher_y_pred, mae, mape, elapsed_time_lstm = lstm_func_1_4(latent_gen, sequence_input, pred_train, y_ground, y_prev, solar_penetration)
-    net_load_df_safe, temperature_df_safe, humidity_df_safe, apparent_power_df_safe, conf_95_df_safe = prepare_output_df_1_4(y_pred, Y_test, lower_y_pred, higher_y_pred, timeline, timeline_original, temperature_original, temperature_nans,  humidity, humidity_original, humidity_nans, apparent_power, apparent_power_original, apparent_power_nans)
+    net_load_df_safe, temperature_df_safe, humidity_df_safe, apparent_power_df_safe, conf_95_df_safe = prepare_output_df_1_4(y_pred, Y_test, lower_y_pred, higher_y_pred, timeline, timeline_original, temperature_original, temperature_nans,  humidity, humidity_original, humidity_nans, apparent_power, apparent_power_original, apparent_power_nans, nans_dict, nans_dict_percentage)
     #generate_comparison_image(y_pred, Y_test, solar_penetration, "processor", start_date, end_date)
     elapsed_time_total = time.process_time() - t
     print("MAE: ", mae)

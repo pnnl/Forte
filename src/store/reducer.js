@@ -1,6 +1,7 @@
 let initialState = {
     blank_placeholder: null,
     url: "http://localhost:5000",
+    url_version : "1.3",
     start_date: 1578009600000, // 1588291200000, // https://www.epochconverter.com/ (Use the timestamp in milliseconds)
     end_date: 1578096000000,//1578182400000,//1588464000000,
     start_date_temp: 1578009600000,//1588291200000,

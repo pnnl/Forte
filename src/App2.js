@@ -38,7 +38,7 @@ class App extends Component{
     values_array.map(el =>{
       console.log("Started for noise: "+el)
       this.handle_change_constant_bias(el);
-      jsonCall.download(this.props.url + "/api/v@latest/processor", {start_date: converted_start_date, end_date: converted_end_date, solar_penetration:this.props.solar_penetration, temperature_updated:1,humidity_updated:0, apparent_power_updated:0, metrics_updated:metrics_updated, updated_metric:this.props.updated_metric}).then(res =>{
+      jsonCall.download(this.props.url + "/api/v@"+this.props.url_version+"/processor", {start_date: converted_start_date, end_date: converted_end_date, solar_penetration:this.props.solar_penetration, temperature_updated:1,humidity_updated:0, apparent_power_updated:0, metrics_updated:metrics_updated, updated_metric:this.props.updated_metric}).then(res =>{
         this.props.set_net_load_df(res["net_load_df"]);
         this.props.set_isLoadingUpdate(false);
         mae_values.push([el, res["7. MAE"]])
@@ -170,6 +170,7 @@ const mapStateToProp = (state) => {
   return {
     blank_placeholder: state.blank_placeholder,
     url: state.url,
+    url_version: state.url_version,
     isLoadingUpdate: state.isLoadingUpdate,
     actual_net_load: state.actual_net_load,
     predicted_net_load: state.predicted_net_load,

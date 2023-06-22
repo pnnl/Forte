@@ -83,7 +83,29 @@ def gen_seq(id_df, seq_length, seq_cols):
     for start, stop in zip(range(0, num_elements-seq_length, 1), range(seq_length, num_elements, 1)):
         
         yield data_matrix[stop-sequence_length:stop].values.reshape((-1,len(seq_cols)))
+def gen_seq1(id_df, seq_length, seq_cols):
+    """
+    This function converts the dataframe into numpy array of arrays
+    Inputs:
+    id_df: dataframe
+    seq_length: length of historical datapoints to use for forecast
+    seq_cols: columns of the dataframe id_df
 
+    Output:
+    numpy array of arrays for each sequence
+    Example:
+    Sequence 1 would be the df rows (0,48)
+    Sequence 2 would be the df rows (1,49)
+    Sequence 3 would be the df rows (2,50)
+    ...
+    Sequence n would be the df rows (26180,26228)
+    """
+    data_matrix =  id_df[seq_cols]
+    num_elements = data_matrix.shape[0]
+
+    for start, stop in zip(range(0, num_elements-seq_length, 1), range(seq_length, num_elements, 1)):
+        
+        yield data_matrix[stop-seq_length:stop].values.reshape((-1,len(seq_cols)))
 def NLL(y, distr): 
     sy = distr.mean()
     return 1*-distr.log_prob(y)+tf.keras.losses.mean_squared_error(y, sy)
@@ -151,6 +173,20 @@ for i in solar_penetration_levels:
     latent_gens[i] = np.load(path_parent+"/data/models/pen_"+i+"/latent_gen.npy")
 elapsed_time_model_load = time.process_time() - t
 loading_message = "#### Models and data loading: Completed in %f seconds or %f minutes ####" %(elapsed_time_model_load, (elapsed_time_model_load/60))
+print(loading_message)
+app.logger.info(loading_message)
+
+t = time.process_time()
+print("#### Models and data loading for v1.4: Started ####")
+autoencoder_models_1_4, encoder_models_1_4, lstm_models_1_4, latent_gens_1_4 = {}, {}, {}, {}
+solar_penetration_levels = ["20"]
+for i in solar_penetration_levels:
+    autoencoder_models_1_4[i] = tf.keras.models.load_model(path_parent+"/data/models/v1.4/pen_"+i+"/autoencoder.h5")
+    encoder_models_1_4[i] = tf.keras.models.load_model(path_parent+"/data/models/v1.4/pen_"+i+"/encoder.h5")
+    lstm_models_1_4[i] = tf.keras.models.load_model(path_parent+"/data/models/v1.4/pen_"+i+"/model_rnn_probab_nonsol.h5", custom_objects={'NLL': NLL})
+    latent_gens_1_4[i] = np.load(path_parent+"/data/models/v1.4/pen_"+i+"/latent_gen.npy")
+elapsed_time_model_load = time.process_time() - t
+loading_message = "#### Models and data loading for v1.4: Completed in %f seconds or %f minutes ####" %(elapsed_time_model_load, (elapsed_time_model_load/60))
 print(loading_message)
 app.logger.info(loading_message)
 
@@ -707,15 +743,15 @@ def lstm_func_shap1(latent_gen, sequence_input, pred_train, y_ground, y_prev, so
 def prepare_input_1_4(start_date, end_date, solar_penetration, updated_metric):
     t = time.process_time()
     #A=pd.read_csv(path_parent+"/data/inputs/df1_solar_"+str(solar_penetration)+"_pen.csv") # Reading file
-    A=pd.read_csv(path_parent+"/data/inputs/input_1_4_pen_"+str(solar_penetration)+".csv") # Reading file
+    A=pd.read_csv(path_parent+"/data/inputs/v1.4/input_1_4_pen_"+str(solar_penetration)+".csv") # Reading file
     my_data = A.loc[(A['timestamp'] >= start_date) & (A['timestamp'] < end_date)]
     my_data.reset_index(inplace=True, drop=True)
     nans_dict, nans_dict_percentage = {}, {}
     for input_variable in ["SZA", "AZM", "ETR (W/m^2)", "GHI", "Wind_Speed", "Temperature"]:
         nans_dict[input_variable] = (my_data[input_variable].apply(np.isnan)).tolist() # getting a list with index positions of NaNs
         nans_dict_percentage[input_variable] = (sum(nans_dict[input_variable])/len(nans_dict[input_variable]))*100 #counting the percentage of NaNs in data
-    print(nans_dict)
-    print(nans_dict_percentage)
+    #print(nans_dict)
+    #print(nans_dict_percentage)
     ##### To BE DELETED START #####
     # temperature_nans = (my_data['temp'].apply(np.isnan)).tolist() # getting a list with index positions of NaNs
     # humidity_nans = (my_data['humidity'].apply(np.isnan)).tolist()
@@ -769,45 +805,47 @@ def prepare_input_1_4(start_date, end_date, solar_penetration, updated_metric):
 
     #temperature_original = [99999 if math.isnan(item) else item for item in temperature_original]
     timeline = timeline[96:] # removing the first 48 entries(i.e., 12 hours)
-    my_data=my_data.drop(['timestamp'], axis=1) # Drop this axis
+    #print(my_data.columns)
+    my_data=my_data.drop(['Unnamed: 0', 'timestamp', 'predicted mean', 'predicted std',], axis=1) # Drop this axis
     #my_data=my_data.fillna(99999)
 
     sequence_length = 24*4*1 #This is one day historical data #24*2 # Length of historical datapoints to use for forecast
     sequence_input = []
-    for seq in gen_seq(my_data, sequence_length, my_data.columns):
+    for seq in gen_seq1(my_data, sequence_length, my_data.columns):
         sequence_input.append(seq)    
     sequence_input = np.asarray(sequence_input) 
     #print(sequence_input)
     
     y_ground=[]
     for i in range(len(sequence_input)):
-        y_ground.append(my_data.iloc[i+48]['power'])   # Original code
+        y_ground.append(my_data.iloc[i+96]['measurement'])   # Original code
         #y_ground.append(my_data.iloc[i]['power'])   
     y_ground=np.asarray(y_ground)
     #pd.DataFrame(y_ground).to_csv(path_parent+"/data/outputs/pen_"+str(solar_penetration)+"/y_ground.csv", header=None, index=None)
 
-    temperature = []
-    for i in range(len(sequence_input)):
-        temperature.append(my_data.iloc[i+48]['temp'])
-    humidity = []
-    for i in range(len(sequence_input)):
-        humidity.append(my_data.iloc[i+48]['humidity'])
-    apparent_power = []
-    for i in range(len(sequence_input)):
-        apparent_power.append(my_data.iloc[i+48]['apparent_power'])        
-  
+    ##### To BE DELETED START #####
+    # temperature = []
+    # for i in range(len(sequence_input)):
+    #     temperature.append(my_data.iloc[i+48]['temp'])
+    # humidity = []
+    # for i in range(len(sequence_input)):
+    #     humidity.append(my_data.iloc[i+48]['humidity'])
+    # apparent_power = []
+    # for i in range(len(sequence_input)):
+    #     apparent_power.append(my_data.iloc[i+48]['apparent_power'])        
+    ##### To BE DELETED END #####
 
     y_prev = []
     sequence_target = []
     #AA=A
-    B=my_data.drop(['apparent_power', 'humidity','temp'], axis=1)
-    for seq in gen_seq(B, sequence_length, B.columns):
+    B=my_data.drop(['SZA', 'AZM', 'ETR (W/m^2)', 'GHI', 'Wind_Speed', 'Temperature'], axis=1)
+    for seq in gen_seq1(B, sequence_length, B.columns):
         y_prev.append(seq)
     y_prev=np.asarray(y_prev)
     y_prev=y_prev.reshape((y_prev.shape[0],y_prev.shape[1]))
     elapsed_time_prepare_input = time.process_time() - t
     #return sequence_input, y_ground, y_prev, temperature, temperature_original, temperature_nans, temperature_nans_percentage, humidity, humidity_original, humidity_nans, humidity_nans_percentage, apparent_power, apparent_power_original, apparent_power_nans, apparent_power_nans_percentage, elapsed_time_prepare_input, timeline, timeline_original
-    return sequence_input, y_ground, y_prev, temperature, temperature_original, humidity, humidity_original, apparent_power, apparent_power_original, nans_dict, nans_dict_percentage, elapsed_time_prepare_input, timeline, timeline_original
+    return sequence_input, y_ground, y_prev, input_variable_original,  nans_dict, nans_dict_percentage, elapsed_time_prepare_input, timeline, timeline_original
 
 
 def autoencoder_func_1_4(sequence_input, solar_penetration):
@@ -815,8 +853,11 @@ def autoencoder_func_1_4(sequence_input, solar_penetration):
     scaler_target = Scaler1D().fit(sequence_input)
     seq_inp_norm = scaler_target.transform(sequence_input)
     #pred_train=autoencoder_model.predict(seq_inp_norm) # this one does not work
-    encoder_model = encoder_models[str(solar_penetration)]
+    print("No error upto here 1")
+    encoder_model = encoder_models_1_4[str(solar_penetration)]
+    print("No error upto here 2")
     pred_train=encoder_model.predict(seq_inp_norm)
+    print("No error upto here 3")
     #print(pred_train)
     #pd.DataFrame(pred_train).to_csv(path_parent+'/data/outputs/pen_"+str(solar_penetration)+"/pred_train.csv', header=None, index=None)
     elapsed_time_autoencoder = time.process_time() - t
@@ -892,7 +933,7 @@ def lstm_func_1_4(latent_gen, sequence_input, pred_train, y_ground, y_prev, sola
     #return y_pred, Y_test, mae, mape, crps, pbb, mse, elapsed_time_lstm
     return y_pred, Y_test, lower_y_pred, higher_y_pred, mae, mape, elapsed_time_lstm
 
-def prepare_output_df_1_4(y_pred, Y_test, lower_y_pred, higher_y_pred, timeline, timeline_original, temperature_original, temperature_nans, humidity, humidity_original, humidity_nans, apparent_power, apparent_power_original, apparent_power_nans, nans_dict, nans_dict_percentage):
+def prepare_output_df_1_4(y_pred, Y_test, lower_y_pred, higher_y_pred, timeline, timeline_original, temperature_original, temperature_nans, humidity, humidity_original, humidity_nans, apparent_power, apparent_power_original, apparent_power_nans, input_variable_original, nans_dict, nans_dict_percentage):
     net_load = ((Y_test.flatten()).tolist())
     net_load.extend((y_pred.flatten()).tolist())
     net_load.extend((lower_y_pred.flatten()).tolist())
@@ -914,9 +955,17 @@ def prepare_output_df_1_4(y_pred, Y_test, lower_y_pred, higher_y_pred, timeline,
     
     conf_95_df = pd.DataFrame({"timeline": timeline, "lower_limit": (lower_y_pred.flatten()).tolist(), "higher_limit": (higher_y_pred.flatten()).tolist()})
     # temperature_df = pd.DataFrame({"temperature": temperature, "timeline": timeline, "dummy":[1]*len(temperature)})
-    temperature_df = pd.DataFrame({"temperature": temperature_original, "timeline": timeline_original, "wasNan": temperature_nans, "dummy":[1]*len(temperature_original)})
-    humidity_df = pd.DataFrame({"humidity": humidity_original, "timeline": timeline_original, "wasNan": humidity_nans, "dummy":[1]*len(humidity_original)})
-    apparent_power_df = pd.DataFrame({"apparent_power": apparent_power_original, "timeline": timeline_original, "wasNan": apparent_power_nans, "dummy":[1]*len(apparent_power_original)})
+    ##### To BE DELETED START #####
+    # temperature_df = pd.DataFrame({"temperature": temperature_original, "timeline": timeline_original, "wasNan": temperature_nans, "dummy":[1]*len(temperature_original)})
+    # humidity_df = pd.DataFrame({"humidity": humidity_original, "timeline": timeline_original, "wasNan": humidity_nans, "dummy":[1]*len(humidity_original)})
+    # apparent_power_df = pd.DataFrame({"apparent_power": apparent_power_original, "timeline": timeline_original, "wasNan": apparent_power_nans, "dummy":[1]*len(apparent_power_original)})
+    ##### To BE DELETED START #####
+    
+    input_variable_df, input_variable_df_safe ={}, {}
+    for input_variable in ["SZA", "AZM", "ETR (W/m^2)", "GHI", "Wind_Speed", "Temperature"]:
+        input_variable_df[input_variable] = pd.DataFrame({input_variable: input_variable_original[input_variable], "timeline": timeline_original, "wasNan": nans_dict[input_variable], "dummy":[1]*len(input_variable_original[input_variable])})
+        input_variable_df_safe[input_variable] = (input_variable_df[input_variable]).to_dict(orient="records")
+
     #print(timeline[0], timeline[-1], len(timeline))
     timeline_initial = list(timeline)
     timeline.extend(timeline_initial)
@@ -928,10 +977,12 @@ def prepare_output_df_1_4(y_pred, Y_test, lower_y_pred, higher_y_pred, timeline,
     # net_load_df.to_csv(path_parent+"/data/outputs/pen_"+str(solar_penetration)+"/net_load_df.csv", index=False)
     net_load_df_safe = net_load_df.to_dict(orient="records")
     conf_95_df_safe = conf_95_df.to_dict(orient="records")
-    temperature_df_safe = temperature_df.to_dict(orient="records")
-    humidity_df_safe = humidity_df.to_dict(orient="records")
-    apparent_power_df_safe = apparent_power_df.to_dict(orient="records")
-    return net_load_df_safe, temperature_df_safe, humidity_df_safe, apparent_power_df_safe, conf_95_df_safe
+    ##### To BE DELETED START #####
+    # temperature_df_safe = temperature_df.to_dict(orient="records")
+    # humidity_df_safe = humidity_df.to_dict(orient="records")
+    # apparent_power_df_safe = apparent_power_df.to_dict(orient="records")
+    ##### To BE DELETED START #####
+    return net_load_df_safe, input_variable_df_safe, conf_95_df_safe
 
 def validate_start_date_1_4(start_date):
     """
@@ -1748,7 +1799,8 @@ def processor_1_4(start_date="2020-05-01 00:00:00", end_date="2020-05-03 00:00:0
     #start_date, end_date, solar_penetration = "2020-05-01 00:00:00", "2020-05-03 00:00:00", 50
     start_date = validate_start_date_1_4(start_date)
     updated_metric = {}
-    metrics = ["temperature", "humidity", "apparent_power"]
+    #metrics = ["temperature", "humidity", "apparent_power"]
+    metrics = ["SZA", "AZM", "ETR (W/m^2)", "GHI", "Wind_Speed", "Temperature"]
     for i in metrics: updated_metric[i] = []
     if(request.is_json):
         req = request.get_json()
@@ -1756,21 +1808,24 @@ def processor_1_4(start_date="2020-05-01 00:00:00", end_date="2020-05-03 00:00:0
         start_date = validate_start_date_1_4(req["start_date"])
         end_date = req["end_date"]
         solar_penetration = 20 #req["solar_penetration"]
-        for metric in metrics:
-            if(req["metrics_updated"][metric] == 1): updated_metric[metric] = req["updated_metric"][metric]        
+        # Need to enable this in order to enable updates
+        # for metric in metrics:
+        #     if(req["metrics_updated"][metric] == 1): updated_metric[metric] = req["updated_metric"][metric]        
     print(start_date, solar_penetration)
     # if(len(updated_metric["temperature"])>0): print((updated_metric["temperature"])[0])
-    sequence_input, y_ground, y_prev, temperature, temperature_original, humidity, humidity_original, apparent_power, apparent_power_original, apparent_power_nans, nans_dict, nans_dict_percentage, elapsed_time_prepare_input, timeline, timeline_original = prepare_input_1_4(start_date, end_date, solar_penetration, updated_metric)
+    sequence_input, y_ground, y_prev, input_variable_original, nans_dict, nans_dict_percentage, elapsed_time_prepare_input, timeline, timeline_original = prepare_input_1_4(start_date, end_date, solar_penetration, updated_metric)
+    print("Prepare input PASSED")
     pred_train, elapsed_time_autoencoder = autoencoder_func_1_4(sequence_input, solar_penetration)
+    print("Autoencoder PASSED")
     latent_gen, elapsed_time_kpf = kPF_func_1_4(pred_train, solar_penetration)
     #y_pred, Y_test, mae, mape, crps, pbb, mse, elapsed_time_lstm = lstm_func(latent_gen, sequence_input, pred_train, y_ground, y_prev)
     y_pred, Y_test, lower_y_pred, higher_y_pred, mae, mape, elapsed_time_lstm = lstm_func_1_4(latent_gen, sequence_input, pred_train, y_ground, y_prev, solar_penetration)
-    net_load_df_safe, temperature_df_safe, humidity_df_safe, apparent_power_df_safe, conf_95_df_safe = prepare_output_df_1_4(y_pred, Y_test, lower_y_pred, higher_y_pred, timeline, timeline_original, temperature_original, temperature_nans,  humidity, humidity_original, humidity_nans, apparent_power, apparent_power_original, apparent_power_nans, nans_dict, nans_dict_percentage)
+    net_load_df_safe, input_variable_df_safe, conf_95_df_safe = prepare_output_df_1_4(y_pred, Y_test, lower_y_pred, higher_y_pred, timeline, timeline_original, temperature_original, temperature_nans, humidity_original, humidity_nans, apparent_power_original, apparent_power_nans, input_variable_original, nans_dict, nans_dict_percentage)
     #generate_comparison_image(y_pred, Y_test, solar_penetration, "processor", start_date, end_date)
     elapsed_time_total = time.process_time() - t
     print("MAE: ", mae)
     #final_result ={"1. message":"Program executed", "2. time taken (prepare input)": elapsed_time_prepare_input, "3. time taken (autoencoder)":elapsed_time_autoencoder, "4. time taken (kPF)": elapsed_time_kpf, "5. time taken (LSTM)": elapsed_time_lstm, "6. total time taken":elapsed_time_total, "7. MAE": mae, "8. MAPE": mape, "9. CRPS": crps, "10. PBB": pbb, "11. MSE": mse}
-    final_result ={"1. message":"Program executed", "2. time taken (prepare input)": elapsed_time_prepare_input, "3. time taken (autoencoder)":elapsed_time_autoencoder, "4. time taken (kPF)": elapsed_time_kpf, "5. time taken (LSTM)": elapsed_time_lstm, "6. total time taken":elapsed_time_total, "7. MAE": mae, "8. MAPE": mape, "predicted_net_load":y_pred.flatten().tolist(), "actual_net_load": Y_test.tolist(), "predicted_net_load_conf_95_higher":higher_y_pred.flatten().tolist(), "predicted_net_load_conf_95_lower":lower_y_pred.flatten().tolist(), "temperature":temperature, "humidity":humidity, "apparent_power":apparent_power, "net_load_df": net_load_df_safe, "conf_95_df":conf_95_df_safe, "temperature_df": temperature_df_safe, "temperature_nans_percentage":temperature_nans_percentage, "humidity_df": humidity_df_safe, "humidity_nans_percentage": humidity_nans_percentage, "apparent_power_df": apparent_power_df_safe, "apparent_power_nans_percentage": apparent_power_nans_percentage}
+    final_result ={"1. message":"Program executed", "2. time taken (prepare input)": elapsed_time_prepare_input, "3. time taken (autoencoder)":elapsed_time_autoencoder, "4. time taken (kPF)": elapsed_time_kpf, "5. time taken (LSTM)": elapsed_time_lstm, "6. total time taken":elapsed_time_total, "7. MAE": mae, "8. MAPE": mape, "predicted_net_load":y_pred.flatten().tolist(), "actual_net_load": Y_test.tolist(), "predicted_net_load_conf_95_higher":higher_y_pred.flatten().tolist(), "predicted_net_load_conf_95_lower":lower_y_pred.flatten().tolist(), "temperature":temperature, "humidity":humidity, "apparent_power":apparent_power, "input_variable_df_safe":input_variable_df_safe, "net_load_df": net_load_df_safe, "conf_95_df":conf_95_df_safe, "temperature_df": temperature_df_safe, "temperature_nans_percentage":temperature_nans_percentage, "humidity_df": humidity_df_safe, "humidity_nans_percentage": humidity_nans_percentage, "apparent_power_df": apparent_power_df_safe, "apparent_power_nans_percentage": apparent_power_nans_percentage}
     response=make_response(jsonify(final_result), 200) #removed processing
     response.headers.add('Access-Control-Allow-Origin', '*')
     return response;

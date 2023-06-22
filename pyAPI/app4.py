@@ -851,13 +851,10 @@ def prepare_input_1_4(start_date, end_date, solar_penetration, updated_metric):
 def autoencoder_func_1_4(sequence_input, solar_penetration):
     t = time.process_time()
     scaler_target = Scaler1D().fit(sequence_input)
-    seq_inp_norm = scaler_target.transform(sequence_input)
+    seq_inp_norm = scaler_target.transform(sequence_input) # Error maybe because of zero values in the data
     #pred_train=autoencoder_model.predict(seq_inp_norm) # this one does not work
-    print("No error upto here 1")
     encoder_model = encoder_models_1_4[str(solar_penetration)]
-    print("No error upto here 2")
     pred_train=encoder_model.predict(seq_inp_norm)
-    print("No error upto here 3")
     #print(pred_train)
     #pd.DataFrame(pred_train).to_csv(path_parent+'/data/outputs/pen_"+str(solar_penetration)+"/pred_train.csv', header=None, index=None)
     elapsed_time_autoencoder = time.process_time() - t
@@ -865,7 +862,7 @@ def autoencoder_func_1_4(sequence_input, solar_penetration):
 
 def kPF_func_1_4(pred_train, solar_penetration):
     t = time.process_time()
-    latent_gen = latent_gens[str(solar_penetration)]
+    latent_gen = latent_gens_1_4[str(solar_penetration)]
     elapsed_time_kpf = time.process_time() - t
     return latent_gen, elapsed_time_kpf
 
@@ -1818,6 +1815,7 @@ def processor_1_4(start_date="2020-05-01 00:00:00", end_date="2020-05-03 00:00:0
     pred_train, elapsed_time_autoencoder = autoencoder_func_1_4(sequence_input, solar_penetration)
     print("Autoencoder PASSED")
     latent_gen, elapsed_time_kpf = kPF_func_1_4(pred_train, solar_penetration)
+    print("kPF PASSED")
     #y_pred, Y_test, mae, mape, crps, pbb, mse, elapsed_time_lstm = lstm_func(latent_gen, sequence_input, pred_train, y_ground, y_prev)
     y_pred, Y_test, lower_y_pred, higher_y_pred, mae, mape, elapsed_time_lstm = lstm_func_1_4(latent_gen, sequence_input, pred_train, y_ground, y_prev, solar_penetration)
     net_load_df_safe, input_variable_df_safe, conf_95_df_safe = prepare_output_df_1_4(y_pred, Y_test, lower_y_pred, higher_y_pred, timeline, timeline_original, temperature_original, temperature_nans, humidity_original, humidity_nans, apparent_power_original, apparent_power_nans, input_variable_original, nans_dict, nans_dict_percentage)

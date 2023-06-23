@@ -869,26 +869,34 @@ def kPF_func_1_4(pred_train, solar_penetration):
 def lstm_func_1_4(latent_gen, sequence_input, pred_train, y_ground, y_prev, solar_penetration):
     t = time.process_time()
     aa = (latent_gen)
+    enc = 20
+    sequence_length = 24*4*1
     #total_train=int(len(sequence_input) - 48) # did not use this since we are not using training data
     total_train=int(len(sequence_input))
     yyy=np.zeros((total_train,40))
     for index in range(total_train):
-        yyy[index,0:20]=np.mean(aa[np.argsort(np.linalg.norm(aa[:,:]-pred_train[index,:],axis=1))[0:10],:],axis=0)
-        yyy[index,20:40]=np.std(aa[np.argsort(np.linalg.norm(aa[:,:]-pred_train[index,:],axis=1))[0:10],:],axis=0)
+        yyy[index,0:enc]=np.mean(aa[np.argsort(np.linalg.norm(aa[:,:]-pred_train[index,:],axis=1))[0:20],:],axis=0)
+        yyy[index,enc:2*enc]=np.std(aa[np.argsort(np.linalg.norm(aa[:,:]-pred_train[index,:],axis=1))[0:20],:],axis=0)
         
-    yyy1=np.concatenate((yyy,y_prev[:,47].reshape((len(y_prev),1))),axis=1)
+    yyy1=np.concatenate((yyy,y_prev[:,sequence_length-1].reshape((len(y_prev),1))),axis=1)
 
     y_train_sol=y_ground
     total_train_data=np.concatenate((yyy1,y_train_sol.reshape((len(y_train_sol),1))),axis=1)
-    scaler_target = Scaler1D().fit(total_train_data)
-    total_norm_train = scaler_target.transform(total_train_data)
-    X=total_norm_train[:,0:41].reshape((total_norm_train.shape[0],41,1))
-    Y=total_norm_train[:,41]
+    T1=total_train_data[:,0:2*enc]
+    T2=total_train_data[:,2*enc:2*enc+2]
+    T2=T2*1e-6
+    T3=np.concatenate((T1,T2),axis=1)
+    total_norm_train=T3
+    # scaler_target = Scaler1D().fit(total_train_data)
+    # total_norm_train = scaler_target.transform(total_train_data)
+    X=total_norm_train[:,0:2*enc+1].reshape((total_norm_train.shape[0],2*enc+1))
+    Y=total_norm_train[:,2*enc+1]
 
-    lstm_model = lstm_models[str(solar_penetration)]
-    y_pred = lstm_model.predict(X)
-    y_pred=y_pred*(np.max(total_train_data[:,41])-np.min(total_train_data[:,41]))+np.min(total_train_data[:,41])
-    Y_test=Y*(np.max(total_train_data[:,41])-np.min(total_train_data[:,41]))+np.min(total_train_data[:,41])
+    lstm_model = lstm_models_1_4[str(solar_penetration)]
+    y_pred = lstm_model.predict(X)*1e6
+    Y_test=Y*1e6
+    #y_pred=y_pred*(np.max(total_train_data[:,41])-np.min(total_train_data[:,41]))+np.min(total_train_data[:,41])
+    #Y_test=Y*(np.max(total_train_data[:,41])-np.min(total_train_data[:,41]))+np.min(total_train_data[:,41])
     #y_pred = y_pred.flatten()
     #print(y_pred, Y_test)
 
@@ -922,7 +930,7 @@ def lstm_func_1_4(latent_gen, sequence_input, pred_train, y_ground, y_prev, sola
     #np.savetxt(path_parent+"/data/outputs/pen_"+str(solar_penetration)+"/lower_y_pred.csv", lower_y_pred, delimiter=",")
     #np.savetxt(path_parent+"/data/outputs/pen_"+str(solar_penetration)+"/higher_y_pred.csv", higher_y_pred, delimiter=",")
     mae = mean_absolute_error(Y_test, y_pred)
-    mape = mean_absolute_percentage_error(Y_test, y_pred)
+    mape = mean_absolute_percentage_error(Y_test, y_pred)*100
     # crps = ps.crps_ensemble(y_pred.flatten(), Y_test).mean()
     # pbb = pbb_calculation(Y_test, y_pred.flatten())
     mse = mean_squared_error(Y_test, y_pred)
@@ -1818,6 +1826,7 @@ def processor_1_4(start_date="2020-05-01 00:00:00", end_date="2020-05-03 00:00:0
     print("kPF PASSED")
     #y_pred, Y_test, mae, mape, crps, pbb, mse, elapsed_time_lstm = lstm_func(latent_gen, sequence_input, pred_train, y_ground, y_prev)
     y_pred, Y_test, lower_y_pred, higher_y_pred, mae, mape, elapsed_time_lstm = lstm_func_1_4(latent_gen, sequence_input, pred_train, y_ground, y_prev, solar_penetration)
+    print("LSTM PASSED")
     net_load_df_safe, input_variable_df_safe, conf_95_df_safe = prepare_output_df_1_4(y_pred, Y_test, lower_y_pred, higher_y_pred, timeline, timeline_original, temperature_original, temperature_nans, humidity_original, humidity_nans, apparent_power_original, apparent_power_nans, input_variable_original, nans_dict, nans_dict_percentage)
     #generate_comparison_image(y_pred, Y_test, solar_penetration, "processor", start_date, end_date)
     elapsed_time_total = time.process_time() - t

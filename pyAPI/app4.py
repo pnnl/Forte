@@ -1815,7 +1815,7 @@ def processor_1_4(start_date="2020-05-01 00:00:00", end_date="2020-05-03 00:00:0
         print("Reading JSON")
         start_date = validate_start_date_1_4(req["start_date"])
         end_date = req["end_date"]
-        solar_penetration = 20 #req["solar_penetration"]
+        solar_penetration = req["solar_penetration"]
         # Need to enable this in order to enable updates
         # for metric in metrics:
         #     if(req["metrics_updated"][metric] == 1): updated_metric[metric] = req["updated_metric"][metric]        
@@ -1835,7 +1835,7 @@ def processor_1_4(start_date="2020-05-01 00:00:00", end_date="2020-05-03 00:00:0
     elapsed_time_total = time.process_time() - t
     print("MAPE: ", mape)
     #final_result ={"1. message":"Program executed", "2. time taken (prepare input)": elapsed_time_prepare_input, "3. time taken (autoencoder)":elapsed_time_autoencoder, "4. time taken (kPF)": elapsed_time_kpf, "5. time taken (LSTM)": elapsed_time_lstm, "6. total time taken":elapsed_time_total, "7. MAE": mae, "8. MAPE": mape, "9. CRPS": crps, "10. PBB": pbb, "11. MSE": mse}
-    final_result ={"1. message":"Program executed", "2. time taken (prepare input)": elapsed_time_prepare_input, "3. time taken (autoencoder)":elapsed_time_autoencoder, "4. time taken (kPF)": elapsed_time_kpf, "5. time taken (LSTM)": elapsed_time_lstm, "6. total time taken":elapsed_time_total, "7. MAE": mae, "8. MAPE": mape, "predicted_net_load":y_pred.flatten().tolist(), "actual_net_load": Y_test.tolist(), "predicted_net_load_conf_95_higher":higher_y_pred.flatten().tolist(), "predicted_net_load_conf_95_lower":lower_y_pred.flatten().tolist(),  "input_variable_df_safe":input_variable_df_safe, "net_load_df": net_load_df_safe, "conf_95_df":conf_95_df_safe,  "nans_dict_percentage": nans_dict_percentage}
+    final_result ={"1. message":"Program executed", "2. time taken (prepare input)": elapsed_time_prepare_input, "3. time taken (autoencoder)":elapsed_time_autoencoder, "4. time taken (kPF)": elapsed_time_kpf, "5. time taken (LSTM)": elapsed_time_lstm, "6. total time taken":elapsed_time_total, "7. MAE": mae, "8. MAPE": mape, "predicted_net_load":y_pred.flatten().tolist(), "actual_net_load": Y_test.tolist(), "predicted_net_load_conf_95_higher":higher_y_pred.flatten().tolist(), "predicted_net_load_conf_95_lower":lower_y_pred.flatten().tolist(),  "input_variable_df":input_variable_df_safe, "net_load_df": net_load_df_safe, "conf_95_df":conf_95_df_safe,  "nans_dict_percentage": nans_dict_percentage}
     response=make_response(jsonify(final_result), 200) #removed processing
     response.headers.add('Access-Control-Allow-Origin', '*')
     return response;

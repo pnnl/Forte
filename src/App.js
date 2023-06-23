@@ -27,28 +27,56 @@ class App extends Component{
     converted_start_date = (converted_start_date.toISOString()).replace("T", " ").replace(".000Z", "")
     var converted_end_date = new Date(this.props.end_date)
     converted_end_date = (converted_end_date.toISOString()).replace("T", " ").replace(".000Z", "")
-    var metrics_updated ={}
-    var metrics = ["temperature", "humidity", "apparent_power"]
-    var processor = "processor_15min_ahead";
-    if(this.props.selected_model === "net load 15 min ahead"){processor = "processor_15min_ahead"}
-    else if(this.props.selected_model === "net load 24 hr ahead"){processor = "processor_24hr_ahead"}
-    console.log(this.props.url + "/api/v@"+this.props.url_version+"/processor");
-    metrics.map(em => {metrics_updated[em]=0}) // none of the metrics should be updated
-    jsonCall.download(this.props.url + "/api/v@"+this.props.url_version+"/processor", {start_date: converted_start_date, end_date: converted_end_date, solar_penetration:this.props.solar_penetration, temperature_updated:0,humidity_updated:0, apparent_power_updated:0, metrics_updated:metrics_updated, updated_metric:this.props.updated_metric, selected_model:this.props.selected_model}).then(res =>{
-      console.log(res);
-      this.props.set_net_load_df(res["net_load_df"]);
-      this.props.set_conf_95_df(res["conf_95_df"]);
-      this.props.set_temperature_df(res["temperature_df"]);
-      this.props.set_humidity_df(res["humidity_df"]);
-      this.props.set_apparent_power_df(res["apparent_power_df"]);
-      this.props.set_temperature_nans_percentage(res["temperature_nans_percentage"]);
-      this.props.set_humidity_nans_percentage(res["humidity_nans_percentage"]);
-      this.props.set_apparent_power_nans_percentage(res["apparent_power_nans_percentage"]);
-      this.props.set_mae(res["7. MAE"]);
-      this.props.set_mape(res["8. MAPE"]);
-      this.props.set_isLoadingUpdate(false);
+
+    if(this.props.url_version === "1.3"){
+      var metrics_updated ={}
+      var metrics = ["temperature", "humidity", "apparent_power"]
+      var processor = "processor_15min_ahead";
+      if(this.props.selected_model === "net load 15 min ahead"){processor = "processor_15min_ahead"}
+      else if(this.props.selected_model === "net load 24 hr ahead"){processor = "processor_24hr_ahead"}
+      console.log(this.props.url + "/api/v@"+this.props.url_version+"/processor");
+      metrics.map(em => {metrics_updated[em]=0}) // none of the metrics should be updated
+      jsonCall.download(this.props.url + "/api/v@"+this.props.url_version+"/processor", {start_date: converted_start_date, end_date: converted_end_date, solar_penetration:this.props.solar_penetration, temperature_updated:0,humidity_updated:0, apparent_power_updated:0, metrics_updated:metrics_updated, updated_metric:this.props.updated_metric, selected_model:this.props.selected_model}).then(res =>{
+        console.log(res);
+        this.props.set_net_load_df(res["net_load_df"]);
+        this.props.set_conf_95_df(res["conf_95_df"]);
+        this.props.set_temperature_df(res["temperature_df"]);
+        this.props.set_humidity_df(res["humidity_df"]);
+        this.props.set_apparent_power_df(res["apparent_power_df"]);
+        this.props.set_temperature_nans_percentage(res["temperature_nans_percentage"]);
+        this.props.set_humidity_nans_percentage(res["humidity_nans_percentage"]);
+        this.props.set_apparent_power_nans_percentage(res["apparent_power_nans_percentage"]);
+        this.props.set_mae(res["7. MAE"]);
+        this.props.set_mape(res["8. MAPE"]);
+        this.props.set_isLoadingUpdate(false);
+        
+        })
+    
+    }
+    else{
+      var metrics_updated ={}
+      var metrics = ["SZA", "AZM", "ETR (W/m^2)", "GHI", "Wind_Speed", "Temperature"]
       
-      })
+      metrics.map(em => {metrics_updated[em]=0}) // none of the metrics should be updated
+      jsonCall.download(this.props.url + "/api/v@"+this.props.url_version+"/processor", {start_date: converted_start_date, end_date: converted_end_date, solar_penetration:this.props.solar_penetration, temperature_updated:0,humidity_updated:0, apparent_power_updated:0, metrics_updated:metrics_updated, updated_metric:this.props.updated_metric, selected_model:this.props.selected_model}).then(res =>{
+        console.log(res);
+        this.props.set_net_load_df(res["net_load_df"]);
+        this.props.set_conf_95_df(res["conf_95_df"]);
+        // this.props.set_temperature_df(res["temperature_df"]);
+        // this.props.set_humidity_df(res["humidity_df"]);
+        // this.props.set_apparent_power_df(res["apparent_power_df"]);
+        this.props.set_input_variable_df(res["input_variable_df"]);
+        // this.props.set_temperature_nans_percentage(res["temperature_nans_percentage"]);
+        // this.props.set_humidity_nans_percentage(res["humidity_nans_percentage"]);
+        // this.props.set_apparent_power_nans_percentage(res["apparent_power_nans_percentage"]);
+        this.props.set_nans_dict_percentage(res["nans_dict_percentage"]);
+        this.props.set_mae(res["7. MAE"]);
+        this.props.set_mape(res["8. MAPE"]);
+        this.props.set_isLoadingUpdate(false);
+        
+        })
+      
+    }
     
   }
 
@@ -107,9 +135,11 @@ const mapDispatchToProp = (dispatch) => {
     set_temperature_df: (val) => dispatch({ type: "temperature_df", value: val}),
     set_humidity_df: (val) => dispatch({ type: "humidity_df", value: val}),
     set_apparent_power_df: (val) => dispatch({ type: "apparent_power_df", value: val}),
+    set_input_variable_df: (val) => dispatch({ type: "input_variable_df", value: val}),
     set_temperature_nans_percentage: (val) => dispatch({ type: "temperature_nans_percentage", value: val}),
     set_humidity_nans_percentage: (val) => dispatch({ type: "humidity_nans_percentage", value: val}),
     set_apparent_power_nans_percentage: (val) => dispatch({ type: "apparent_power_nans_percentage", value: val}),
+    set_nans_dict_percentage: (val) => dispatch({ type: "nans_dict_percentage", value: val}),
     set_mae: (val) => dispatch({ type: "mae", value: val}),
     set_mape: (val) => dispatch({ type: "mape", value: val}),
   }

@@ -1,7 +1,9 @@
+var url_version = "1.4";
+
 let initialState = {
     blank_placeholder: null,
     url: "http://localhost:5000",
-    url_version : "1.4",
+    url_version : url_version,
     start_date: 1578009600000, // 1588291200000, // https://www.epochconverter.com/ (Use the timestamp in milliseconds)
     end_date: 1578096000000,//1578182400000,//1588464000000,
     start_date_temp: 1578009600000,//1588291200000,
@@ -20,11 +22,13 @@ let initialState = {
     temperature_df: [],
     humidity_df: [],
     apparent_power_df: [],
+    input_variable_df_safe:{},
     temperature_nans_percentage: 0,
     humidity_nans_percentage: 0,
     apparent_power_nans_percentage: 0,
-    solar_penetration_temp: 50,
-    solar_penetration: 50,
+    nans_dict_percentage: {},
+    solar_penetration_temp: (url_version === "1.3")?50:20,
+    solar_penetration: (url_version === "1.3")?50:20,
     temp_check: {"temperature":[], "humidity":[], "apparent_power":[]},
     updated_temperature:[],
     updated_humidity:[],
@@ -111,6 +115,9 @@ const reducer = (state = initialState, action) => {
     if (action.type === "apparent_power_df") {
         return { ...state, apparent_power_df: action.value }
      } 
+    if (action.type === "input_variable_df") {
+        return { ...state, input_variable_df: action.value }
+     }
     if (action.type === "temperature_nans_percentage") {
         return { ...state, temperature_nans_percentage: action.value }
      } 
@@ -120,6 +127,9 @@ const reducer = (state = initialState, action) => {
     if (action.type === "apparent_power_nans_percentage") {
         return { ...state, apparent_power_nans_percentage: action.value }
      }
+    if (action.type === "nans_dict_percentage") {
+        return { ...state, nans_dict_percentage: action.value }
+    }
     if (action.type === "solar_penetration_temp") {
         return { ...state, solar_penetration_temp: action.value }
     } 

@@ -1,4 +1,4 @@
-/* eslint-disable no-unused-vars, array-callback-return */
+/* eslint-disable no-unused-vars, array-callback-return, no-redeclare */
 import React, {Component} from 'react';
 import {connect} from "react-redux";
 import Grid from '@mui/material/Grid';

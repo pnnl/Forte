@@ -178,12 +178,13 @@ app.logger.info(loading_message)
 
 t = time.process_time()
 print("#### Models and data loading for v1.4: Started ####")
-autoencoder_models_1_4, encoder_models_1_4, lstm_models_1_4, latent_gens_1_4 = {}, {}, {}, {}
+autoencoder_models_1_4, encoder_models_1_4, lstm_models_1_4, mu_models_1_4, latent_gens_1_4 = {}, {}, {}, {}
 solar_penetration_levels = ["20"]
 for i in solar_penetration_levels:
     autoencoder_models_1_4[i] = tf.keras.models.load_model(path_parent+"/data/models/v1.4/pen_"+i+"/autoencoder.h5")
     encoder_models_1_4[i] = tf.keras.models.load_model(path_parent+"/data/models/v1.4/pen_"+i+"/encoder.h5")
     lstm_models_1_4[i] = tf.keras.models.load_model(path_parent+"/data/models/v1.4/pen_"+i+"/model_rnn_probab_nonsol.h5", custom_objects={'NLL': NLL})
+    mu_models_1_4[i] = tf.keras.models.load_model(path_parent+"/data/models/v1.4/pen_"+i+"/mu_model.h5")
     latent_gens_1_4[i] = np.load(path_parent+"/data/models/v1.4/pen_"+i+"/latent_gen.npy")
 elapsed_time_model_load = time.process_time() - t
 loading_message = "#### Models and data loading for v1.4: Completed in %f seconds or %f minutes ####" %(elapsed_time_model_load, (elapsed_time_model_load/60))
@@ -908,6 +909,7 @@ def lstm_func_1_4(latent_gen, sequence_input, pred_train, y_ground, y_prev, sola
     # lower_y_pred = y_pred - two_sd
     # higher_y_pred = y_pred + two_sd
 
+    # Need to extract it from mu_model
     func = K.function([lstm_model.get_layer(index=0).input], lstm_model.get_layer(index=6).output)
     layerOutput = func(X)  # input_data is a numpy array
     print(layerOutput.shape)
@@ -1826,7 +1828,7 @@ def processor_1_4(start_date="2020-05-01 00:00:00", end_date="2020-05-03 00:00:0
     print("kPF PASSED")
     #y_pred, Y_test, mae, mape, crps, pbb, mse, elapsed_time_lstm = lstm_func(latent_gen, sequence_input, pred_train, y_ground, y_prev)
     y_pred, Y_test, lower_y_pred, higher_y_pred, mae, mape, elapsed_time_lstm = lstm_func_1_4(latent_gen, sequence_input, pred_train, y_ground, y_prev, solar_penetration)
-    print("LSTM PASSED")
+    print("LSTM PASSED (Except Mu Model)")
     net_load_df_safe, input_variable_df_safe, conf_95_df_safe = prepare_output_df_1_4(y_pred, Y_test, lower_y_pred, higher_y_pred, timeline, timeline_original, temperature_original, temperature_nans, humidity_original, humidity_nans, apparent_power_original, apparent_power_nans, input_variable_original, nans_dict, nans_dict_percentage)
     #generate_comparison_image(y_pred, Y_test, solar_penetration, "processor", start_date, end_date)
     elapsed_time_total = time.process_time() - t

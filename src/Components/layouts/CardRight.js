@@ -33,11 +33,28 @@ shouldComponentUpdate(nextProps, nextState){
 
 
 render(){ 
-var metrics = this.props.selected_variables;//["temperature", "humidity", "apparent_power"];
-var metrics_unit = [" (°F)", " (%)", " (kVA)"];
-var metrics_data = [[...this.props.temperature_df], [...this.props.humidity_df], [...this.props.apparent_power_df], [...this.props.temperature_df]];
-var metrics_nan_percentage = [Math.round(this.props.temperature_nans_percentage), Math.round(this.props.humidity_nans_percentage), Math.round(this.props.apparent_power_nans_percentage), Math.round(this.props.apparent_power_nans_percentage)];
-var mini_card_height = (metrics.length<=3)?((100/metrics.length) + "%"):((100/3) + "%");
+  if(this.props.url_version === "1.3"){
+    var metrics = this.props.selected_variables;//["temperature", "humidity", "apparent_power"];
+    var metrics_unit = [" (°F)", " (%)", " (kVA)"];
+    var metrics_data = [[...this.props.temperature_df], [...this.props.humidity_df], [...this.props.apparent_power_df], [...this.props.temperature_df]];
+    var metrics_nan_percentage = [Math.round(this.props.temperature_nans_percentage), Math.round(this.props.humidity_nans_percentage), Math.round(this.props.apparent_power_nans_percentage), Math.round(this.props.apparent_power_nans_percentage)];
+    var mini_card_height = (metrics.length<=3)?((100/metrics.length) + "%"):((100/3) + "%");
+  }
+  else{
+    console.log("Version loaded: ",this.props.url_version)
+    var metrics = this.props.selected_variables;//["temperature", "humidity", "apparent_power"];
+    var metrics_unit = ["", "", "", "", "", ""];
+    var metrics_data = [];
+    var metrics_nan_percentage = [];
+    metrics.map(m =>{
+      console.log("CHecking: ", this.props.input_variable_df)
+      metrics_data.push([...(this.props.input_variable_df)[m]])
+      metrics_nan_percentage.push(Math.round((this.props.nans_dict_percentage)[m]))
+    })
+    //var metrics_data = [[...this.props.temperature_df], [...this.props.humidity_df], [...this.props.apparent_power_df], [...this.props.temperature_df]];
+    //var metrics_nan_percentage = [Math.round(this.props.temperature_nans_percentage), Math.round(this.props.humidity_nans_percentage), Math.round(this.props.apparent_power_nans_percentage), Math.round(this.props.apparent_power_nans_percentage)];
+    var mini_card_height = (metrics.length<=3)?((100/metrics.length) + "%"):((100/3) + "%");
+  }
 
 
 return (
@@ -158,9 +175,11 @@ const maptstateToprop = (state) => {
       temperature_df: state.temperature_df,
       humidity_df: state.humidity_df,
       apparent_power_df : state.apparent_power_df,
+      input_variable_df: state.input_variable_df,
       temperature_nans_percentage: state.temperature_nans_percentage,
       humidity_nans_percentage: state.humidity_nans_percentage,
       apparent_power_nans_percentage: state.apparent_power_nans_percentage,
+      nans_dict_percentage: state.nans_dict_percentage,
       updated_temperature: state.updated_temperature,
       updated_humidity: state.updated_humidity,
       updated_apparent_power: state.updated_apparent_power, // need to keep this to trigger an update

@@ -1,4 +1,4 @@
-var url_version = "1.4";
+var url_version = "1.3";
 
 let initialState = {
     blank_placeholder: null,
@@ -29,17 +29,17 @@ let initialState = {
     nans_dict_percentage: {},
     solar_penetration_temp: (url_version === "1.3")?50:20,
     solar_penetration: (url_version === "1.3")?50:20,
-    temp_check: {"temperature":[], "humidity":[], "apparent_power":[]},
+    temp_check: (url_version === "1.3")?{"temperature":[], "humidity":[], "apparent_power":[]}:{"SZA":[], "AZM":[], "ETR (W/m^2)":[], "GHI":[], "Wind_Speed":[], "Temperature":[]},
     updated_temperature:[],
     updated_humidity:[],
     updated_apparent_power:[], // need to keep this to trigger an update
-    updated_metric:{"temperature":[], "humidity":[], "apparent_power":[]},
+    updated_metric:(url_version === "1.3")?{"temperature":[], "humidity":[], "apparent_power":[]}:{"SZA":[], "AZM":[], "ETR (W/m^2)":[], "GHI":[], "Wind_Speed":[], "Temperature":[]},
     enable_seasons_flag:0,
     enable_seasons_choice_temp:0,
     enable_seasons_choice:0,
     noise_temperature_temp: -1,
     noise_temperature:-1,
-    noise_control:{"temperature":-1, "humidity":-1, "apparent_power":-1},
+    noise_control:(url_version === "1.3")?{"temperature":-1, "humidity":-1, "apparent_power":-1}:{"SZA":-1, "AZM":-1, "ETR (W/m^2)":-1, "GHI":-1, "Wind_Speed":-1, "Temperature":-1},
     mae:0,
     mape:0,
     mae_values:[],
@@ -47,8 +47,8 @@ let initialState = {
     freezed_axis:[],
     current_net_load_y_axis: [],
     selected_model:"net load 15 min ahead",
-    selected_variables_temp: ["temperature", "humidity", "apparent_power"],
-    selected_variables: ["temperature", "humidity", "apparent_power"],
+    selected_variables_temp:(url_version === "1.3")?["temperature", "humidity", "apparent_power"]:["SZA", "AZM", "ETR (W/m^2)", "GHI", "Wind_Speed", "Temperature"],
+    selected_variables: (url_version === "1.3")?["temperature", "humidity", "apparent_power"]:["SZA", "AZM", "ETR (W/m^2)", "GHI", "Wind_Speed", "Temperature"],
     selected_card_sensitivity_analysis: "create_job",
     input_variable_sa: "temperature",
     start_date_sa: "Start Date",

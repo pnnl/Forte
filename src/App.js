@@ -27,6 +27,7 @@ class App extends Component{
     converted_start_date = (converted_start_date.toISOString()).replace("T", " ").replace(".000Z", "")
     var converted_end_date = new Date(this.props.end_date)
     converted_end_date = (converted_end_date.toISOString()).replace("T", " ").replace(".000Z", "")
+    console.log("Version loaded: ",this.props.url_version)
 
     if(this.props.url_version === "1.3"){
       var metrics_updated ={}
@@ -54,6 +55,7 @@ class App extends Component{
     
     }
     else{
+      console.log("Came here in 1.4")
       var metrics_updated ={}
       var metrics = ["SZA", "AZM", "ETR (W/m^2)", "GHI", "Wind_Speed", "Temperature"]
       
@@ -65,6 +67,7 @@ class App extends Component{
         // this.props.set_temperature_df(res["temperature_df"]);
         // this.props.set_humidity_df(res["humidity_df"]);
         // this.props.set_apparent_power_df(res["apparent_power_df"]);
+        console.log("CHecking -1:", res["input_variable_df"])
         this.props.set_input_variable_df(res["input_variable_df"]);
         // this.props.set_temperature_nans_percentage(res["temperature_nans_percentage"]);
         // this.props.set_humidity_nans_percentage(res["humidity_nans_percentage"]);
@@ -93,6 +96,7 @@ class App extends Component{
           {/* <Grid container style={{opacity:(this.props.isLoadingUpdate)?0.4:1}}> */}
           <Grid container>
           <Grid item xs={12} lg={6}><CardLeft></CardLeft></Grid>
+          {/* {(!this.props.isLoadingUpdate)?<Grid item xs={12} lg={6}><CardRight></CardRight></Grid>:null} */}
           <Grid item xs={12} lg={6}><CardRight></CardRight></Grid>
           </Grid>
         </Grid>

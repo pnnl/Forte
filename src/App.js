@@ -96,8 +96,8 @@ class App extends Component{
           {/* <Grid container style={{opacity:(this.props.isLoadingUpdate)?0.4:1}}> */}
           <Grid container>
           <Grid item xs={12} lg={6}><CardLeft></CardLeft></Grid>
-          {/* {(!this.props.isLoadingUpdate)?<Grid item xs={12} lg={6}><CardRight></CardRight></Grid>:null} */}
-          <Grid item xs={12} lg={6}><CardRight></CardRight></Grid>
+          {(this.props.input_variable_df)?<Grid item xs={12} lg={6}><CardRight></CardRight></Grid>:null}
+          {/* <Grid item xs={12} lg={6}><CardRight></CardRight></Grid> */}
           </Grid>
         </Grid>
         </Grid>
@@ -120,7 +120,8 @@ const mapStateToProp = (state) => {
     start_date: state.start_date,
     end_date: state.end_date,
     updated_metric: state.updated_metric,
-    selected_model: state.selected_model
+    selected_model: state.selected_model,
+    input_variable_df: state.input_variable_df,
 
   }
 }

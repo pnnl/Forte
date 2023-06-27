@@ -1,4 +1,4 @@
-var url_version = "1.3";
+var url_version = "1.4";
 
 let initialState = {
     blank_placeholder: null,

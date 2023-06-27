@@ -1001,7 +1001,7 @@ def validate_start_date_1_4(start_date):
     edited_start_date: String (e.g.: "2020-04-30 12:00:00")
     """
     received_start_date = datetime.strptime(start_date, "%Y-%m-%d %H:%M:%S")
-    edited_start_date = datetime.strftime((received_start_date - timedelta(hours = 12)), "%Y-%m-%d %H:%M:%S" )
+    edited_start_date = datetime.strftime((received_start_date - timedelta(hours = 24)), "%Y-%m-%d %H:%M:%S" )
     # Handle sending lesser than 1st Jan dates
     return edited_start_date
 
@@ -1093,7 +1093,7 @@ def validate_start_date(start_date):
     edited_start_date: String (e.g.: "2020-05-01 12:00:00")
     """
     received_start_date = datetime.strptime(start_date, "%Y-%m-%d %H:%M:%S")
-    edited_start_date = datetime.strftime((received_start_date - timedelta(hours = 24)), "%Y-%m-%d %H:%M:%S" )
+    edited_start_date = datetime.strftime((received_start_date - timedelta(hours = 12)), "%Y-%m-%d %H:%M:%S" )
     # Handle sending lesser than 1st Jan dates
     return edited_start_date
 

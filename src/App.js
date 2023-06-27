@@ -96,7 +96,8 @@ class App extends Component{
           {/* <Grid container style={{opacity:(this.props.isLoadingUpdate)?0.4:1}}> */}
           <Grid container>
           <Grid item xs={12} lg={6}><CardLeft></CardLeft></Grid>
-          {(this.props.input_variable_df)?<Grid item xs={12} lg={6}><CardRight></CardRight></Grid>:null}
+          {/* {(this.props.input_variable_df | this.props.url_version === "1.3")?<Grid item xs={12} lg={6}><CardRight></CardRight></Grid>:null} */}
+          {(this.props.url_version === "1.3")?<Grid item xs={12} lg={6}><CardRight></CardRight></Grid>:((this.props.input_variable_df)?<Grid item xs={12} lg={6}><CardRight></CardRight></Grid>:null)}
           {/* <Grid item xs={12} lg={6}><CardRight></CardRight></Grid> */}
           </Grid>
         </Grid>

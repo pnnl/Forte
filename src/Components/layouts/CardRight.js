@@ -55,7 +55,7 @@ render(){
     var metrics_data = [];
     var metrics_nan_percentage = [];
     metrics.map(m =>{
-      console.log("CHecking: ", [...(this.props.input_variable_df)[m]])
+      //console.log("CHecking: ", [...(this.props.input_variable_df)[m]])
       metrics_data.push([...(this.props.input_variable_df)[m]])
       metrics_nan_percentage.push(Math.round((this.props.nans_dict_percentage)[m]))
     })

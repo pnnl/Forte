@@ -1,5 +1,5 @@
 /* eslint-disable no-useless-constructor */
-/* eslint-disable no-unused-vars, array-callback-return */
+/* eslint-disable no-unused-vars, array-callback-return, no-redeclare */
 import React, {Component} from 'react';
 import { connect } from "react-redux";
 import { Card, CardGroup} from 'react-bootstrap';

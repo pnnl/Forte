@@ -75,6 +75,9 @@ class App extends Component{
         this.props.set_nans_dict_percentage(res["nans_dict_percentage"]);
         this.props.set_mae(res["7. MAE"]);
         this.props.set_mape(res["8. MAPE"]);
+        this.props.set_mean_ape(res["8a. Mean APE"]);
+        this.props.set_median_ape(res["8b. Median APE"]);
+        this.props.set_mode_ape(res["8c. Mode APE"]);
         this.props.set_isLoadingUpdate(false);
         
         })
@@ -148,6 +151,9 @@ const mapDispatchToProp = (dispatch) => {
     set_nans_dict_percentage: (val) => dispatch({ type: "nans_dict_percentage", value: val}),
     set_mae: (val) => dispatch({ type: "mae", value: val}),
     set_mape: (val) => dispatch({ type: "mape", value: val}),
+    set_mean_ape: (val) => dispatch({ type: "mean_ape", value: val}),
+    set_median_ape: (val) => dispatch({ type: "median_ape", value: val}),
+    set_mode_ape: (val) => dispatch({ type: "mode_ape", value: val}),
   }
 }
 export default connect(mapStateToProp,mapDispatchToProp)(App);

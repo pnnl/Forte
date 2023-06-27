@@ -5,7 +5,7 @@ import time, os, re, random, calendar
 import pandas as pd
 import numpy as np
 from flask_cors import CORS
-import requests, ast
+import requests, ast, statistics
 import json 
 from tqdm import tqdm# as tqdm1
 import logging
@@ -113,15 +113,13 @@ def NLL(y, distr):
 def kernel(x, y):
     return math.exp(-np.linalg.norm(x - y)/2)
 
-# def prepare_output_df(y_pred, Y_test):
-#     net_load = ((Y_test.flatten()).tolist())
-#     net_load.extend(y_pred.tolist())
-#     net_load_type = (["actual"] * Y_test.size)
-#     net_load_type.extend(["predicted"] * y_pred.size)
-#     years = (list(range(1,Y_test.size+1)))
-#     years.extend(list(range(1,y_pred.size+1)))
-#     net_load_df = pd.DataFrame({"net_load": net_load, "net_load_type": net_load_type, "years": years})
-#     return net_load_df
+# Defining APE Formulae
+def calculate_ape(y_true, y_pred):
+    y_true, y_pred = (y_true.flatten()).tolist(), (y_pred.flatten()).tolist()
+    ape_array = []
+    for i in range(len(y_true)):
+        ape_array.append(abs((y_true[i] - y_pred[i]) / y_true[i]) * 100)
+    return ape_array
 
 #deprecated
 def kPF_func_calculation(solar_penetration):
@@ -925,10 +923,14 @@ def lstm_func_1_4(latent_gen, sequence_input, pred_train, y_ground, y_prev, sola
     mape = mean_absolute_percentage_error(Y_test, y_pred)*100
     # crps = ps.crps_ensemble(y_pred.flatten(), Y_test).mean()
     # pbb = pbb_calculation(Y_test, y_pred.flatten())
+    ape_array = calculate_ape(Y_test[np.where(Y_test!=0)],y_pred[np.where(Y_test!=0)])
+    mean_ape = statistics.mean(ape_array)
+    median_ape = statistics.median(ape_array)
+    mode_ape = statistics.mode(ape_array)
     mse = mean_squared_error(Y_test, y_pred)
     elapsed_time_lstm = time.process_time() - t
     #return y_pred, Y_test, mae, mape, crps, pbb, mse, elapsed_time_lstm
-    return y_pred, Y_test, lower_y_pred, higher_y_pred, mae, mape, elapsed_time_lstm
+    return y_pred, Y_test, lower_y_pred, higher_y_pred, mae, mape, mean_ape, median_ape, mode_ape,  elapsed_time_lstm
 
 
 def prepare_output_df_1_4(y_pred, Y_test, lower_y_pred, higher_y_pred, timeline, timeline_original, input_variable_original, nans_dict, nans_dict_percentage):
@@ -1818,14 +1820,14 @@ def processor_1_4(start_date="2020-05-01 00:00:00", end_date="2020-05-03 00:00:0
     latent_gen, elapsed_time_kpf = kPF_func_1_4(pred_train, solar_penetration)
     print("kPF PASSED")
     #y_pred, Y_test, mae, mape, crps, pbb, mse, elapsed_time_lstm = lstm_func(latent_gen, sequence_input, pred_train, y_ground, y_prev)
-    y_pred, Y_test, lower_y_pred, higher_y_pred, mae, mape, elapsed_time_lstm = lstm_func_1_4(latent_gen, sequence_input, pred_train, y_ground, y_prev, solar_penetration)
+    y_pred, Y_test, lower_y_pred, higher_y_pred, mae, mape, mean_ape, median_ape, mode_ape, elapsed_time_lstm = lstm_func_1_4(latent_gen, sequence_input, pred_train, y_ground, y_prev, solar_penetration)
     print("LSTM PASSED")
     net_load_df_safe, input_variable_df_safe, conf_95_df_safe = prepare_output_df_1_4(y_pred, Y_test, lower_y_pred, higher_y_pred, timeline, timeline_original, input_variable_original, nans_dict, nans_dict_percentage)
     #generate_comparison_image(y_pred, Y_test, solar_penetration, "processor", start_date, end_date)
     elapsed_time_total = time.process_time() - t
     print("MAPE: ", mape)
     #final_result ={"1. message":"Program executed", "2. time taken (prepare input)": elapsed_time_prepare_input, "3. time taken (autoencoder)":elapsed_time_autoencoder, "4. time taken (kPF)": elapsed_time_kpf, "5. time taken (LSTM)": elapsed_time_lstm, "6. total time taken":elapsed_time_total, "7. MAE": mae, "8. MAPE": mape, "9. CRPS": crps, "10. PBB": pbb, "11. MSE": mse}
-    final_result ={"1. message":"Program executed", "2. time taken (prepare input)": elapsed_time_prepare_input, "3. time taken (autoencoder)":elapsed_time_autoencoder, "4. time taken (kPF)": elapsed_time_kpf, "5. time taken (LSTM)": elapsed_time_lstm, "6. total time taken":elapsed_time_total, "7. MAE": mae, "8. MAPE": mape, "predicted_net_load":y_pred.flatten().tolist(), "actual_net_load": Y_test.tolist(), "predicted_net_load_conf_95_higher":higher_y_pred.flatten().tolist(), "predicted_net_load_conf_95_lower":lower_y_pred.flatten().tolist(),  "input_variable_df":input_variable_df_safe, "net_load_df": net_load_df_safe, "conf_95_df":conf_95_df_safe,  "nans_dict_percentage": nans_dict_percentage}
+    final_result ={"1. message":"Program executed", "2. time taken (prepare input)": elapsed_time_prepare_input, "3. time taken (autoencoder)":elapsed_time_autoencoder, "4. time taken (kPF)": elapsed_time_kpf, "5. time taken (LSTM)": elapsed_time_lstm, "6. total time taken":elapsed_time_total, "7. MAE": mae, "8. MAPE": mape, "8a. Mean APE": mean_ape, "8b. Median APE": median_ape,  "8c. Mode APE": mode_ape, "predicted_net_load":y_pred.flatten().tolist(), "actual_net_load": Y_test.tolist(), "predicted_net_load_conf_95_higher":higher_y_pred.flatten().tolist(), "predicted_net_load_conf_95_lower":lower_y_pred.flatten().tolist(),  "input_variable_df":input_variable_df_safe, "net_load_df": net_load_df_safe, "conf_95_df":conf_95_df_safe,  "nans_dict_percentage": nans_dict_percentage}
     response=make_response(jsonify(final_result), 200) #removed processing
     response.headers.add('Access-Control-Allow-Origin', '*')
     return response;

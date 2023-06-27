@@ -42,6 +42,9 @@ let initialState = {
     noise_control:(url_version === "1.3")?{"temperature":-1, "humidity":-1, "apparent_power":-1}:{"SZA":-1, "AZM":-1, "ETR (W/m^2)":-1, "GHI":-1, "Wind_Speed":-1, "Temperature":-1},
     mae:0,
     mape:0,
+    mean_ape:0,
+    median_ape:0,
+    mode_ape:0,
     mae_values:[],
     mape_values:[],
     freezed_axis:[],
@@ -182,10 +185,16 @@ const reducer = (state = initialState, action) => {
     }
     if (action.type === "mape") {
         return { ...state, mape: action.value }
-    }  
-    if (action.type === "mae_values") {
-        return { ...state, mae_values: action.value }
+    } 
+    if (action.type === "mean_ape") {
+        return { ...state, mean_ape: action.value }
     }
+    if (action.type === "median_ape") {
+        return { ...state, median_ape: action.value }
+    }
+    if (action.type === "mode_ape") {
+        return { ...state, mode_ape: action.value }
+    }  
     if (action.type === "mape_values") {
         return { ...state, mape_values: action.value }
     }

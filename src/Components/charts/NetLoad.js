@@ -259,9 +259,17 @@ class NetLoad extends Component {
                 tooltip.transition()
                   .duration(200)
                   .style("opacity", .9);
-                tooltip.html("MAE: "+String(self.props.mae)+" kW <br> MAPE: "+String(self.props.mape)+"%")
-                  .style("left", (event.pageX + 5) + "px")
-                  .style("top", (event.pageY - 10) + "px");
+                if(self.props.url_version === "1.3"){
+                    tooltip.html("MAE: "+String(self.props.mae)+" kW <br> MAPE: "+String(self.props.mape)+"%")
+                            .style("left", (event.pageX + 5) + "px")
+                            .style("top", (event.pageY - 10) + "px");
+                }
+                else{
+                    tooltip.html("MAE: "+String(self.props.mae)+" kW <br> MAPE: "+String(self.props.mape)+"%"+"<br> Mode APE: "+String(self.props.mode_ape)+"%"+"<br> Median APE: "+String(self.props.median_ape)+"%"+"<br> Mean APE: "+String(self.props.mean_ape)+"%")
+                            .style("left", (event.pageX + 5) + "px")
+                            .style("top", (event.pageY - 10) + "px");
+                }
+                
               })
                 .on("mouseout", function (d) {
                   tooltip.transition()
@@ -293,8 +301,12 @@ const maptstateToprop = (state) => {
         blank_placeholder:state.blank_placeholder,
         net_load_df: state.net_load_df,
         conf_95_df: state.conf_95_df,
+        url_version: state.url_version,
         mae: state.mae,
         mape: state.mape,
+        mean_ape: state.mean_ape,
+        median_ape: state.median_ape,
+        mode_ape: state.mode_ape,
         freezed_axis: state.freezed_axis,
         animation_duration: state.animation_duration,
     }

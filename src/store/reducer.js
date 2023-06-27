@@ -49,6 +49,8 @@ let initialState = {
     selected_model:"net load 15 min ahead",
     selected_variables_temp:(url_version === "1.3")?["temperature", "humidity", "apparent_power"]:["SZA", "AZM", "ETR (W/m^2)", "GHI", "Wind_Speed", "Temperature"],
     selected_variables: (url_version === "1.3")?["temperature", "humidity", "apparent_power"]:["SZA", "AZM", "ETR (W/m^2)", "GHI", "Wind_Speed", "Temperature"],
+    selected_variables_unit: (url_version === "1.3")?{"temperature":" (°F)", "humidity":" (%)", "apparent_power":" (kVA)"}:{"SZA":" (°)", "AZM":" (°)", "ETR (W/m^2)":" (W/m^2)", "GHI":" (W/m^2)", "Wind_Speed":" (m/s)", "Temperature":" (°C)"},
+    // SZA: Solar Zenith Angle; AZM: Azimuth angle; ETR: ExtraTerrestial Irradiance; GHI: Global Horizontal Irradiance; Wind Speed is meters/seconds as per the user guide;
     selected_card_sensitivity_analysis: "create_job",
     input_variable_sa: "temperature",
     start_date_sa: "Start Date",

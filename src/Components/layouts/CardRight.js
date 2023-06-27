@@ -51,13 +51,14 @@ render(){
     console.log("Version loaded: ",this.props.url_version)
     var metrics = this.props.selected_variables;//["temperature", "humidity", "apparent_power"];
     metrics = metrics.filter(m => m !== "ETR (W/m^2)"); // Removing ETR for time being
-    var metrics_unit = ["", "", "", "", "", ""];
+    var metrics_unit = []; //["", "", "", "", "", ""];
     var metrics_data = [];
     var metrics_nan_percentage = [];
     metrics.map(m =>{
       //console.log("CHecking: ", [...(this.props.input_variable_df)[m]])
       metrics_data.push([...(this.props.input_variable_df)[m]])
       metrics_nan_percentage.push(Math.round((this.props.nans_dict_percentage)[m]))
+      metrics_unit.push((this.props.selected_variables_unit)[m])
     })
     //var metrics_data = [[...this.props.temperature_df], [...this.props.humidity_df], [...this.props.apparent_power_df], [...this.props.temperature_df]];
     //var metrics_nan_percentage = [Math.round(this.props.temperature_nans_percentage), Math.round(this.props.humidity_nans_percentage), Math.round(this.props.apparent_power_nans_percentage), Math.round(this.props.apparent_power_nans_percentage)];
@@ -195,6 +196,7 @@ const maptstateToprop = (state) => {
       updated_metric: state.updated_metric,
       noise_control: state.noise_control,
       selected_variables: state.selected_variables,
+      selected_variables_unit: state.selected_variables_unit,
       selected_model: state.selected_model,
   }
 }

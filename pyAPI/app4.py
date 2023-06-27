@@ -183,7 +183,7 @@ solar_penetration_levels = ["20"]
 for i in solar_penetration_levels:
     autoencoder_models_1_4[i] = tf.keras.models.load_model(path_parent+"/data/models/v1.4/pen_"+i+"/autoencoder.h5")
     encoder_models_1_4[i] = tf.keras.models.load_model(path_parent+"/data/models/v1.4/pen_"+i+"/encoder.h5")
-    lstm_models_1_4[i] = tf.keras.models.load_model(path_parent+"/data/models/v1.4/pen_"+i+"/model_rnn_probab_nonsol.h5", custom_objects={'NLL': NLL})
+    lstm_models_1_4[i] = tf.keras.models.load_model(path_parent+"/data/models/v1.4/pen_"+i+"/model_rnn_probab_nonsol.h5")
     mu_models_1_4[i] = tf.keras.models.load_model(path_parent+"/data/models/v1.4/pen_"+i+"/mu_model.h5")
     latent_gens_1_4[i] = np.load(path_parent+"/data/models/v1.4/pen_"+i+"/latent_gen.npy")
 elapsed_time_model_load = time.process_time() - t
@@ -896,36 +896,26 @@ def lstm_func_1_4(latent_gen, sequence_input, pred_train, y_ground, y_prev, sola
     lstm_model = lstm_models_1_4[str(solar_penetration)]
     y_pred = lstm_model.predict(X)*1e6
     Y_test=Y*1e6
-    #y_pred=y_pred*(np.max(total_train_data[:,41])-np.min(total_train_data[:,41]))+np.min(total_train_data[:,41])
-    #Y_test=Y*(np.max(total_train_data[:,41])-np.min(total_train_data[:,41]))+np.min(total_train_data[:,41])
-    #y_pred = y_pred.flatten()
-    #print(y_pred, Y_test)
 
-    # Un comment for old way of calculating confidence interval
-    # mean = lambda x: x.mean()#.flatten()
-    # sd = lambda x: x.std()#.flatten() 
-    # conf_int_95 = np.array([mean(y_pred) - 2*sd(y_pred), mean(y_pred) + 2*sd(y_pred)]) #https://datascience.stackexchange.com/questions/109048/get-the-confidence-interval-for-prediction-results-with-lstm
-    # two_sd = 2*sd(y_pred)
-    # lower_y_pred = y_pred - two_sd
-    # higher_y_pred = y_pred + two_sd
+    mu_model = mu_models_1_4[str(solar_penetration)]
+    mean_n_sd = mu_model.predict(X)*1e6
+    mean_full = mean_n_sd[:,0]
+    sd_full = mean_n_sd[:,1]
 
-    # Need to extract it from mu_model
-    func = K.function([lstm_model.get_layer(index=0).input], lstm_model.get_layer(index=6).output)
-    layerOutput = func(X)  # input_data is a numpy array
-    print(layerOutput.shape)
-    y_pred = y_pred.flatten()
     conf_array_higher_limit, conf_array_lower_limit = [], []
-    for index, concatenated_data in enumerate(layerOutput): # concatenated_data = [mean, sd]
-        # sigma_sign = 1
-        # if(concatenated_data[1]<0): sigma_sign = -1
-        # sigma = sigma_sign * np.sqrt(abs(concatenated_data[1]))
-        sigma = concatenated_data[1]
-        lower_limit = y_pred[index] - 2*sigma
-        higher_limit = y_pred[index] + 2*sigma
-        conf_array_lower_limit.append(lower_limit) #reversing
-        conf_array_higher_limit.append(higher_limit)
-    lower_y_pred = np.array(conf_array_lower_limit) #y_pred - two_sd
-    higher_y_pred = np.array(conf_array_higher_limit) #y_pred + two_sd
+    for index, the_data in enumerate(mean_full):
+        lower_limit = mean_full[index] - 2*sd_full[index]
+        upper_limit = mean_full[index] + 2*sd_full[index]
+        conf_array_lower_limit.append(lower_limit) 
+        conf_array_higher_limit.append(upper_limit)
+    lower_y_pred = np.array(conf_array_lower_limit)
+    higher_y_pred = np.array(conf_array_higher_limit)
+
+    # print(Y_test[0], y_pred[0], mean_full[0], sd_full[0], lower_y_pred[0], higher_y_pred[0] )
+    # print(Y_test[1], y_pred[1], mean_full[1], sd_full[1], lower_y_pred[1], higher_y_pred[1] )
+    # print(Y_test[2], y_pred[2], mean_full[2], sd_full[2], lower_y_pred[2], higher_y_pred[2] )  
+    #print(sd_full)
+
     
     #np.savetxt(path_parent+"/data/outputs/pen_"+str(solar_penetration)+"/y_pred.csv", y_pred, delimiter=",")
     #np.savetxt(path_parent+"/data/outputs/pen_"+str(solar_penetration)+"/Y_test.csv", Y_test, delimiter=",")
@@ -1829,7 +1819,7 @@ def processor_1_4(start_date="2020-05-01 00:00:00", end_date="2020-05-03 00:00:0
     print("kPF PASSED")
     #y_pred, Y_test, mae, mape, crps, pbb, mse, elapsed_time_lstm = lstm_func(latent_gen, sequence_input, pred_train, y_ground, y_prev)
     y_pred, Y_test, lower_y_pred, higher_y_pred, mae, mape, elapsed_time_lstm = lstm_func_1_4(latent_gen, sequence_input, pred_train, y_ground, y_prev, solar_penetration)
-    print("LSTM PASSED (Except Mu Model)")
+    print("LSTM PASSED")
     net_load_df_safe, input_variable_df_safe, conf_95_df_safe = prepare_output_df_1_4(y_pred, Y_test, lower_y_pred, higher_y_pred, timeline, timeline_original, input_variable_original, nans_dict, nans_dict_percentage)
     #generate_comparison_image(y_pred, Y_test, solar_penetration, "processor", start_date, end_date)
     elapsed_time_total = time.process_time() - t

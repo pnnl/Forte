@@ -260,12 +260,13 @@ class NetLoad extends Component {
                   .duration(200)
                   .style("opacity", .9);
                 if(self.props.url_version === "1.3"){
-                    tooltip.html("MAE: "+String(self.props.mae)+" kW <br> MAPE: "+String(self.props.mape)+"%")
+                    //tooltip.html("MAE: "+String(self.props.mae)+" kW <br> MAPE: "+String(self.props.mape)+"%")
+                    tooltip.html("MAE: "+String(self.props.mae)+" kW"+"<br> Mode APE: "+String(self.props.mode_ape)+"%"+"<br> Median APE: "+String(self.props.median_ape)+"%"+"<br> Mean APE: "+String(self.props.mean_ape)+"%")
                             .style("left", (event.pageX + 5) + "px")
                             .style("top", (event.pageY - 10) + "px");
                 }
                 else{
-                    tooltip.html("MAE: "+String(self.props.mae)+" kW <br> MAPE: "+String(self.props.mape)+"%"+"<br> Mode APE: "+String(self.props.mode_ape)+"%"+"<br> Median APE: "+String(self.props.median_ape)+"%"+"<br> Mean APE: "+String(self.props.mean_ape)+"%")
+                    tooltip.html("MAE: "+String(self.props.mae)+" kW"+"<br> Mode APE: "+String(self.props.mode_ape)+"%"+"<br> Median APE: "+String(self.props.median_ape)+"%"+"<br> Mean APE: "+String(self.props.mean_ape)+"%")
                             .style("left", (event.pageX + 5) + "px")
                             .style("top", (event.pageY - 10) + "px");
                 }

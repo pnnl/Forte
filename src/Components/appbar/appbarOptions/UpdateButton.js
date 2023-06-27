@@ -67,6 +67,9 @@ class UpdateButton extends Component {
                     this.props.set_noise_control(noise_control);
                     this.props.set_mae(res["7. MAE"]);
                     this.props.set_mape(res["8. MAPE"]);
+                    this.props.set_mean_ape(res["8a. Mean APE"]);
+                    this.props.set_median_ape(res["8b. Median APE"]);
+                    this.props.set_mode_ape(res["8c. Mode APE"]);
                     this.props.set_isLoadingUpdate(false);
                     
                     })

@@ -30,41 +30,7 @@ export class  CardRight extends Component {
   
 }
 componentDidMount() {}
-componentDidUpdate() {
-  // var metrics = []
-  // var metrics_unit = []
-  // var metrics_data = []
-  // var metrics_nan_percentage = []
-  // var mini_card_height = ((100/3) + "%")
-  // if(this.props.url_version === "1.3"){
-  //   metrics = this.props.selected_variables;//["temperature", "humidity", "apparent_power"];
-  //   metrics_unit = [" (°F)", " (%)", " (kVA)"];
-  //   metrics_data = [[...this.props.temperature_df], [...this.props.humidity_df], [...this.props.apparent_power_df], [...this.props.temperature_df]];
-  //   metrics_nan_percentage = [Math.round(this.props.temperature_nans_percentage), Math.round(this.props.humidity_nans_percentage), Math.round(this.props.apparent_power_nans_percentage), Math.round(this.props.apparent_power_nans_percentage)];
-  //   mini_card_height = (metrics.length<=3)?((100/metrics.length) + "%"):((100/3) + "%");
-  // }
-  // else{
-  //   console.log("Version loaded: ",this.props.url_version)
-  //   metrics = this.props.selected_variables;//["temperature", "humidity", "apparent_power"];
-  //   metrics_unit = ["", "", "", "", "", ""];
-  //   metrics_data = [];
-  //   metrics_nan_percentage = [];
-  //   metrics.map(m =>{
-  //     console.log("CHecking: ", [...(this.props.input_variable_df)[m]])
-  //     metrics_data.push([...(this.props.input_variable_df)[m]])
-  //     metrics_nan_percentage.push(Math.round((this.props.nans_dict_percentage)[m]))
-  //   })
-  //   //var metrics_data = [[...this.props.temperature_df], [...this.props.humidity_df], [...this.props.apparent_power_df], [...this.props.temperature_df]];
-  //   //var metrics_nan_percentage = [Math.round(this.props.temperature_nans_percentage), Math.round(this.props.humidity_nans_percentage), Math.round(this.props.apparent_power_nans_percentage), Math.round(this.props.apparent_power_nans_percentage)];
-  //   mini_card_height = (metrics.length<=3)?((100/metrics.length) + "%"):((100/3) + "%");
-  // }
-  // this.setState({metrics:metrics});
-  // this.setState({metrics_unit:metrics_unit});
-  // this.setState({metrics_data:metrics_data});
-  // this.setState({metrics_nan_percentage:metrics_nan_percentage});
-  // this.setState({mini_card_height:mini_card_height})
-
-}
+componentDidUpdate() {}
 shouldComponentUpdate(nextProps, nextState){
     return true
 }
@@ -199,105 +165,6 @@ render(){
     
   );  
 
-// return (
-//     <div style={{height: "90vh", overflow:"scroll"}}>
-//     {this.state.metrics.map((metric, metric_index) =>{
-//       //console.log(metric, metric_index)
-//         return <Card key={metric_index} style={{height: this.state.mini_card_height}}>
-//         <Card.Header>
-//           <Grid container direction="row" spacing={1}>
-//             <Grid item xs={8} sm={8}>{metric.replaceAll("_", " ")+this.state.metrics_unit[metric_index]}   {(this.state.metrics_nan_percentage[metric_index] > 0)?<i className={"fa fa-info-circle metrics_nans_info_icon_"+metric} aria-hidden="true"></i>:null}</Grid>
-//             {/* <Grid item xs={1} sm={1}></Grid> */}
-//             <Grid item xs={4} sm={4}>
-//               <Grid container direction="row" spacing={5}>
-//                 <Grid item xs={4} sm={4}>{(["temperature", "humidity", "apparent_power"].includes(metric))?<NoiseAdditionOption the_metric={metric} the_data={this.state.metrics_data[metric_index]}></NoiseAdditionOption>:null}</Grid>
-//                 <Grid item xs={4} sm={4}>{(["temperature", "humidity", "apparent_power"].includes(metric))?<Tooltip title={(this.props.isLoadingUpdate)?"Loading":(((this.props.updated_metric[metric]).length === 0)?"Drag this chart to make changes":"Click the button to reset the changes")} placement="top" arrow><span><Button size="small"  color="secondary"  disabled={this.props.isLoadingUpdate || ((this.props.updated_metric[metric]).length === 0)}  style={{ backgroundColor: "#efefef", opacity: 1, borderRadius: 0, color: (this.props.isLoadingUpdate || ((this.props.updated_metric[metric]).length === 0))?null:"black",  marginTop: -2, textTransform: 'none' }}
-//                 onClick={()=>{
-//                   this.props.set_isLoadingUpdate(true);
-//                   var converted_start_date = new Date(this.props.start_date_temp)
-//                   converted_start_date = (converted_start_date.toISOString()).replace("T", " ").replace(".000Z", "")
-//                   var converted_end_date = new Date(this.props.end_date_temp)
-//                   converted_end_date = (converted_end_date.toISOString()).replace("T", " ").replace(".000Z", "")
-
-//                   var metrics_updated ={}
-//                   this.state.metrics.map(em => {metrics_updated[em]=((this.props.updated_metric[em]).length===0 || em===metric)?0:1}) // capturing which metrics are updated
-
-//                   var processor = "processor_15min_ahead";
-//                   if(this.props.selected_model === "net load 15 min ahead"){processor = "processor_15min_ahead"}
-//                   else if(this.props.selected_model === "net load 24 hr ahead"){processor = "processor_24hr_ahead"}
-                  
-
-//                   jsonCall.download(this.props.url + "/api/v@"+this.props.url_version+"/processor", {start_date: converted_start_date, end_date: converted_end_date, solar_penetration:this.props.solar_penetration_temp, metrics_updated:metrics_updated, updated_metric:this.props.updated_metric}).then(res =>{
-//                     console.log(res);
-//                     this.props.set_net_load_df_old(this.props.net_load_df);
-//                     this.props.set_conf_95_df_old(this.props.conf_95_df); //Saving the older values
-//                     this.props.set_net_load_df(res["net_load_df"]);
-//                     this.props.set_conf_95_df(res["conf_95_df"]);
-//                     this.props.set_temperature_df(res["temperature_df"]);
-//                     this.props.set_humidity_df(res["humidity_df"]);
-//                     this.props.set_apparent_power_df(res["apparent_power_df"]);
-//                     this.props.set_temperature_nans_percentage(res["temperature_nans_percentage"]);
-//                     this.props.set_humidity_nans_percentage(res["humidity_nans_percentage"]);
-//                     this.props.set_apparent_power_nans_percentage(res["apparent_power_nans_percentage"]);
-//                     var updated_metric =this.props.updated_metric;
-//                     updated_metric[metric] = []; // resetting the metric that is being reset
-//                     this.props.set_updated_metric(updated_metric);
-//                     this.props.set_noise_temperature_temp(-1);
-//                     this.props.set_mae(res["7. MAE"]);
-//                     this.props.set_mape(res["8. MAPE"]);
-//                     this.props.set_isLoadingUpdate(false);
-                    
-//                     })
-//                 }}>{this.props.isLoadingUpdate ? 'Loading...' : 'Reset'}</Button></span></Tooltip>:null}</Grid>
-
-
-//                 <Grid item xs={4} sm={4}>{(["temperature", "humidity", "apparent_power"].includes(metric))?<Tooltip title={(this.props.isLoadingUpdate)?"Loading":(((this.props.updated_metric[metric]).length === 0)?"Drag this chart to make changes":"Click the button to see the changes")} placement="top" arrow><span><Button size="small"  color="secondary"  disabled={this.props.isLoadingUpdate || ((this.props.updated_metric[metric]).length === 0)}  style={{ backgroundColor: "#efefef", opacity: 1, borderRadius: 0, color: (this.props.isLoadingUpdate || ((this.props.updated_metric[metric]).length === 0))?null:"black",  marginTop: -2, textTransform: 'none' }}
-//                 onClick={()=>{
-//                   this.props.set_isLoadingUpdate(true);
-//                   var converted_start_date = new Date(this.props.start_date_temp)
-//                   converted_start_date = (converted_start_date.toISOString()).replace("T", " ").replace(".000Z", "")
-//                   var converted_end_date = new Date(this.props.end_date_temp)
-//                   converted_end_date = (converted_end_date.toISOString()).replace("T", " ").replace(".000Z", "")
-                  
-//                   var metrics_updated ={}
-//                   this.state.metrics.map(em => {metrics_updated[em]=((this.props.updated_metric[em]).length>0)?1:0}) // capturing which metrics are updated
-                  
-//                   var processor = "processor_15min_ahead";
-//                   if(this.props.selected_model === "net load 15 min ahead"){processor = "processor_15min_ahead"}
-//                   else if(this.props.selected_model === "net load 24 hr ahead"){processor = "processor_24hr_ahead"}
-
-//                   jsonCall.download(this.props.url + "/api/v@"+this.props.url_version+"/processor", {start_date: converted_start_date, end_date: converted_end_date, solar_penetration:this.props.solar_penetration_temp, metrics_updated:metrics_updated, updated_metric: this.props.updated_metric}).then(res =>{
-//                     console.log(res);
-//                     this.props.set_net_load_df_old(this.props.net_load_df);
-//                     this.props.set_conf_95_df_old(this.props.conf_95_df); //Saving the older values
-//                     this.props.set_net_load_df(res["net_load_df"]);
-//                     this.props.set_conf_95_df(res["conf_95_df"]);
-//                     this.props.set_temperature_df(res["temperature_df"]);
-//                     this.props.set_humidity_df(res["humidity_df"]);
-//                     this.props.set_apparent_power_df(res["apparent_power_df"]);
-//                     this.props.set_temperature_nans_percentage(res["temperature_nans_percentage"]);
-//                     this.props.set_humidity_nans_percentage(res["humidity_nans_percentage"]);
-//                     this.props.set_apparent_power_nans_percentage(res["apparent_power_nans_percentage"]);
-//                     this.props.set_mae(res["7. MAE"]);
-//                     this.props.set_mape(res["8. MAPE"]);
-//                     this.props.set_isLoadingUpdate(false);
-                    
-//                     })
-//                 }}>{this.props.isLoadingUpdate ? 'Loading...' : 'Update'}</Button></span></Tooltip>:null}</Grid>
-//               </Grid>
-//             </Grid>  
-//           </Grid>
-//         </Card.Header>
-//         <Card.Body style={{opacity:(this.props.isLoadingUpdate)?0.4:1}} >
-//             {(["temperature", "humidity", "apparent_power"].includes(metric) & (this.props.net_load_df).length >0 & ([...this.props.temperature_df]).length >0)?<MetricsChart the_metric={metric} the_data={this.state.metrics_data[metric_index]} the_nans_percentage={this.state.metrics_nan_percentage[metric_index]} the_noise_control={this.props.noise_control} ></MetricsChart>:null}
-//         </Card.Body>
-//         </Card>
-//     })}    
-    
-//     </div>  
-
-    
-//   );
  } //return ends
 }
 

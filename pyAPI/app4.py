@@ -808,14 +808,14 @@ def lstm_func_1_3(latent_gen, sequence_input, pred_train, y_ground, y_prev, sola
 
 
 
-def prepare_input_1_4(start_date, end_date, solar_penetration, updated_metric):
+def prepare_input_1_4(start_date, end_date, solar_penetration, updated_metric, metrics):
     t = time.process_time()
     #A=pd.read_csv(path_parent+"/data/inputs/df1_solar_"+str(solar_penetration)+"_pen.csv") # Reading file
     A=pd.read_csv(path_parent+"/data/inputs/v1.4/input_1_4_pen_"+str(solar_penetration)+".csv") # Reading file
     my_data = A.loc[(A['timestamp'] >= start_date) & (A['timestamp'] < end_date)]
     my_data.reset_index(inplace=True, drop=True)
     nans_dict, nans_dict_percentage = {}, {}
-    for input_variable in ["SZA", "AZM", "ETR (W/m^2)", "GHI", "Wind_Speed", "Temperature"]:
+    for input_variable in metrics:
         nans_dict[input_variable] = (my_data[input_variable].apply(np.isnan)).tolist() # getting a list with index positions of NaNs
         nans_dict_percentage[input_variable] = (sum(nans_dict[input_variable])/len(nans_dict[input_variable]))*100 #counting the percentage of NaNs in data
     #print(nans_dict)
@@ -831,7 +831,7 @@ def prepare_input_1_4(start_date, end_date, solar_penetration, updated_metric):
     ##### To BE DELETED END #####
 
     #Injecting updated input variables
-    for input_variable in ["SZA", "AZM", "ETR (W/m^2)", "GHI", "Wind_Speed", "Temperature"]:
+    for input_variable in metrics:
         temp_column = []
         if(len(updated_metric[input_variable])>0):
             for item in updated_metric[input_variable]: temp_column.append(item[3])
@@ -862,7 +862,7 @@ def prepare_input_1_4(start_date, end_date, solar_penetration, updated_metric):
 
     # Capturing the original input variable values
     input_variable_original = {}
-    for input_variable in ["SZA", "AZM", "ETR (W/m^2)", "GHI", "Wind_Speed", "Temperature"]:
+    for input_variable in metrics:
         input_variable_original[input_variable] = my_data[input_variable].to_list()
 
     ##### To BE DELETED START #####
@@ -906,7 +906,7 @@ def prepare_input_1_4(start_date, end_date, solar_penetration, updated_metric):
     y_prev = []
     sequence_target = []
     #AA=A
-    B=my_data.drop(['SZA', 'AZM', 'ETR (W/m^2)', 'GHI', 'Wind_Speed', 'Temperature'], axis=1)
+    B=my_data.drop(metrics, axis=1)
     for seq in gen_seq1(B, sequence_length, B.columns):
         y_prev.append(seq)
     y_prev=np.asarray(y_prev)
@@ -1002,7 +1002,7 @@ def lstm_func_1_4(latent_gen, sequence_input, pred_train, y_ground, y_prev, sola
     return y_pred, Y_test, lower_y_pred, higher_y_pred, mae, mape, mean_ape, median_ape, mode_ape,  elapsed_time_lstm
 
 
-def prepare_output_df_1_4(y_pred, Y_test, lower_y_pred, higher_y_pred, timeline, timeline_original, input_variable_original, nans_dict, nans_dict_percentage):
+def prepare_output_df_1_4(y_pred, Y_test, lower_y_pred, higher_y_pred, timeline, timeline_original, input_variable_original, nans_dict, nans_dict_percentage, metrics):
     net_load = ((Y_test.flatten()).tolist())
     net_load.extend((y_pred.flatten()).tolist())
     net_load.extend((lower_y_pred.flatten()).tolist())
@@ -1031,7 +1031,7 @@ def prepare_output_df_1_4(y_pred, Y_test, lower_y_pred, higher_y_pred, timeline,
     ##### To BE DELETED START #####
     
     input_variable_df, input_variable_df_safe ={}, {}
-    for input_variable in ["SZA", "AZM", "ETR (W/m^2)", "GHI", "Wind_Speed", "Temperature"]:
+    for input_variable in metrics:
         input_variable_df[input_variable] = pd.DataFrame({input_variable: input_variable_original[input_variable], "timeline": timeline_original, "wasNan": nans_dict[input_variable], "dummy":[1]*len(input_variable_original[input_variable])})
         input_variable_df_safe[input_variable] = (input_variable_df[input_variable]).to_dict(orient="records")
 
@@ -1869,7 +1869,7 @@ def processor_1_4(start_date="2020-05-01 00:00:00", end_date="2020-05-03 00:00:0
     start_date = validate_start_date_1_4(start_date)
     updated_metric = {}
     #metrics = ["temperature", "humidity", "apparent_power"]
-    metrics = ["SZA", "AZM", "ETR (W/m^2)", "GHI", "Wind_Speed", "Temperature"]
+    metrics = ["SZA", "AZM", "ETR", "GHI", "Wind_Speed", "Temperature"]
     for i in metrics: updated_metric[i] = []
     if(request.is_json):
         req = request.get_json()
@@ -1882,7 +1882,7 @@ def processor_1_4(start_date="2020-05-01 00:00:00", end_date="2020-05-03 00:00:0
         #     if(req["metrics_updated"][metric] == 1): updated_metric[metric] = req["updated_metric"][metric]        
     print(start_date, solar_penetration)
     # if(len(updated_metric["temperature"])>0): print((updated_metric["temperature"])[0])
-    sequence_input, y_ground, y_prev, input_variable_original, nans_dict, nans_dict_percentage, elapsed_time_prepare_input, timeline, timeline_original = prepare_input_1_4(start_date, end_date, solar_penetration, updated_metric)
+    sequence_input, y_ground, y_prev, input_variable_original, nans_dict, nans_dict_percentage, elapsed_time_prepare_input, timeline, timeline_original = prepare_input_1_4(start_date, end_date, solar_penetration, updated_metric, metrics)
     print("Prepare input PASSED")
     pred_train, elapsed_time_autoencoder = autoencoder_func_1_4(sequence_input, solar_penetration)
     print("Autoencoder PASSED")
@@ -1891,7 +1891,7 @@ def processor_1_4(start_date="2020-05-01 00:00:00", end_date="2020-05-03 00:00:0
     #y_pred, Y_test, mae, mape, crps, pbb, mse, elapsed_time_lstm = lstm_func(latent_gen, sequence_input, pred_train, y_ground, y_prev)
     y_pred, Y_test, lower_y_pred, higher_y_pred, mae, mape, mean_ape, median_ape, mode_ape, elapsed_time_lstm = lstm_func_1_4(latent_gen, sequence_input, pred_train, y_ground, y_prev, solar_penetration)
     print("LSTM PASSED")
-    net_load_df_safe, input_variable_df_safe, conf_95_df_safe = prepare_output_df_1_4(y_pred, Y_test, lower_y_pred, higher_y_pred, timeline, timeline_original, input_variable_original, nans_dict, nans_dict_percentage)
+    net_load_df_safe, input_variable_df_safe, conf_95_df_safe = prepare_output_df_1_4(y_pred, Y_test, lower_y_pred, higher_y_pred, timeline, timeline_original, input_variable_original, nans_dict, nans_dict_percentage, metrics)
     #generate_comparison_image(y_pred, Y_test, solar_penetration, "processor", start_date, end_date)
     elapsed_time_total = time.process_time() - t
     print("MAPE: ", mape)

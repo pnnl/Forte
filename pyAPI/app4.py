@@ -1839,6 +1839,7 @@ def processor_1_4(start_date="2020-05-01 00:00:00", end_date="2020-05-03 00:00:0
         end_date = req["end_date"]
         solar_penetration = req["solar_penetration"]
         # Need to enable this in order to enable updates
+        print(req["metrics_updated"])
         for metric in metrics:
             if(req["metrics_updated"][metric] == 1): updated_metric[metric] = req["updated_metric"][metric]        
     print(start_date, solar_penetration)

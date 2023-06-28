@@ -50,7 +50,7 @@ render(){
   else{
     console.log("Version loaded: ",this.props.url_version)
     var metrics = this.props.selected_variables;//["temperature", "humidity", "apparent_power"];
-    metrics = metrics.filter(m => m !== "ETR (W/m^2)"); // Removing ETR for time being
+    //metrics = metrics.filter(m => m !== "ETR (W/m^2)"); // Removing ETR for time being
     var metrics_unit = []; //["", "", "", "", "", ""];
     var metrics_data = [];
     var metrics_nan_percentage = [];

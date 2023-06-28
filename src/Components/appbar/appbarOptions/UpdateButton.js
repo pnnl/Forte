@@ -76,7 +76,7 @@ class UpdateButton extends Component {
             }
             else{
                 var metrics_updated ={}
-                var metrics = ["SZA", "AZM", "ETR (W/m^2)", "GHI", "Wind_Speed", "Temperature"]
+                var metrics = ["SZA", "AZM", "ETR", "GHI", "Wind_Speed", "Temperature"]
                 metrics.map(em => {metrics_updated[em]=((this.props.updated_metric[em]).length>0)?0:0}) // capturing which metrics are updated; reset all metrics when this button is clicked
 
                 jsonCall.download(this.props.url + "/api/v@"+this.props.url_version+"/processor", {start_date: converted_start_date, end_date: converted_end_date, solar_penetration:this.props.solar_penetration_temp, temperature_updated:0, humidity_updated:0, apparent_power_updated:0, metrics_updated:metrics_updated, updated_metric:this.props.updated_metric, selected_model: this.props.selected_model}).then(res =>{

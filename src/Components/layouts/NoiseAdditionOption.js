@@ -81,6 +81,11 @@ class NoiseAdditionOption extends Component {
         formatted_array = formatted_array.map((em,i) => [em[0], em[1], em[2],formatted_array_edited[i]])
         updated_metric[this.props.the_metric] = formatted_array;
         this.props.set_updated_metric(updated_metric);
+        this.props.set_updated_metric_dummy(formatted_array);
+        this.props.set_updated_temperature(formatted_array);
+        //console.log(updated_metric[this.props.the_metric])
+        if(this.props.url_version !== "1.3"){this.props.set_updated_temperature(formatted_array);}//doing this to trigger an update
+
         if(this.props.the_metric==="temperature"){this.props.set_updated_temperature(formatted_array);}
         else if(this.props.the_metric==="humidity"){this.props.set_updated_humidity(formatted_array);}
         else if(this.props.the_metric==="apparent_power"){this.props.set_updated_apparent_power(formatted_array);}
@@ -132,6 +137,7 @@ class NoiseAdditionOption extends Component {
 const maptstateToprop = (state) => {
     return {
         blank_placeholder:state.blank_placeholder,
+        url_version: state.url_version,
         isLoadingUpdate: state.isLoadingUpdate,
         noise_temperature_temp: state.noise_temperature_temp,
         updated_metric: state.updated_metric,
@@ -147,6 +153,7 @@ const mapdispatchToprop = (dispatch) => {
         set_updated_humidity: (val) => dispatch({ type: "updated_humidity", value: val }),
         set_updated_apparent_power: (val) => dispatch({ type: "updated_apparent_power", value: val }),
         set_updated_metric: (val) => dispatch({ type: "updated_metric", value: val }),
+        set_updated_metric_dummy: (val) => dispatch({ type: "updated_metric_dummy", value: val }),
     }
 }
 export default connect(maptstateToprop, mapdispatchToprop)(NoiseAdditionOption);

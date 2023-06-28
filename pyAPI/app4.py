@@ -1812,6 +1812,19 @@ def processor_1_3(start_date="2020-05-01 00:00:00", end_date="2020-05-03 00:00:0
 @app.route('/api/v@1.4/processor',methods = ['POST', 'GET'])
 #@app.route('/api/v@latest/processor',methods = ['POST', 'GET'])
 def processor_1_4(start_date="2020-05-01 00:00:00", end_date="2020-05-03 00:00:00", solar_penetration=20):
+    """
+    This function processes the inputs from the API caller (generally front-end), passes them through different functions,
+    and then returns the output to the API caller.
+    Inputs:
+    start_date: starting date for the prediction (String)
+    end_date: ending date for the prediction (String)
+    solar_penetration: solar penetration level (Integer)
+    metrics_updated: array containing the signals if a certain metric is updated; if updated, then 1 else -1
+    updated_metric: dict containing the updated values of the metrics
+
+    Output:
+    JSON message including different outputs
+    """
     t = time.process_time()
     #start_date, end_date, solar_penetration = "2020-05-01 00:00:00", "2020-05-03 00:00:00", 50
     start_date = validate_start_date_1_4(start_date)
@@ -1826,8 +1839,8 @@ def processor_1_4(start_date="2020-05-01 00:00:00", end_date="2020-05-03 00:00:0
         end_date = req["end_date"]
         solar_penetration = req["solar_penetration"]
         # Need to enable this in order to enable updates
-        # for metric in metrics:
-        #     if(req["metrics_updated"][metric] == 1): updated_metric[metric] = req["updated_metric"][metric]        
+        for metric in metrics:
+            if(req["metrics_updated"][metric] == 1): updated_metric[metric] = req["updated_metric"][metric]        
     print(start_date, solar_penetration)
     # if(len(updated_metric["temperature"])>0): print((updated_metric["temperature"])[0])
     sequence_input, y_ground, y_prev, input_variable_original, nans_dict, nans_dict_percentage, elapsed_time_prepare_input, timeline, timeline_original = prepare_input_1_4(start_date, end_date, solar_penetration, updated_metric, metrics)

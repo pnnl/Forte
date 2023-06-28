@@ -820,15 +820,6 @@ def prepare_input_1_4(start_date, end_date, solar_penetration, updated_metric, m
         nans_dict_percentage[input_variable] = (sum(nans_dict[input_variable])/len(nans_dict[input_variable]))*100 #counting the percentage of NaNs in data
     #print(nans_dict)
     #print(nans_dict_percentage)
-    ##### To BE DELETED START #####
-    # temperature_nans = (my_data['temp'].apply(np.isnan)).tolist() # getting a list with index positions of NaNs
-    # humidity_nans = (my_data['humidity'].apply(np.isnan)).tolist()
-    # apparent_power_nans = (my_data['apparent_power'].apply(np.isnan)).tolist()
-    # temperature_nans_percentage = (sum(temperature_nans)/len(temperature_nans))*100 #counting the percentage of NaNs in data
-    # humidity_nans_percentage = (sum(humidity_nans)/len(humidity_nans))*100
-    # apparent_power_nans_percentage = (sum(apparent_power_nans)/len(apparent_power_nans))*100
-    #my_data=my_data.fillna(99999)
-    ##### To BE DELETED END #####
 
     #Injecting updated input variables
     for input_variable in metrics:
@@ -837,24 +828,7 @@ def prepare_input_1_4(start_date, end_date, solar_penetration, updated_metric, m
             for item in updated_metric[input_variable]: temp_column.append(item[3])
             # print("Temperature was increased ", temperature_column[0])
             my_data[input_variable] = temp_column
-    ##### To BE DELETED START #####
-    # Injecting updated temperature
-    # temperature_column =[]
-    # if(len(updated_metric["temperature"])>0):
-    #     for item in updated_metric["temperature"]: temperature_column.append(item[3])
-    #     # print("Temperature was increased ", temperature_column[0])
-    #     my_data['temp'] = temperature_column
-    # # Injecting updated humidity
-    # humidity_column =[]
-    # if(len(updated_metric["humidity"])>0):
-    #     for item in updated_metric["humidity"]: humidity_column.append(item[3])
-    #     my_data['humidity'] = humidity_column
-    # # Injecting updated apparent_power
-    # apparent_power_column =[]
-    # if(len(updated_metric["apparent_power"])>0):
-    #     for item in updated_metric["apparent_power"]: apparent_power_column.append(item[3])
-    #     my_data['apparent_power'] = apparent_power_column            
-    ##### To BE DELETED END #####
+    
     my_data = my_data.interpolate(method="linear", axis=0, limit_direction='both') # linear interpolation column by column; both directions so that the first and last columns are not left alone
     #my_data = A
     timeline = my_data['timestamp'].to_list() # capturing the timeline called
@@ -865,11 +839,6 @@ def prepare_input_1_4(start_date, end_date, solar_penetration, updated_metric, m
     for input_variable in metrics:
         input_variable_original[input_variable] = my_data[input_variable].to_list()
 
-    ##### To BE DELETED START #####
-    # temperature_original = my_data['temp'].to_list() # capturing the original temperature
-    # humidity_original = my_data['humidity'].to_list() # capturing the original temperature
-    # apparent_power_original = my_data['apparent_power'].to_list() # capturing the original temperature
-    ##### To BE DELETED END #####
 
     #temperature_original = [99999 if math.isnan(item) else item for item in temperature_original]
     timeline = timeline[96:] # removing the first 48 entries(i.e., 12 hours)
@@ -891,17 +860,6 @@ def prepare_input_1_4(start_date, end_date, solar_penetration, updated_metric, m
     y_ground=np.asarray(y_ground)
     #pd.DataFrame(y_ground).to_csv(path_parent+"/data/outputs/pen_"+str(solar_penetration)+"/y_ground.csv", header=None, index=None)
 
-    ##### To BE DELETED START #####
-    # temperature = []
-    # for i in range(len(sequence_input)):
-    #     temperature.append(my_data.iloc[i+48]['temp'])
-    # humidity = []
-    # for i in range(len(sequence_input)):
-    #     humidity.append(my_data.iloc[i+48]['humidity'])
-    # apparent_power = []
-    # for i in range(len(sequence_input)):
-    #     apparent_power.append(my_data.iloc[i+48]['apparent_power'])        
-    ##### To BE DELETED END #####
 
     y_prev = []
     sequence_target = []
@@ -1024,11 +982,6 @@ def prepare_output_df_1_4(y_pred, Y_test, lower_y_pred, higher_y_pred, timeline,
     
     conf_95_df = pd.DataFrame({"timeline": timeline, "lower_limit": (lower_y_pred.flatten()).tolist(), "higher_limit": (higher_y_pred.flatten()).tolist()})
     # temperature_df = pd.DataFrame({"temperature": temperature, "timeline": timeline, "dummy":[1]*len(temperature)})
-    ##### To BE DELETED START #####
-    # temperature_df = pd.DataFrame({"temperature": temperature_original, "timeline": timeline_original, "wasNan": temperature_nans, "dummy":[1]*len(temperature_original)})
-    # humidity_df = pd.DataFrame({"humidity": humidity_original, "timeline": timeline_original, "wasNan": humidity_nans, "dummy":[1]*len(humidity_original)})
-    # apparent_power_df = pd.DataFrame({"apparent_power": apparent_power_original, "timeline": timeline_original, "wasNan": apparent_power_nans, "dummy":[1]*len(apparent_power_original)})
-    ##### To BE DELETED START #####
     
     input_variable_df, input_variable_df_safe ={}, {}
     for input_variable in metrics:
@@ -1046,11 +999,6 @@ def prepare_output_df_1_4(y_pred, Y_test, lower_y_pred, higher_y_pred, timeline,
     # net_load_df.to_csv(path_parent+"/data/outputs/pen_"+str(solar_penetration)+"/net_load_df.csv", index=False)
     net_load_df_safe = net_load_df.to_dict(orient="records")
     conf_95_df_safe = conf_95_df.to_dict(orient="records")
-    ##### To BE DELETED START #####
-    # temperature_df_safe = temperature_df.to_dict(orient="records")
-    # humidity_df_safe = humidity_df.to_dict(orient="records")
-    # apparent_power_df_safe = apparent_power_df.to_dict(orient="records")
-    ##### To BE DELETED START #####
     return net_load_df_safe, input_variable_df_safe, conf_95_df_safe
 
 def validate_start_date_1_4(start_date):

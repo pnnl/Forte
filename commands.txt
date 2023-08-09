@@ -10,7 +10,7 @@ export FLASK_APP=pyAPI/app.py
 flask run
 
 If using Windows Powershell:
-$env:FLASK_APP = "pyAPI\app3.py"
+$env:FLASK_APP = "pyAPI\app4.py"
 # $env:FLASK_APP = "pyAPI\app.py"
 # $env:FLASK_APP = "pyAPI\app_15_min_ahead.py"
 $env:FLASK_ENV = "development"

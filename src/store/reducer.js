@@ -50,7 +50,7 @@ let initialState = {
     mape_values:[],
     freezed_axis:[],
     current_net_load_y_axis: [],
-    selected_model:"net load 15 min ahead",
+    selected_model:"15 min ahead",
     selected_variables_temp:(url_version === "1.3")?["temperature", "humidity", "apparent_power"]:["SZA", "AZM", "ETR", "GHI", "Wind_Speed", "Temperature"],
     selected_variables: (url_version === "1.3")?["temperature", "humidity", "apparent_power"]:["SZA", "AZM", "ETR", "GHI", "Wind_Speed", "Temperature"],
     selected_variables_unit: (url_version === "1.3")?{"temperature":" (°F)", "humidity":" (%)", "apparent_power":" (kVA)"}:{"SZA":" (°)", "AZM":" (°)", "ETR":" (W/m^2)", "GHI":" (W/m^2)", "Wind_Speed":" (m/s)", "Temperature":" (°C)"},

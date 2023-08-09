@@ -23,9 +23,9 @@ class ModelsSelectionOptions extends Component {
     }
 
     handleChange(event){
-        var default_variables = {"net load 15 min ahead":["temperature", "humidity", "apparent_power"],
-                         "net load 24 hr ahead": ["temperature", "humidity"],
-                         "net load v2": ["wind speed", "temperature"]}
+        var default_variables = {"15 min ahead":(this.props.url_version === "1.3")?["temperature", "humidity", "apparent_power"]:["Temperature", "Wind_Speed"],
+                         "24 hr ahead": (this.props.url_version === "1.3")?["temperature", "humidity"]:["Temperature", "Wind_Speed"],
+                        }
         var changed_variables = default_variables[event.target.name];                 
         this.props.set_selected_variables_temp([...changed_variables])
         this.props.set_selected_model(event.target.name)
@@ -33,11 +33,11 @@ class ModelsSelectionOptions extends Component {
     }
     render() {
         // css design is in App.css
-        var models = ["net load 15 min ahead", "net load 24 hr ahead", "net load v2"];
+        var models = ["15 min ahead", "24 hr ahead"];
 
 
         return <Grid container spacing={0}>
-        <Grid item xs={12}><b>Models</b></Grid>    
+        <Grid item xs={12}><b>Prediction Horizons</b></Grid>    
         {models.map(model=>{
                 return <Grid item xs={12} key={model}><FormControlLabel 
                         label={model}
@@ -55,6 +55,7 @@ class ModelsSelectionOptions extends Component {
 const maptstateToprop = (state) => {
     return {
         blank_placeholder:state.blank_placeholder,
+        url_version: state.url_version,
         selected_model: state.selected_model,
         selected_variables_temp: state.selected_variables_temp,
     }

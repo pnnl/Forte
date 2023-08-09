@@ -94,8 +94,6 @@ class UpdateButton extends Component {
                     // this.props.set_apparent_power_nans_percentage(res["apparent_power_nans_percentage"]);
                     this.props.set_nans_dict_percentage(res["nans_dict_percentage"]);
                     this.props.set_enable_seasons_choice(this.props.enable_seasons_choice_temp);
-                    console.log("Selected Variables Temp: ",this.props.selected_variables_temp);
-                    this.props.set_selected_variables(this.props.selected_variables_temp)
                     var updated_metric = this.props.updated_metric;
                     var noise_control = this.props.noise_control;
                     metrics.map(el => {
@@ -111,6 +109,8 @@ class UpdateButton extends Component {
                     this.props.set_mean_ape(res["8a. Mean APE"]);
                     this.props.set_median_ape(res["8b. Median APE"]);
                     this.props.set_mode_ape(res["8c. Mode APE"]);
+                    console.log("Selected Variables Temp: ",this.props.selected_variables_temp);
+                    this.props.set_selected_variables(this.props.selected_variables_temp);
                     this.props.set_isLoadingUpdate(false);
                     
                     })

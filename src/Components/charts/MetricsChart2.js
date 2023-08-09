@@ -22,7 +22,7 @@ class MetricsChart extends Component {
         this.create_line_chart(this.props.the_data, this.props.the_metric);
     }
     componentDidUpdate(prevProps, prevState) {
-        this.create_line_chart(this.props.the_data, this.props.the_metric);
+        //this.create_line_chart(this.props.the_data, this.props.the_metric);
     }
 
     roundToNearest15(date) {
@@ -63,7 +63,7 @@ class MetricsChart extends Component {
         formatted_array = ((updated_metric1[the_metric]).length === 0)?this.convert_to_Array_of_Arrays(the_data, the_metric):updated_metric1[the_metric];
         //formatted_array = (my_metric_values.length === 0)?this.convert_to_Array_of_Arrays(the_data, the_metric):my_metric_values;
         //formatted_array = this.convert_to_Array_of_Arrays(the_data, the_metric);
-        console.log(formatted_array);
+        //console.log(formatted_array);
 
         //the_data = the_data.filter((d) => d.temperature !== 99999); // removing NaN
 

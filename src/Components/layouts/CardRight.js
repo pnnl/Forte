@@ -69,7 +69,7 @@ render(){
   return (
     <div style={{height: "90vh", overflow:"scroll"}}>
     {metrics.map((metric, metric_index) =>{
-      //console.log(metric, metric_index)
+      console.log(metric, metric_index)
         return <Card key={metric_index} style={{height: mini_card_height}}>
         <Card.Header>
           <Grid container direction="row" spacing={1}>

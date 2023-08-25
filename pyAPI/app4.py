@@ -1863,6 +1863,61 @@ def processor_1_4(start_date="2020-05-01 00:00:00", end_date="2020-05-03 00:00:0
     response.headers.add('Access-Control-Allow-Origin', '*')
     return response;
 
+@app.route('/api/v@1.4/processor2',methods = ['POST', 'GET'])
+#@app.route('/api/v@latest/processor',methods = ['POST', 'GET'])
+def processor_1_4_2(start_date="2020-05-01 00:00:00", end_date="2020-05-03 00:00:00", solar_penetration=20):
+    """
+    This function processes the inputs from the API caller (generally front-end), passes them through different functions,
+    and then returns the output to the API caller.
+    Inputs:
+    start_date: starting date for the prediction (String)
+    end_date: ending date for the prediction (String)
+    solar_penetration: solar penetration level (Integer)
+    metrics_updated: array containing the signals if a certain metric is updated; if updated, then 1 else -1
+    updated_metric: dict containing the updated values of the metrics
+
+    Output:
+    JSON message including different outputs
+    """
+    t = time.process_time()
+    #start_date, end_date, solar_penetration = "2020-05-01 00:00:00", "2020-05-03 00:00:00", 50
+    start_date = validate_start_date_1_4(start_date)
+    updated_metric = {}
+    #metrics = ["temperature", "humidity", "apparent_power"]
+    metrics = ["SZA", "AZM", "ETR", "GHI", "Wind_Speed", "Temperature"]
+    for i in metrics: updated_metric[i] = []
+    if(request.is_json):
+        req = request.get_json()
+        print("Reading JSON")
+        start_date = validate_start_date_1_4(req["start_date"])
+        end_date = req["end_date"]
+        solar_penetration = req["solar_penetration"]
+        # Need to enable this in order to enable updates
+        print(req["metrics_updated"])
+        for metric in metrics:
+            if(req["metrics_updated"][metric] == 1): updated_metric[metric] = req["updated_metric"][metric]        
+    print(start_date, solar_penetration)
+    # if(len(updated_metric["temperature"])>0): print((updated_metric["temperature"])[0])
+    sequence_input, y_ground, y_prev, input_variable_original, nans_dict, nans_dict_percentage, elapsed_time_prepare_input, timeline, timeline_original = prepare_input_1_4(start_date, end_date, solar_penetration, updated_metric, metrics)
+    print("Prepare input PASSED")
+    pred_train, elapsed_time_autoencoder = autoencoder_func_1_4(sequence_input, solar_penetration)
+    print("Autoencoder PASSED")
+    latent_gen, elapsed_time_kpf = kPF_func_1_4(pred_train, solar_penetration)
+    print("kPF PASSED")
+    #y_pred, Y_test, mae, mape, crps, pbb, mse, elapsed_time_lstm = lstm_func(latent_gen, sequence_input, pred_train, y_ground, y_prev)
+    y_pred, Y_test, lower_y_pred, higher_y_pred, mae, mape, mean_ape, median_ape, mode_ape, elapsed_time_lstm = lstm_func_1_4(latent_gen, sequence_input, pred_train, y_ground, y_prev, solar_penetration)
+    print("LSTM PASSED")
+    net_load_df_safe, input_variable_df_safe, conf_95_df_safe = prepare_output_df_1_4(y_pred, Y_test, lower_y_pred, higher_y_pred, timeline, timeline_original, input_variable_original, nans_dict, nans_dict_percentage, metrics)
+    #generate_comparison_image(y_pred, Y_test, solar_penetration, "processor", start_date, end_date)
+    elapsed_time_total = time.process_time() - t
+    print("MAPE: ", mape)
+    #final_result ={"1. message":"Program executed", "2. time taken (prepare input)": elapsed_time_prepare_input, "3. time taken (autoencoder)":elapsed_time_autoencoder, "4. time taken (kPF)": elapsed_time_kpf, "5. time taken (LSTM)": elapsed_time_lstm, "6. total time taken":elapsed_time_total, "7. MAE": mae, "8. MAPE": mape, "9. CRPS": crps, "10. PBB": pbb, "11. MSE": mse}
+    final_result ={"1. message":"Program executed", "2. time taken (prepare input)": elapsed_time_prepare_input, "3. time taken (autoencoder)":elapsed_time_autoencoder, "4. time taken (kPF)": elapsed_time_kpf, "5. time taken (LSTM)": elapsed_time_lstm, "6. total time taken":elapsed_time_total, "7. MAE": mae, "8. MAPE": mape, "8a. Mean APE": mean_ape, "8b. Median APE": median_ape,  "8c. Mode APE": mode_ape, "predicted_net_load":y_pred.flatten().tolist(), "actual_net_load": Y_test.tolist(), "predicted_net_load_conf_95_higher":higher_y_pred.flatten().tolist(), "predicted_net_load_conf_95_lower":lower_y_pred.flatten().tolist(),  "input_variable_df":input_variable_df_safe, "net_load_df": net_load_df_safe, "conf_95_df":conf_95_df_safe,  "nans_dict_percentage": nans_dict_percentage}
+    response=make_response(jsonify(final_result), 200) #removed processing
+    response.headers.add('Access-Control-Allow-Origin', '*')
+    return response;
+
+
 
 
 @app.errorhandler(404)

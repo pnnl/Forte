@@ -22,7 +22,7 @@ class MetricsChart extends Component {
         this.create_line_chart(this.props.the_data, this.props.the_metric);
     }
     componentDidUpdate(prevProps, prevState) {
-        //this.create_line_chart(this.props.the_data, this.props.the_metric);
+        this.create_line_chart(this.props.the_data, this.props.the_metric);
     }
 
     roundToNearest15(date) {

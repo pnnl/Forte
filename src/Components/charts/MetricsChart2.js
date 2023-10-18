@@ -58,8 +58,10 @@ class MetricsChart extends Component {
         height = $(the_id).height() - margin.top - margin.bottom;
 
         var updated_metric1 =this.props.updated_metric;
+        var my_metric_values = [...this.props.updated_metric[the_metric]];
         var formatted_array;
         formatted_array = ((updated_metric1[the_metric]).length === 0)?this.convert_to_Array_of_Arrays(the_data, the_metric):updated_metric1[the_metric];
+        //formatted_array = (my_metric_values.length === 0)?this.convert_to_Array_of_Arrays(the_data, the_metric):my_metric_values;
         //formatted_array = this.convert_to_Array_of_Arrays(the_data, the_metric);
         //console.log(formatted_array);
 
@@ -172,6 +174,8 @@ class MetricsChart extends Component {
             var updated_metric =self.props.updated_metric;
             updated_metric[the_metric] = formatted_array;
             self.props.set_updated_metric(updated_metric);
+            self.props.set_updated_metric_dummy(formatted_array);
+            if(self.props.url_version !== "1.3"){self.props.set_updated_temperature(formatted_array);}//doing this to trigger an update
             if(the_metric==="temperature"){self.props.set_updated_temperature(formatted_array);}
             else if(the_metric==="humidity"){self.props.set_updated_humidity(formatted_array);}
             else if(the_metric==="apparent_power"){self.props.set_updated_apparent_power(formatted_array);} // need to do this to trigger an update
@@ -269,9 +273,12 @@ class MetricsChart extends Component {
         tooltip = d3.select("body").selectAll(".tooltip_matches").data([0]).join('div')
             .attr("class", "tooltip_matches")
             .style("opacity", 0);
+        
+            var the_height = ((this.props.selected_variables).length>=3)?"22vh":(((90/(this.props.selected_variables).length)-8)+"vh");
+            console.log(the_height)
 
         return <div >
-        <div id={"metricChartDiv_"+this.props.the_metric} style={{height:"22vh"}}>
+        <div id={"metricChartDiv_"+this.props.the_metric} style={{height:the_height}}>
         <svg className={"metricChart_"+this.props.the_metric} onMouseEnter={this.handleMouseEnter} onMouseLeave={this.handleMouseExit} ></svg>
         </div>
       </div>
@@ -282,9 +289,12 @@ class MetricsChart extends Component {
 const maptstateToprop = (state) => {
     return {
         blank_placeholder:state.blank_placeholder,
+        url_version: state.url_version,
         net_load_df: state.net_load_df,
         temp_check: state.temp_check,
         updated_metric: state.updated_metric,
+        selected_variables: state.selected_variables,
+        noise_control: state.noise_control,
     }
 }
 const mapdispatchToprop = (dispatch) => {
@@ -295,6 +305,7 @@ const mapdispatchToprop = (dispatch) => {
         set_updated_humidity: (val) => dispatch({ type: "updated_humidity", value: val }),
         set_updated_apparent_power: (val) => dispatch({ type: "updated_apparent_power", value: val }),
         set_updated_metric: (val) => dispatch({ type: "updated_metric", value: val }),
+        set_updated_metric_dummy: (val) => dispatch({ type: "updated_metric_dummy", value: val }),
     }
 }
 export default connect(maptstateToprop, mapdispatchToprop)(MetricsChart);

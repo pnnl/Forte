@@ -1,5 +1,5 @@
 /* eslint-disable no-unused-vars */
-/* eslint-disable array-callback-return */
+/* eslint-disable array-callback-return, no-useless-concat */
 import React, { Component } from 'react';
 import { connect } from "react-redux";
 import * as $ from "jquery";
@@ -32,7 +32,7 @@ class NetLoad extends Component {
                 my_conf_95_df = my_conf_95_df_temp.filter(el =>{var month = parseInt((el.timeline).substring(5,7)); return (month<4  || month>9)})
             }
         }
-        this.create_line_chart(my_net_load_df, my_conf_95_df, this.props.my_type);
+        this.create_line_chart(my_net_load_df, my_conf_95_df, this.props.my_type, this.props.animation_duration);
     }
     componentDidUpdate(prevProps, prevState) {
         var chart_type = this.props.my_type;
@@ -51,7 +51,7 @@ class NetLoad extends Component {
                 my_conf_95_df = my_conf_95_df_temp.filter(el =>{var month = parseInt((el.timeline).substring(5,7)); return (month<4  || month>9)})
             }
         }
-        this.create_line_chart(my_net_load_df, my_conf_95_df, this.props.my_type);
+        this.create_line_chart(my_net_load_df, my_conf_95_df, this.props.my_type, this.props.animation_duration);
     }
 
     convert_to_Array_of_Arrays(input){
@@ -59,7 +59,13 @@ class NetLoad extends Component {
             return [obj.timeline, obj.lower_limit, obj.higher_limit]
           }); 
         return output;  
-    } 
+    }
+    convert_to_Array_of_Arrays2(input){
+        var output = input.map(function(obj, i) {
+            if(i<input.length){return [[obj.net_load, obj.net_load_type, obj.timeline, obj.years],[(obj.net_load)*1.1, obj.net_load_type, obj.timeline, obj.years]]}
+          }); 
+        return output;  
+    }
     /** This function increases the opacity of the gridlines when hovered */
     handleMouseEnter(event){
         var my_svg = d3.select(event.target)
@@ -71,9 +77,9 @@ class NetLoad extends Component {
         my_svg.selectAll(".tick line").style("stroke-opacity", 0.2)
     }
 
-    create_line_chart(net_load_df, conf_95_df, my_type){
+    create_line_chart(net_load_df, conf_95_df, my_type, animation_duration=2500){
         var self = this;
-        var animation_duration = 2500;//2000;
+        //var animation_duration = 2500;//2000;
         var the_id = "#netLoadChartDiv_"+my_type;   
         const margin = {top: 10, right: 30, bottom: 30, left: 60},
         width = $(the_id).width() - margin.left - margin.right,
@@ -92,7 +98,7 @@ class NetLoad extends Component {
 
 
         /** Grouping the data: in order to draw one line per group */
-        var test = net_load_df.filter(el => ["actual", "predicted"].includes(el.net_load_type))
+        var test = net_load_df.filter(el => ["actual", "predicted"].includes(el.net_load_type) && el["years"]<5000001)
         var test2 = net_load_df.filter(el => !["actual", "predicted"].includes(el.net_load_type))
         var test3 = d3.group(test2, d => d.years)
         //test = net_load_df
@@ -117,9 +123,9 @@ class NetLoad extends Component {
         /** Adding and calling Y axis */ 
         //var limit = 1.1*(Math.max(Math.abs(d3.min(net_load_df, function(d) { return d.net_load; })), Math.abs(d3.max(net_load_df, function(d) { return d.net_load; }))))
         var upper_limit = d3.max(net_load_df, (d) => { return d.net_load; });
-        upper_limit = (upper_limit>0)?(upper_limit*1.1):(upper_limit*0.9); // increasing upper limit
+        upper_limit = (upper_limit>0)?(upper_limit*1.25):(upper_limit*0.75); // increasing upper limit ; [1.1, 0.9]
         var lower_limit = d3.min(net_load_df, (d) => { return d.net_load; });
-        lower_limit = (lower_limit>0)?(lower_limit*0.9):(lower_limit*1.1); // decreasing lower limit
+        lower_limit = (lower_limit>0)?(lower_limit*0.75):(lower_limit*1.25); // decreasing lower limit
         this.props.set_current_net_load_y_axis([lower_limit,upper_limit]); // updating the current y axis every time
         var y_domain = ((this.props.freezed_axis).length === 0)?[lower_limit,upper_limit]:this.props.freezed_axis;
         const y = d3.scaleLinear()
@@ -194,33 +200,77 @@ class NetLoad extends Component {
             //     (d[1])
             // })
 
+        var line = d3.line()
+            .curve(d3.curveStep)
+            .x(function(d) { return x(new Date(d.timeline)); })
+            .y(function(d) { return y(d.net_load); }); 
+        var line2 = d3.line()
+            .curve(d3.curveStep)
+            .x(function(d) { return x(new Date(d[0][2])); })
+            .y(function(d) { return y(d[0][0]); })
+                 
+        // var converted_predicted = this.convert_to_Array_of_Arrays2(sumstat2.get("predicted"))
+        // console.log(converted_predicted);   
 
         /** Drawing the lines */ 
-        svg.selectAll(".lineCharts")
-        .data(sumstat2)
+        svg.selectAll(".lineCharts_actual")
+        .data((sumstat2.get("actual"))?[sumstat2.get("actual")]:[])
         .join("path")
-            .attr("class", "lineCharts")
+            .attr("class", "lineCharts_actual")
             .attr("fill", "none")
-            .attr("stroke", function(d){ return color(d[0]) })
+            .attr("stroke", function(d){ return color("actual") })
             .attr("stroke-width", 1.5)
             .transition()
             .duration(animation_duration)
-            .attr("d", function(d){
-            return d3.line()
-                .curve(d3.curveStep)
-                .x(function(d) { return x(new Date(d.timeline)); })
-                .y(function(d) { return y(d.net_load); })
-                (d[1])
-            })
+            .attr("d", (el) => {return line(el)} )
+
+        svg.selectAll(".lineCharts_predicted")
+            .data([sumstat2.get("predicted")])
+            //.data(converted_predicted)
+            .join("path")
+                .attr("class", "lineCharts_predicted")
+                .attr("fill", "none")
+                .attr("stroke", function(d){ return color("predicted") })
+                .attr("stroke-width", 1.5)
+                .transition()
+                .duration(animation_duration)
+                .delay((d,i) =>{console.log(i);return 1000*i})
+                .ease(d3.easeLinear)
+                .attr("d", (el) => {return line(el)} )    
+        // svg.selectAll(".lineCharts")
+        // .data(sumstat2)
+        // .join("path")
+        //     .attr("class", "lineCharts")
+        //     .attr("fill", "none")
+        //     .attr("stroke", function(d){ return color(d[0]) })
+        //     .attr("stroke-width", 1.5)
+        //     .transition()
+        //     .duration(animation_duration)
+        //     .attr("d", function(d){
+        //     return d3.line()
+        //         .curve(d3.curveStep)
+        //         .x(function(d) { return x(new Date(d.timeline)); })
+        //         .y(function(d) { return y(d.net_load); })
+        //         (d[1])
+        //     })
 
             // info icon about performance metrics
             d3.selectAll(".netload_performance_icon").on("mouseover", function (event) {
                 tooltip.transition()
                   .duration(200)
                   .style("opacity", .9);
-                tooltip.html("MAE: "+String(self.props.mae)+" kW <br> MAPE: "+String(self.props.mape)+"%")
-                  .style("left", (event.pageX + 5) + "px")
-                  .style("top", (event.pageY - 10) + "px");
+                if(self.props.url_version === "1.3"){
+                    //tooltip.html("MAE: "+String(self.props.mae)+" kW <br> MAPE: "+String(self.props.mape)+"%")
+                    tooltip.html("MAE: "+(self.props.mae).toFixed(2)+" kW"+"<br> Mode APE: "+String(self.props.mode_ape)+"%"+"<br> Median APE: "+String(self.props.median_ape)+"%"+"<br> Mean APE: "+String(self.props.mean_ape)+"%")
+                            .style("left", (event.pageX + 5) + "px")
+                            .style("top", (event.pageY - 10) + "px");
+                }
+                else{
+                    tooltip.html("MAE: "+(self.props.mae).toFixed(2)+" kW"+"<br> Mode APE: "+(self.props.mode_ape).toFixed(2)+"%"+"<br> Median APE: "+(self.props.median_ape).toFixed(2)+"%"+"<br> Mean APE: "+(self.props.mean_ape).toFixed(2)+"%")
+                            .style("left", (event.pageX + 5) + "px")
+                            .style("top", (event.pageY - 10) + "px");
+                }
+                
               })
                 .on("mouseout", function (d) {
                   tooltip.transition()
@@ -252,15 +302,21 @@ const maptstateToprop = (state) => {
         blank_placeholder:state.blank_placeholder,
         net_load_df: state.net_load_df,
         conf_95_df: state.conf_95_df,
+        url_version: state.url_version,
         mae: state.mae,
         mape: state.mape,
+        mean_ape: state.mean_ape,
+        median_ape: state.median_ape,
+        mode_ape: state.mode_ape,
         freezed_axis: state.freezed_axis,
+        animation_duration: state.animation_duration,
     }
 }
 const mapdispatchToprop = (dispatch) => {
     return {
         set_blank_placeholder: (val) => dispatch({ type: "blank_placeholder", value: val }),
         set_current_net_load_y_axis: (val) => dispatch({ type: "current_net_load_y_axis", value: val }),
+        
     }
 }
 export default connect(maptstateToprop, mapdispatchToprop)(NetLoad);

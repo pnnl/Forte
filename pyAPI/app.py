@@ -1,7 +1,7 @@
 from cmath import nan
 from tracemalloc import start
 from flask import Flask, render_template, Response, g, redirect, url_for, request,jsonify, make_response
-import time, os, re
+import time, os, re, random
 import pandas as pd
 import numpy as np
 from flask_cors import CORS
@@ -11,6 +11,7 @@ from tqdm import tqdm# as tqdm1
 import logging
 import tensorflow as tf
 import tensorflow_probability as tfp
+from tensorflow.keras import backend as K
 import math
 from scipy import io
 from scipy.io import loadmat
@@ -145,10 +146,15 @@ loading_message = "#### Models and data loading: Completed in %f seconds or %f m
 print(loading_message)
 app.logger.info(loading_message)
 
+default_response = ""
+# ### Initial Calling of processor for pre-loading ###
+# default_response = processor3()   
+
 ### Pipeline functions and others (non-callable externally) ###
 
-def prepare_input(start_date, end_date, solar_penetration, updated_metric):
+def prepare_general_input(start_date, end_date, solar_penetration, updated_metric):
     t = time.process_time()
+    print("times in general input: ", start_date, end_date)
     A=pd.read_csv(path_parent+"/data/inputs/df1_solar_"+str(solar_penetration)+"_pen.csv") # Reading file
     my_data = A.loc[(A['min_t'] >= start_date) & (A['min_t'] < end_date)]
     my_data.reset_index(inplace=True, drop=True)
@@ -165,18 +171,22 @@ def prepare_input(start_date, end_date, solar_penetration, updated_metric):
         for item in updated_metric["temperature"]: temperature_column.append(item[3])
         # print("Temperature was increased ", temperature_column[0])
         my_data['temp'] = temperature_column
+    else: temperature_column = my_data['temp'].tolist()
     # Injecting updated humidity
     humidity_column =[]
     if(len(updated_metric["humidity"])>0):
         for item in updated_metric["humidity"]: humidity_column.append(item[3])
         my_data['humidity'] = humidity_column
+    else: humidity_column = my_data['humidity'].tolist()    
     # Injecting updated apparent_power
     apparent_power_column =[]
     if(len(updated_metric["apparent_power"])>0):
         for item in updated_metric["apparent_power"]: apparent_power_column.append(item[3])
-        my_data['apparent_power'] = apparent_power_column            
+        my_data['apparent_power'] = apparent_power_column 
+    else: apparent_power_column = my_data['apparent_power'].tolist()               
     my_data = my_data.interpolate(method="linear", axis=0, limit_direction='both') # linear interpolation column by column; both directions so that the first and last columns are not left alone
     #my_data = A
+    print("my data ", my_data.shape)
     timeline = my_data['min_t'].to_list() # capturing the timeline called
     timeline_original = timeline
     temperature_original = my_data['temp'].to_list() # capturing the original temperature
@@ -187,12 +197,114 @@ def prepare_input(start_date, end_date, solar_penetration, updated_metric):
     my_data=my_data.drop(['min_t'], axis=1) # Drop this axis
     #my_data=my_data.fillna(99999)
 
+    # Creating a df for updated_metric
+    df_updated_metric = pd.DataFrame({
+        "timeline_original": timeline_original,
+        "updated_temperature": temperature_column,
+        "updated_humidity": humidity_column,
+        "updated_apparent_power": apparent_power_column
+    })
+
     sequence_length = 24*2 # Length of historical datapoints to use for forecast
     sequence_input = []
     for seq in tqdm(gen_seq(my_data, sequence_length, my_data.columns)):
         sequence_input.append(seq)    
     sequence_input = np.asarray(sequence_input) 
-    #print(sequence_input)
+    #print("sequence_input ", sequence_input)
+    
+    # y_ground=[]
+    # for i in range(len(sequence_input)):
+    #     y_ground.append(my_data.iloc[i+48]['power'])   # Original code
+    #     #y_ground.append(my_data.iloc[i]['power'])   
+    # y_ground=np.asarray(y_ground)
+    #pd.DataFrame(y_ground).to_csv(path_parent+"/data/outputs/pen_"+str(solar_penetration)+"/y_ground.csv", header=None, index=None)
+
+    temperature = []
+    for i in range(len(sequence_input)):
+        temperature.append(my_data.iloc[i+48]['temp'])
+    humidity = []
+    for i in range(len(sequence_input)):
+        humidity.append(my_data.iloc[i+48]['humidity'])
+    apparent_power = []
+    for i in range(len(sequence_input)):
+        apparent_power.append(my_data.iloc[i+48]['apparent_power'])        
+  
+
+    # y_prev = []
+    # sequence_target = []
+    # #AA=A
+    # B=my_data.drop(['apparent_power', 'humidity','temp'], axis=1)
+    # for seq in tqdm(gen_seq(B, sequence_length, B.columns)):
+    #     y_prev.append(seq)
+    # y_prev=np.asarray(y_prev)
+    # print("y_prev", y_prev)
+    # y_prev=y_prev.reshape((y_prev.shape[0],y_prev.shape[1]))
+    elapsed_time_prepare_input = time.process_time() - t
+    return  temperature, temperature_original, temperature_nans, temperature_nans_percentage, humidity, humidity_original, humidity_nans, humidity_nans_percentage, apparent_power, apparent_power_original, apparent_power_nans, apparent_power_nans_percentage, elapsed_time_prepare_input, timeline, timeline_original, df_updated_metric
+
+def prepare_input(start_date, end_date, solar_penetration, updated_metric, df_updated_metric):
+    t = time.process_time()
+    A=pd.read_csv(path_parent+"/data/inputs/df1_solar_"+str(solar_penetration)+"_pen.csv") # Reading file
+    my_data = A.loc[(A['min_t'] >= start_date) & (A['min_t'] < end_date)]
+    my_data.reset_index(inplace=True, drop=True)
+
+    my_df_updated_metric = df_updated_metric.loc[(df_updated_metric['timeline_original'] >= start_date) & (df_updated_metric['timeline_original'] < end_date)]
+    my_df_updated_metric.reset_index(inplace=True, drop=True)
+    # print("my_df column type: ", my_df_updated_metric.timeline_original.dtype, " my_data column type: ", my_data.min_t.dtype)
+    # print("my_df shape: ", my_df_updated_metric.shape, "my data shape: ", my_data.shape)
+    # print(my_df_updated_metric)
+    # print(my_data)
+    my_data.set_index('min_t')
+    my_df_updated_metric.set_index('timeline_original')
+    # temperature_nans = (my_data['temp'].apply(np.isnan)).tolist() # getting a list with index positions of NaNs
+    # humidity_nans = (my_data['humidity'].apply(np.isnan)).tolist()
+    # apparent_power_nans = (my_data['apparent_power'].apply(np.isnan)).tolist()
+    # temperature_nans_percentage = (sum(temperature_nans)/len(temperature_nans))*100 #counting the percentage of NaNs in data
+    # humidity_nans_percentage = (sum(humidity_nans)/len(humidity_nans))*100
+    # apparent_power_nans_percentage = (sum(apparent_power_nans)/len(apparent_power_nans))*100
+    #my_data=my_data.fillna(99999)
+
+    ## Commenting out for now
+    # Injecting updated temperature
+    temperature_column =[]
+    if(len(updated_metric["temperature"])>0): # Read from my_df_updated_metric only if there is an update; else there would be NaN values
+        temperature_column = my_df_updated_metric["updated_temperature"].to_list()
+        #for item in updated_metric["temperature"]: temperature_column.append(item[3])
+        # print("Temperature was increased ", temperature_column[0])
+        my_data2 = my_data
+        my_data.loc[my_df_updated_metric.index, 'temp'] = my_df_updated_metric["updated_temperature"]
+        #my_data['temp'] = temperature_column
+    # Injecting updated humidity
+    humidity_column =[]
+    if(len(updated_metric["humidity"])>0):
+        # for item in updated_metric["humidity"]: humidity_column.append(item[3])
+        # my_data['humidity'] = humidity_column
+        my_data.loc[my_df_updated_metric.index, 'humidity'] = my_df_updated_metric["updated_humidity"]
+    # Injecting updated apparent_power
+    apparent_power_column =[]
+    if(len(updated_metric["apparent_power"])>0):
+        # for item in updated_metric["apparent_power"]: apparent_power_column.append(item[3])
+        # my_data['apparent_power'] = apparent_power_column    
+        my_data.loc[my_df_updated_metric.index, 'apparent_power'] = my_df_updated_metric["updated_apparent_power"]        
+    my_data = my_data.interpolate(method="linear", axis=0, limit_direction='both') # linear interpolation column by column; both directions so that the first and last columns are not left alone
+    #my_data = A
+    print("my data ", my_data.shape)
+    timeline = my_data['min_t'].to_list() # capturing the timeline called
+    # timeline_original = timeline
+    # temperature_original = my_data['temp'].to_list() # capturing the original temperature
+    # humidity_original = my_data['humidity'].to_list() # capturing the original temperature
+    # apparent_power_original = my_data['apparent_power'].to_list() # capturing the original temperature
+    #temperature_original = [99999 if math.isnan(item) else item for item in temperature_original]
+    timeline = timeline[48:] # removing the first 48 entries(i.e., 12 hours)
+    my_data=my_data.drop(['min_t'], axis=1) # Drop this axis
+    #my_data=my_data.fillna(99999)
+
+    sequence_length = 24*2 # Length of historical datapoints to use for forecast
+    sequence_input = []
+    for seq in tqdm(gen_seq(my_data, sequence_length, my_data.columns)):
+        sequence_input.append(seq)    
+    sequence_input = np.asarray(sequence_input) 
+    print("sequence_input ", sequence_input)
     
     y_ground=[]
     for i in range(len(sequence_input)):
@@ -219,9 +331,11 @@ def prepare_input(start_date, end_date, solar_penetration, updated_metric):
     for seq in tqdm(gen_seq(B, sequence_length, B.columns)):
         y_prev.append(seq)
     y_prev=np.asarray(y_prev)
+    print("y_prev", y_prev)
     y_prev=y_prev.reshape((y_prev.shape[0],y_prev.shape[1]))
     elapsed_time_prepare_input = time.process_time() - t
-    return sequence_input, y_ground, y_prev, temperature, temperature_original, temperature_nans, temperature_nans_percentage, humidity, humidity_original, humidity_nans, humidity_nans_percentage, apparent_power, apparent_power_original, apparent_power_nans, apparent_power_nans_percentage, elapsed_time_prepare_input, timeline, timeline_original
+    #return sequence_input, y_ground, y_prev, temperature, temperature_original, temperature_nans, temperature_nans_percentage, humidity, humidity_original, humidity_nans, humidity_nans_percentage, apparent_power, apparent_power_original, apparent_power_nans, apparent_power_nans_percentage, elapsed_time_prepare_input, timeline, timeline_original
+    return sequence_input, y_ground, y_prev
 
 def autoencoder_func(sequence_input, solar_penetration):
     t = time.process_time()
@@ -240,7 +354,7 @@ def kPF_func(pred_train, solar_penetration):
     latent_gen = latent_gens[str(solar_penetration)]
     elapsed_time_kpf = time.process_time() - t
     return latent_gen, elapsed_time_kpf
-
+# deprecated
 def lstm_func(latent_gen, sequence_input, pred_train, y_ground, y_prev, solar_penetration):
     t = time.process_time()
     aa = (latent_gen)
@@ -288,6 +402,7 @@ def lstm_func(latent_gen, sequence_input, pred_train, y_ground, y_prev, solar_pe
     #return y_pred, Y_test, mae, mape, crps, pbb, mse, elapsed_time_lstm
     return y_pred, Y_test, lower_y_pred, higher_y_pred, mae, mape, elapsed_time_lstm
 
+# Used only for Sensitivity Analysis experiments
 def lstm_func_1_2x1(latent_gen, sequence_input, pred_train, y_ground, y_prev, solar_penetration,y_pred_ground_truth):
     t = time.process_time()
     aa = (latent_gen)
@@ -335,6 +450,70 @@ def lstm_func_1_2x1(latent_gen, sequence_input, pred_train, y_ground, y_prev, so
     #return y_pred, Y_test, mae, mape, crps, pbb, mse, elapsed_time_lstm
     return y_pred, Y_test, lower_y_pred, higher_y_pred, mae, mape, elapsed_time_lstm
 
+def lstm_func2(latent_gen, sequence_input, pred_train, y_ground, y_prev, solar_penetration):
+    t = time.process_time()
+    aa = (latent_gen)
+    #total_train=int(len(sequence_input) - 48) # did not use this since we are not using training data
+    total_train=int(len(sequence_input))
+    yyy=np.zeros((total_train,40))
+    for index in tqdm(range(total_train)):
+        yyy[index,0:20]=np.mean(aa[np.argsort(np.linalg.norm(aa[:,:]-pred_train[index,:],axis=1))[0:10],:],axis=0)
+        yyy[index,20:40]=np.std(aa[np.argsort(np.linalg.norm(aa[:,:]-pred_train[index,:],axis=1))[0:10],:],axis=0)
+        
+    yyy1=np.concatenate((yyy,y_prev[:,47].reshape((len(y_prev),1))),axis=1)
+
+    y_train_sol=y_ground
+    total_train_data=np.concatenate((yyy1,y_train_sol.reshape((len(y_train_sol),1))),axis=1)
+    scaler_target = Scaler1D().fit(total_train_data)
+    total_norm_train = scaler_target.transform(total_train_data)
+    X=total_norm_train[:,0:41].reshape((total_norm_train.shape[0],41,1))
+    Y=total_norm_train[:,41]
+
+    lstm_model = lstm_models[str(solar_penetration)]
+    y_pred = lstm_model.predict(X)
+    #print(y_pred)
+    y_pred=y_pred*(np.max(total_train_data[:,41])-np.min(total_train_data[:,41]))+np.min(total_train_data[:,41])
+    Y_test=Y*(np.max(total_train_data[:,41])-np.min(total_train_data[:,41]))+np.min(total_train_data[:,41])
+
+    # Extracting the output of the concatenation layer (source: https://stackoverflow.com/a/65288168/13125348)
+    func = K.function([lstm_model.get_layer(index=0).input], lstm_model.get_layer(index=6).output)
+    layerOutput = func(X)  # input_data is a numpy array
+    print(layerOutput.shape)
+    y_pred = y_pred.flatten()
+    conf_array_higher_limit, conf_array_lower_limit = [], []
+    for index, concatenated_data in enumerate(layerOutput): # concatenated_data = [mean, sd]
+        # sigma_sign = 1
+        # if(concatenated_data[1]<0): sigma_sign = -1
+        # sigma = sigma_sign * np.sqrt(abs(concatenated_data[1]))
+        sigma = concatenated_data[1]
+        lower_limit = y_pred[index] - 2*sigma
+        higher_limit = y_pred[index] + 2*sigma
+        conf_array_lower_limit.append(lower_limit) #reversing
+        conf_array_higher_limit.append(higher_limit)
+    #y_pred = y_pred.flatten()
+    #print(y_pred, Y_test)
+    # mean = lambda x: x.mean()#.flatten()
+    # sd = lambda x: x.std()#.flatten() 
+    # conf_int_95 = np.array([mean(y_pred) - 2*sd(y_pred), mean(y_pred) + 2*sd(y_pred)]) #https://datascience.stackexchange.com/questions/109048/get-the-confidence-interval-for-prediction-results-with-lstm
+    # two_sd = 2*sd(y_pred)
+    # lower_y_pred = y_pred + conf_int_95[0]
+    # higher_y_pred = y_pred + conf_int_95[1]
+    lower_y_pred = np.array(conf_array_lower_limit) #y_pred - two_sd
+    higher_y_pred = np.array(conf_array_higher_limit) #y_pred + two_sd
+    #print("Conf", conf_int_95)
+    # np.savetxt(path_parent+"/data/outputs/pen_"+str(solar_penetration)+"/y_pred.csv", y_pred, delimiter=",")
+    # np.savetxt(path_parent+"/data/outputs/pen_"+str(solar_penetration)+"/Y_test.csv", Y_test, delimiter=",")
+    # np.savetxt(path_parent+"/data/outputs/pen_"+str(solar_penetration)+"/lower_y_pred.csv", lower_y_pred, delimiter=",")
+    # np.savetxt(path_parent+"/data/outputs/pen_"+str(solar_penetration)+"/higher_y_pred.csv", higher_y_pred, delimiter=",")
+    mae = 0 # mean_absolute_error(Y_test, y_pred)
+    mape = 0 # mean_absolute_percentage_error(Y_test, y_pred)
+    # crps = ps.crps_ensemble(y_pred.flatten(), Y_test).mean()
+    # pbb = pbb_calculation(Y_test, y_pred.flatten())
+    #mse = mean_squared_error(Y_test, y_pred)
+    elapsed_time_lstm = time.process_time() - t
+    #return y_pred, Y_test, mae, mape, crps, pbb, mse, elapsed_time_lstm
+    return y_pred, Y_test, lower_y_pred, higher_y_pred, elapsed_time_lstm
+
 def generate_comparison_image(y_pred, Y_test, solar_penetration, purpose, start_date, end_date):
     """
     This function generates an image(through matplotlib) comparing 
@@ -379,26 +558,50 @@ def validate_start_date(start_date):
     return edited_start_date
 
 def prepare_output_df(y_pred, Y_test, lower_y_pred, higher_y_pred, timeline, timeline_original, temperature_original, temperature_nans, humidity, humidity_original, humidity_nans, apparent_power, apparent_power_original, apparent_power_nans):
-    net_load = ((Y_test.flatten()).tolist())
-    net_load.extend((y_pred.flatten()).tolist())
-    net_load.extend((lower_y_pred.flatten()).tolist())
-    net_load.extend((higher_y_pred.flatten()).tolist())
-    y_pred_old = y_pred -1
-    net_load.extend((y_pred_old.flatten()).tolist())
+    # net_load = ((Y_test.flatten()).tolist())
+    # net_load.extend((y_pred.flatten()).tolist())
+    # net_load.extend((lower_y_pred.flatten()).tolist())
+    # net_load.extend((higher_y_pred.flatten()).tolist())
+    # y_pred_old = y_pred -1
+    # net_load.extend((y_pred_old.flatten()).tolist())
 
-    net_load_type = (["actual"] * Y_test.size)
-    net_load_type.extend(["predicted"] * y_pred.size)
-    net_load_type.extend(["lower"] * lower_y_pred.size)
-    net_load_type.extend(["higher"] * higher_y_pred.size)
-    net_load_type.extend(["predicted_old"] * y_pred_old.size)
+    # net_load_type = (["actual"] * Y_test.size)
+    # net_load_type.extend(["predicted"] * y_pred.size)
+    # net_load_type.extend(["lower"] * lower_y_pred.size)
+    # net_load_type.extend(["higher"] * higher_y_pred.size)
+    # net_load_type.extend(["predicted_old"] * y_pred_old.size)
 
-    years = (list(range(1,Y_test.size+1)))
-    years.extend(list(range(1,y_pred.size+1)))
-    years.extend(list(range(1,lower_y_pred.size+1)))
-    years.extend(list(range(1,higher_y_pred.size+1)))
-    years.extend(list(range(1,y_pred_old.size+1)))
+    mae = mean_absolute_error(Y_test, y_pred)
+    mape = mean_absolute_percentage_error(Y_test, y_pred)
+
+    print(len(y_pred), len(Y_test), len(lower_y_pred), len(higher_y_pred), len(timeline), len(timeline_original))
+
+    net_load = []
+    net_load.extend(Y_test)
+    net_load.extend(y_pred)
+    net_load.extend(lower_y_pred)
+    net_load.extend(higher_y_pred)
+    #y_pred_old = y_pred -1 # problematic line
+    y_pred_old =  [x - 1 for x in y_pred]
+    net_load.extend(y_pred_old)
+
+    net_load_type = (["actual"] * len(Y_test))
+    net_load_type.extend(["predicted"] * len(y_pred))
+    net_load_type.extend(["lower"] * len(lower_y_pred))
+    net_load_type.extend(["higher"] * len(higher_y_pred))
+    net_load_type.extend(["predicted_old"] * len(y_pred_old))
+
+    years = (list(range(1,len(Y_test)+1)))
+    years.extend(list(range(1,len(y_pred)+1)))
+    years.extend(list(range(1,len(lower_y_pred)+1)))
+    years.extend(list(range(1,len(higher_y_pred)+1)))
+    years.extend(list(range(1,len(y_pred_old)+1)))
+
+    print(timeline[0], timeline[-1], len(timeline), len(lower_y_pred), len(higher_y_pred), len(temperature_original), len(timeline_original))
     
-    conf_95_df = pd.DataFrame({"timeline": timeline, "lower_limit": (lower_y_pred.flatten()).tolist(), "higher_limit": (higher_y_pred.flatten()).tolist()})
+    #conf_95_df = pd.DataFrame({"timeline": timeline, "lower_limit": (lower_y_pred.flatten()).tolist(), "higher_limit": (higher_y_pred.flatten()).tolist()})
+    conf_95_df = pd.DataFrame({"timeline": timeline, "lower_limit": lower_y_pred, "higher_limit": higher_y_pred})
+    #conf_95_df = pd.DataFrame({"timeline": timeline, "lower_limit": timeline, "higher_limit": timeline})
     # temperature_df = pd.DataFrame({"temperature": temperature, "timeline": timeline, "dummy":[1]*len(temperature)})
     temperature_df = pd.DataFrame({"temperature": temperature_original, "timeline": timeline_original, "wasNan": temperature_nans, "dummy":[1]*len(temperature_original)})
     humidity_df = pd.DataFrame({"humidity": humidity_original, "timeline": timeline_original, "wasNan": humidity_nans, "dummy":[1]*len(humidity_original)})
@@ -409,7 +612,7 @@ def prepare_output_df(y_pred, Y_test, lower_y_pred, higher_y_pred, timeline, tim
     timeline.extend(timeline_initial)
     timeline.extend(timeline_initial)
     timeline.extend(timeline_initial)
-    print(len(net_load), len(net_load_type), len(years), len(timeline))
+    print("Net load df ", len(net_load), len(net_load_type), len(years), len(timeline))
     net_load_df = pd.DataFrame({"net_load": net_load, "net_load_type": net_load_type, "years": years, "timeline": timeline})
     # net_load_df.to_csv(path_parent+"/data/outputs/pen_"+str(solar_penetration)+"/net_load_df.csv", index=False)
     net_load_df_safe = net_load_df.to_dict(orient="records")
@@ -417,8 +620,48 @@ def prepare_output_df(y_pred, Y_test, lower_y_pred, higher_y_pred, timeline, tim
     temperature_df_safe = temperature_df.to_dict(orient="records")
     humidity_df_safe = humidity_df.to_dict(orient="records")
     apparent_power_df_safe = apparent_power_df.to_dict(orient="records")
-    return net_load_df_safe, temperature_df_safe, humidity_df_safe, apparent_power_df_safe, conf_95_df_safe
+    return net_load_df_safe, temperature_df_safe, humidity_df_safe, apparent_power_df_safe, conf_95_df_safe, mae, mape
 
+def get_time_intervals(start_date, end_date):
+    time_intervals = []
+    received_start_date = datetime.strptime(start_date, "%Y-%m-%d %H:%M:%S")
+    received_end_date = datetime.strptime(end_date, "%Y-%m-%d %H:%M:%S")
+    edited_start_date = received_start_date
+    edited_end_date = received_start_date + timedelta(hours = 12) # increasing time by 15
+    while(edited_end_date<received_end_date):
+        time_intervals.append([datetime.strftime((edited_start_date - timedelta(hours = 12)), "%Y-%m-%d %H:%M:%S"), datetime.strftime(edited_end_date, "%Y-%m-%d %H:%M:%S")])
+        #time_intervals.append([datetime.strftime((edited_start_date), "%Y-%m-%d %H:%M:%S"), datetime.strftime(edited_end_date, "%Y-%m-%d %H:%M:%S")])
+        edited_start_date = edited_start_date + timedelta(hours = 0.25)
+        edited_end_date = edited_end_date + timedelta(hours = 0.25)
+    return time_intervals
+
+def calculate_constant_bias_absolute(arr,noise):
+    noisy_arr = list(map(lambda el: el+noise, arr))
+    return noisy_arr
+
+def getRandomArbitrary(min, max):
+      return random.random() * (max - min) + min
+
+def calculate_uniform_noise(arr,noise):
+    lower_number = 1-(noise/100) 
+    upper_number = 1+(noise/100) 
+    noisy_arr = [getRandomArbitrary(lower_number*el, upper_number*el) for el in arr]
+    return noisy_arr
+def calculate_uniform_noise_increase(arr,noise):
+    lower_number = 1-(noise/100) 
+    upper_number = 1+(noise/100) 
+    noisy_arr = [getRandomArbitrary(el, upper_number*el) for el in arr]
+    return noisy_arr
+def calculate_uniform_noise_decrease(arr,noise):
+    lower_number = 1-(noise/100) 
+    upper_number = 1+(noise/100) 
+    noisy_arr = [getRandomArbitrary(lower_number*el, el) for el in arr]
+    return noisy_arr
+def convert_to_Array_of_Arrays(input, the_metric):
+    output = []
+    for obj in input:
+        output.append([obj["dummy"], obj["timeline"], obj["wasNan"], obj[the_metric]])
+    return output
 ### Callable functions ###
 # deprecated
 @app.route('/api/v1/processor',methods = ['POST', 'GET'])
@@ -474,8 +717,9 @@ def processor_v1_1(start_date="2020-05-01 00:00:00", end_date="2020-05-03 00:00:
     response.headers.add('Access-Control-Allow-Origin', '*')
     return response;
 
+# deprecated
 @app.route('/api/v1.2/processor',methods = ['POST', 'GET'])
-@app.route('/api/v@latest/processor',methods = ['POST', 'GET'])
+#@app.route('/api/v@latest/processor',methods = ['POST', 'GET'])
 def processor(start_date="2020-05-01 00:00:00", end_date="2020-05-03 00:00:00", solar_penetration=50):
     t = time.process_time()
     #start_date, end_date, solar_penetration = "2020-05-01 00:00:00", "2020-05-03 00:00:00", 50
@@ -508,6 +752,70 @@ def processor(start_date="2020-05-01 00:00:00", end_date="2020-05-03 00:00:00", 
     response.headers.add('Access-Control-Allow-Origin', '*')
     return response;
 
+@app.route('/api/v1.3/processor',methods = ['POST', 'GET'])
+@app.route('/api/v@latest/processor',methods = ['POST', 'GET'])
+def processor3(start_date="2020-01-03 00:00:00", end_date="2020-01-04 00:00:00", solar_penetration=50):
+    t = time.process_time()
+    #start_date, end_date, solar_penetration = "2020-05-01 00:00:00", "2020-05-03 00:00:00", 50
+    #start_date = validate_start_date(start_date)
+    global default_response
+    updated_metric = {}
+    metrics = ["temperature", "humidity", "apparent_power"]
+    for i in metrics: updated_metric[i] = []
+    if(request.is_json):
+        req = request.get_json()
+        print("Reading JSON")
+        #start_date = validate_start_date(req["start_date"])
+        start_date = req["start_date"]
+        end_date = req["end_date"]
+        solar_penetration = req["solar_penetration"]
+        for metric in metrics:
+            if(req["metrics_updated"][metric] == 1): updated_metric[metric] = req["updated_metric"][metric] 
+        
+        """ Check if all initial parameters are same"""
+        metrics_updated_dict = req["metrics_updated"]
+        metrics_not_updated = all(value == 0 for value in metrics_updated_dict.values()) # This variable checks if none of the metrics are updated
+        if(start_date == "2020-01-03 00:00:00" and end_date == "2020-01-04 00:00:00" and solar_penetration == 50 and metrics_not_updated):
+            print(" I am in out loop")  
+            print(default_response)  
+            return default_response       
+    print(start_date, solar_penetration)
+
+    # if(len(updated_metric["temperature"])>0): print((updated_metric["temperature"])[0])
+    time_intervals = get_time_intervals(validate_start_date(start_date), end_date)
+    print("time intervals ", time_intervals)
+    temperature, temperature_original, temperature_nans, temperature_nans_percentage, humidity, humidity_original, humidity_nans, humidity_nans_percentage, apparent_power, apparent_power_original, apparent_power_nans, apparent_power_nans_percentage, elapsed_time_prepare_input, timeline, timeline_original, df_updated_metric = prepare_general_input(validate_start_date(start_date),end_date, solar_penetration, updated_metric)
+    print("df updated metric ", df_updated_metric)
+    y_pred_mega, Y_test_mega, lower_y_pred_mega, higher_y_pred_mega = [], [], [], []
+    for time_interval in time_intervals:
+        sequence_input, y_ground, y_prev = prepare_input(time_interval[0], time_interval[1], solar_penetration, updated_metric, df_updated_metric)
+        pred_train, elapsed_time_autoencoder = autoencoder_func(sequence_input, solar_penetration)
+        latent_gen, elapsed_time_kpf = kPF_func(pred_train, solar_penetration)
+        #y_pred, Y_test, mae, mape, crps, pbb, mse, elapsed_time_lstm = lstm_func(latent_gen, sequence_input, pred_train, y_ground, y_prev)
+        y_pred, Y_test, lower_y_pred, higher_y_pred, elapsed_time_lstm = lstm_func2(latent_gen, sequence_input, pred_train, y_ground, y_prev, solar_penetration)
+        y_pred_mega.append(y_pred[0])
+        Y_test_mega.append(Y_test[0])
+        lower_y_pred_mega.append(lower_y_pred[0])
+        higher_y_pred_mega.append(higher_y_pred[0])
+    print(y_pred_mega)
+    print("Time sent to prepare general input", validate_start_date(start_date),end_date)
+    print("df updated metric ", df_updated_metric)
+    net_load_df_safe, temperature_df_safe, humidity_df_safe, apparent_power_df_safe, conf_95_df_safe, mae, mape = prepare_output_df(y_pred_mega, Y_test_mega, lower_y_pred_mega, higher_y_pred_mega, timeline, timeline_original, temperature_original, temperature_nans,  humidity, humidity_original, humidity_nans, apparent_power, apparent_power_original, apparent_power_nans)
+    #generate_comparison_image(y_pred, Y_test, solar_penetration, "processor", start_date, end_date)
+    elapsed_time_total = time.process_time() - t
+    print("MAE: ", mae)
+    print("total time: ", elapsed_time_total)
+    #final_result ={"1. message":"Program executed", "2. time taken (prepare input)": elapsed_time_prepare_input, "3. time taken (autoencoder)":elapsed_time_autoencoder, "4. time taken (kPF)": elapsed_time_kpf, "5. time taken (LSTM)": elapsed_time_lstm, "6. total time taken":elapsed_time_total, "7. MAE": mae, "8. MAPE": mape, "9. CRPS": crps, "10. PBB": pbb, "11. MSE": mse}
+    final_result ={"1. message":"Program executed", "2. time taken (prepare input)": elapsed_time_prepare_input, "3. time taken (autoencoder)":elapsed_time_autoencoder, "4. time taken (kPF)": elapsed_time_kpf, "5. time taken (LSTM)": elapsed_time_lstm, "6. total time taken":elapsed_time_total, "7. MAE": mae, "8. MAPE": mape, "predicted_net_load":y_pred.flatten().tolist(), "actual_net_load": Y_test.tolist(), "predicted_net_load_conf_95_higher":higher_y_pred.flatten().tolist(), "predicted_net_load_conf_95_lower":lower_y_pred.flatten().tolist(), "temperature":temperature, "humidity":humidity, "apparent_power":apparent_power, "net_load_df": net_load_df_safe, "conf_95_df":conf_95_df_safe, "temperature_df": temperature_df_safe, "temperature_nans_percentage":temperature_nans_percentage, "humidity_df": humidity_df_safe, "humidity_nans_percentage": humidity_nans_percentage, "apparent_power_df": apparent_power_df_safe, "apparent_power_nans_percentage": apparent_power_nans_percentage}
+    response=make_response(jsonify(final_result), 200) #removed processing
+    response.headers.add('Access-Control-Allow-Origin', '*')
+    return response;
+
+@app.route('/api/v@initial/processor',methods = ['POST', 'GET'])
+def processor_initial():
+    global default_response
+    default_response = processor3()
+    return "The program is now initiated"
 @app.route('/api/v1.2x0/processor',methods = ['POST', 'GET'])
 def processor_v1_2x0(start_date="2020-05-01 00:00:00", end_date="2020-05-03 00:00:00", solar_penetration=50):
     t = time.process_time()
@@ -576,6 +884,115 @@ def processor_v1_2x1(start_date="2020-05-01 00:00:00", end_date="2020-05-03 00:0
     response.headers.add('Access-Control-Allow-Origin', '*')
     return response;
 
+
+@app.route('/api/v1.3/sa_processor',methods = ['POST', 'GET'])
+@app.route('/api/v@latest/sa_processor',methods = ['POST', 'GET'])
+def sa_processor():
+    input_variable_sa, start_date_sa, end_date_sa, months_sa, noise_level_sa, number_of_observations_sa, noise_direction_sa = "", 2, 4, [], 0, 0, ""
+    if(request.is_json):
+        req = request.get_json()
+        print("Reading JSON")
+        input_variable_sa = req["input_variable_sa"]
+        start_date_sa = req["start_date_sa"]
+        end_date_sa = req["end_date_sa"]
+        months_sa = req["months_sa"]
+        noise_level_sa = req["noise_level_sa"]
+        number_of_observations_sa = req["number_of_observations_sa"]
+        noise_direction_sa = req["noise_direction_sa"]
+    print(input_variable_sa, start_date_sa, end_date_sa, months_sa, noise_level_sa, number_of_observations_sa, noise_direction_sa) 
+
+    """Setting variables"""
+    url_base = "http://localhost:5000"
+    api_url = url_base + "/api/v1.2x0/processor"
+    api_url_new = url_base + "/api/v@latest/processor"
+    api_url2 = url_base + "/api/v1.2x1/processor"
+    main_dir=os.getcwd()
+    start_date="2020-02-03 00:00:00" #February
+    end_date="2020-02-05 00:00:00"
+    solar_penetration=50
+    metrics_updated = {}
+    updated_metric = {"temperature":[], "humidity":[], "apparent_power":[]}
+    metrics = ["temperature", "humidity", "apparent_power"]
+    for em in metrics:
+        metrics_updated[em] = 0
+    print(metrics_updated, updated_metric)         
+    
+    """Initial Call"""
+    payload = {"start_date": start_date, "end_date": end_date, "solar_penetration": solar_penetration, "metrics_updated":metrics_updated, "updated_metric":updated_metric}
+    headers =  {"Content-Type":"application/json"}
+    response = requests.post(api_url, data=json.dumps(payload), headers=headers)
+    initial_output = response.json()
+    y_pred_ground_truth = initial_output["predicted_net_load"]
+    temperature_df = initial_output["temperature_df"]
+    formatted_array = convert_to_Array_of_Arrays(temperature_df, "temperature")
+
+    """Uniform noise increase only"""
+    mae_values, mape_values, mae_values_temp_all, mape_values_temp_all = [], [], [], []
+    for el in np.arange(0.0, 5, 1):
+        mae_values_temp, mape_values_temp = [], []
+        for em in range(0,5):
+        #print("Started for ", el)
+            formatted_array_mini = [x[3] for x in formatted_array]
+            updated_temperature = calculate_uniform_noise_increase(formatted_array_mini, el)
+            #print(formatted_array_mini[0], updated_temperature[0])
+            updated_temperature2=[]
+            for i in range(0,len(formatted_array)): updated_temperature2.append([formatted_array[i][0], formatted_array[i][1], formatted_array[i][2], updated_temperature[i]])
+            #print(updated_temperature2[0])
+            updated_metric["temperature"] = updated_temperature2
+            metrics_updated["temperature"] = 1
+            #print(updated_metric["temperature"][0], metrics_updated["temperature"])
+            payload = {"start_date": start_date, "end_date": end_date, "solar_penetration": solar_penetration, "metrics_updated":metrics_updated, "updated_metric":updated_metric, "y_pred_ground_truth": y_pred_ground_truth}
+            headers =  {"Content-Type":"application/json"}
+            response = requests.post(api_url2, data=json.dumps(payload), headers=headers)
+            res = response.json()
+            mae_values_temp.append(res["7. MAE"])
+            mape_values_temp.append(res["8. MAPE"])
+            mae_values_temp_all.append([el, res["7. MAE"]])
+            mape_values_temp_all.append([el, res["8. MAPE"]])
+        #mae_values.append([el, res["7. MAE"]])
+        #mape_values.append([el, res["8. MAPE"]])
+        mae_values.append([el, np.mean(mae_values_temp)])
+        mape_values.append([el, np.mean(mape_values_temp)])
+        print("Ended for ", el)
+
+        """
+        Saving the results
+        """
+        df_mae = pd.DataFrame(mae_values, columns=["Noise_Percentage", "Mean_MAE"])
+        print(main_dir)
+        df_mae.to_csv(main_dir+"/outputs/sensitivity_analysis/temperature/uniform_noise/february/mae_positive.csv", sep=',',index=False)
+        df_mae_all = pd.DataFrame(mae_values_temp_all, columns=["Noise_Percentage", "MAE"])
+        df_mae_all.to_csv(main_dir+"/outputs/sensitivity_analysis/temperature/uniform_noise/february/mae_positive_all.csv", sep=',',index=False)
+
+        df_mape = pd.DataFrame(mape_values, columns=["Noise_Percentage", "Mean_MAPE"])
+        df_mape.to_csv(main_dir+"/outputs/sensitivity_analysis/temperature/uniform_noise/february/mape_positive.csv", sep=',',index=False)
+        df_mape_all = pd.DataFrame(mape_values_temp_all, columns=["Noise_Percentage", "MAPE"])
+        df_mape_all.to_csv(main_dir+"/outputs/sensitivity_analysis/temperature/uniform_noise/february/mape_positive_all.csv", sep=',',index=False)
+        
+        """
+        Output
+        """
+        plt.rcParams["figure.figsize"] = (30,10)
+        plt.rcParams.update({'font.size': 18})
+        xpoints = [x[0] for x in mae_values]
+        ypoints = [x[1] for x in mae_values]
+        plt.plot(xpoints, ypoints, label="MAE")
+        xpoints_scatter = [x[0] for x in mae_values_temp_all]
+        ypoints_scatter = [x[1] for x in mae_values_temp_all]
+        plt.scatter(xpoints_scatter, ypoints_scatter, alpha=0.3)
+        #plt.plot(y_pred, label="pred")
+        plt.legend(loc="upper right")
+        plt.title("Sensitivity analysis by adding uniform noise (unidrectionally positive) in temperature (February)")
+        #plt.xlabel("Temperature bias (°F)")
+        plt.xlabel("Noise(%)")
+        plt.ylabel("MAE (kW)")
+        plt.savefig(main_dir+"/outputs/sensitivity_analysis/temperature/uniform_noise/february/mae_positive.png", facecolor='w')
+        plt.rcParams["figure.figsize"] = plt.rcParamsDefault["figure.figsize"]
+
+        final_result = {"message": "This endpoint is not ready yet"}
+        response=make_response(jsonify(final_result), 200) #removed processing
+        response.headers.add('Access-Control-Allow-Origin', '*')
+        return response;
 
 @app.route('/api/v1/stability_check', methods = ['POST', 'GET'])
 def stability_check():
@@ -668,3 +1085,4 @@ def index():
     response=make_response(jsonify(final_result2), 200) #removed processing
     response.headers.add('Access-Control-Allow-Origin', '*')
     return response;
+ 

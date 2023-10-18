@@ -10,9 +10,12 @@ export FLASK_APP=pyAPI/app.py
 flask run
 
 If using Windows Powershell:
-$env:FLASK_APP = "pyAPI\app.py"
+$env:FLASK_APP = "pyAPI\app4.py"
+# $env:FLASK_APP = "pyAPI\app.py"
+# $env:FLASK_APP = "pyAPI\app_15_min_ahead.py"
 $env:FLASK_ENV = "development"
 flask run
+Run this in browser once flask is up: http://localhost:5000/api/v@initial/processor
 
 If using Windows CMD:
 set FLASK_ENV=development

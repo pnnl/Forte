@@ -4,6 +4,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import './index.css';
 import App from './App';
 import App2 from './App2';
+import App3 from './App3';
 import reportWebVitals from './reportWebVitals';
 import { configureStore} from '@reduxjs/toolkit';
 import myreducer from './store/reducer';
@@ -28,6 +29,7 @@ root.render(
       <Routes>
         <Route path="/" element={<App />}></Route>
         <Route path="/experiments" element={<App2 />}></Route>
+        <Route path="/sensitivity_analysis" element={<App3 />}></Route>
       </Routes>
       </BrowserRouter>
      {/* <App /> */}

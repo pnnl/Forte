@@ -68,6 +68,15 @@
   shape-rendering: crispEdges;
 }
 
+/* .MuiPopover-paper{
+  background-color:"#F2F2F2" !important;
+  max-height:'60vh' !important;
+} */
+/* .test_paper{
+  background-color:"#F2F2F2" !important;
+  max-height:'60vh' !important;
+} */
+
 /* .domain{
   stroke-width: 0;
   stroke-opacity: 0.35;

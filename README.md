@@ -1,77 +1,24 @@
-# Getting Started with Create React App
+# About
+Accurate net-load forecasting is vital for energy planning, aiding decisions on trade and load distribution. However, assessing the performance of forecasting models across diverse input variables, like temperature and humidity, remains challenging, particularly for eliciting a high degree of trust in the model outcomes. In this context, there is a growing need for data-driven technological interventions to aid scientists in comprehending how models react to both noisy and clean input variables, thus shedding light on complex behaviors and fostering confidence in the outcomes. In this paper, we present ``Forte``, a visual analytics-based application to explore deep probabilistic net-load forecasting models across various input variables and understand the error rates for different scenarios. With carefully designed visual interventions, this web-based interface empowers scientists to derive insights about model performance by simulating diverse scenarios, facilitating an informed decision-making process. We discuss observations made using `Forte`` and demonstrate the effectiveness of visualization techniques to provide valuable insights into the correlation between weather inputs and net-load forecasts, ultimately advancing grid capabilities by improving trust in forecasting models.
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
-## Available Scripts
-
-In the project directory, you can run:
-
-### `npm start`
-
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
-
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
-
-### `npm test`
-
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
-
-### `npm run build`
-
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
-
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
-
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
-
-### `npm run eject`
-
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
-
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
-
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
-
+# Steps to Run this project
+1. Clone this project to your local machine
+1. Download all the Python requirements using `python3 -m pip install -r requirements.txt`
+1. Create a new folder for the Flas logs using `mkdir pyAPI/logs`
+1. Type this command in your terminal `export FLASK_ENV=development` (For Powershell, use `$env:FLASK_APP = "pyAPI\app4.py"`)
+1. Type this command: `export FLASK_APP=pyAPI/app4.py` (For Powershell, use `$env:FLASK_ENV = "development"`)
+1. Next, run flask using `flask run`
+1. Now open a different terminal and type this command to install the Node dependencies `npm install`
+1. Now run the app using this command: `npm start`
+1. Your app would be running at http://localhost:3000
 
 # Interface
-![Screenshot on 08/25/2022](images/Screenshot_08252022.png)
+![Screenshot on 09/01/2023](images/Screenshot_09012023.png)
 
 # Interface GIF
-![Screen Capture GIF on 08/25/2022](images/ScreenCapture.gif)
+![Screen Capture GIF on 09/01/2023](images/Forte_Demo.gif)
+
+# Community guidelines
+If you face any issues while running this project, please open an issue in this repo, and we will try to respond as soon as possible.
+Feel free to contribute to this project by creating a fork or a branch on this repo. All ideas/improvements/suggestions are welcome!

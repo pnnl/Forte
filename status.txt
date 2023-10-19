@@ -1,6 +1,0 @@
-1. Any updates in temperature will be reflected.
-2. Need to push this to humidity and apparent power too. (done but need to cross check)
-3. Need to check if we can reduce the time taken for this.
-4. Need to check the Replay thing.
-5. DO a thorogh sanity check
-6. SK asked to think how to implement Sensitivity Analysis through this interface.
